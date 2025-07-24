@@ -19,6 +19,29 @@ module.exports = {
     },
     extend: {
       colors: {
+        navyBlue: '#456882',
+        DNavy: '#1B3C53',
+        beige: {
+          50: '#faf8f5',
+          100: '#f3f0e9',
+          200: '#e8e0d1', // Light Beige
+          300: '#d4c9b2', // Your existing Beige
+          400: '#b8a98a', // Beige Dark
+          500: '#9c8e6e',
+          600: '#827556',
+          700: '#685d45',
+          800: '#4e4633',
+          900: '#343022'
+        },
+        vintage: {
+          brown: '#6b4f3b', // Dark Brown
+          terracotta: '#a05c3a', // Warm accent
+          sage: '#8a9b6e', // Muted green
+          parchment: '#e8ddc5', // Light parchment
+          slate: '#5a6a6e', // Cool contrast
+          pparchment: '#f0e6d2', // A slightly warmer parchment color
+          ink: '#3a3226' // A deep ink-like color for text
+        },
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -73,6 +96,8 @@ module.exports = {
       },
       fontFamily: {
         roboto: 'var(--font-roboto), sans-serif',
+        vintage: ['"Cormorant Garamond"', 'serif'],
+        mono: ['"Fira Code"', 'monospace']
       },
       keyframes: {
         'accordion-down': {

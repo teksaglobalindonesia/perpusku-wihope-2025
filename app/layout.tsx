@@ -1,3 +1,4 @@
+import { Header } from '@/components/custom/header';
 import { Toaster } from '@/components/ui/sonner';
 import { Roboto } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
@@ -26,6 +27,32 @@ export default async function RootLayout({
         <body>
           <NextTopLoader showSpinner={false} height={4} />
           <Toaster />
+          <Header
+        navItems={[
+          {
+            label: 'Dashboard',
+            path: '/'
+          },
+          {
+            label: 'Buku',
+            path: '/book'
+          },
+          {
+            label: 'Anggota',
+            path: '/members'
+          },
+          {
+            label: 'Peminjaman',
+            path: '/peminjaman'
+          },
+          {
+            label: 'Pengembalian',
+            path: '/pengembalian'
+          } 
+          
+        ]}
+        
+      />
           {children}
         </body>
       </html>
