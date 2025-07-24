@@ -1,0 +1,94 @@
+'use client'
+import { useState } from 'react';
+import { StatusBukuType } from './D_LoanBook';
+
+export const D_ReturnBooks = ({ statusBukuItems = [], maxData = 2 }: StatusBukuType) => {
+    const [page, setPage] = useState<number>(1);
+    const bookStock = statusBukuItems.filter((item) => item.status === 1); //ini filter buat status buku, 0 = dipinjam dan 1 = dikembalikan
+    const totalPages = Math.ceil(bookStock.length / maxData);
+    const paginatedData = bookStock.slice((page - 1) * maxData, page * maxData);
+
+    const handleNext = () => {
+        if (page < totalPages) setPage((prev) => prev + 1);
+    };
+
+    const handlePrev = () => {
+        if (page > 1) setPage((prev) => prev - 1);
+    };
+
+    return (
+        <div className="flex flex-col mx-10 my-10 border-2 border-gray-200 rounded-lg shadow-md bg-white">
+            <div className="flex flex-row justify-between py-5 px-6 items-center border-b border-gray-200">
+                <h3 className="font-semibold text-2xl text-gray-800">Pengembalian Hari Ini</h3>
+                <div className="relative">
+                    <input
+                        type="text"
+                        name="search"
+                        id="search"
+                        placeholder="Search..."
+                        className="w-64 h-10 px-4 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                    />
+                    <svg className="w-5 h-5 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+            </div>
+            {/* Display */}
+            {paginatedData.length > 0 ? (
+                paginatedData.map((item, index) => (
+                    <div key={index} className="flex flex-col gap-3 mx-6 my-4">
+                        <div className="px-6 py-4 flex flex-row justify-between items-center border border-gray-200 rounded-md hover:shadow-lg transition-shadow duration-200">
+                            {/* Informasi Buku */}
+                            <div className="flex flex-row items-center gap-6">
+                                <div className="flex flex-col gap-4">
+                                    <div>
+                                        <h3 className="text-xl font-medium text-gray-900">{item.title}</h3>
+                                        <p className="text-base text-gray-600">Peminjam: {item.borrower}</p>
+                                        <p className="text-base text-gray-600">Tanggal Peminjaman: {item.borrowedAt}</p>
+                                        <p className="text-base text-gray-600">Tanggal Pengembalian: {item.returnedAt}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {/* Status Buku */}
+                            <div>
+                                <p className="py-2 px-4 bg-green-100 text-green-800 text-sm font-medium rounded-full">
+                                    {item.status === 1 ? 'DIKEMBALIKAN' : `DIPINJAM`}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <div className="text-center py-8 text-gray-500">
+                    Tidak ada data pengembalian untuk ditampilkan
+                </div>
+            )}
+            {/* Pagination */}
+            <div className="flex gap-4 flex-row justify-center py-4 px-6 items-center border-t border-gray-200">
+                <button
+                    onClick={handlePrev}
+                    disabled={page === 1}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition duration-200 ${page === 1
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                        }`}
+                >
+                    Prev
+                </button>
+                <span className="px-4 py-2 text-sm text-gray-600 font-medium">
+                    {page} / {totalPages}
+                </span>
+                <button
+                    onClick={handleNext}
+                    disabled={page === totalPages}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition duration-200 ${page === totalPages
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                        }`}
+                >
+                    Next
+                </button>
+            </div>
+        </div>
+    );
+}

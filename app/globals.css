@@ -25,6 +25,7 @@
     --ring: 34 100% 63.7%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 34 50% 5%;
     --foreground: 34 5% 90%;
@@ -53,6 +54,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply box-border bg-background text-foreground;
   }
@@ -60,11 +62,14 @@
 
 @layer utilities {
   .min-h-screen {
-    min-height: 100vh; /* Fallback */
+    min-height: 100vh;
+    /* Fallback */
     min-height: 100dvh;
   }
+
   .h-screen {
-    height: 100vh; /* Fallback */
+    height: 100vh;
+    /* Fallback */
     height: 100dvh;
   }
 }
@@ -73,9 +78,31 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.nav-link {
+  text-decoration: none;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  left: 0;
+  bottom: -4px;
+  background-color: currentColor;
+  transition: width 0.3s ease;
+}
+
+.nav-link.active::after {
+  width: 100%;
 }
 
 body {
