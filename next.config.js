@@ -15,12 +15,12 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 's3-alpha-sig.figma.com',
+        hostname: 's3-alpha-sig.figma.com'
       },
       {
         protocol: 'http',
-        hostname: 'localhost',
-      },
+        hostname: 'localhost'
+      }
     ]
   },
   transpilePackages: ['geist']
