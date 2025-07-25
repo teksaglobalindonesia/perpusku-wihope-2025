@@ -24,6 +24,31 @@
     --input: 34 30% 18%;
     --ring: 34 100% 63.7%;
     --radius: 0.5rem;
+    --neutral-dbrown: #4E342E;
+    --neutral-mbrown: #795548;
+    --neutral-sbrown: #A1887F;
+    --neutral-beige: #D7CCC8;
+    --neutral-cream: #FFF9F0;
+    --neutral-white: #FFFFFF;
+
+    --brand-primary: #8B5E3C;
+    --brand-secondary: #4E342E;
+    --brand-info: #CBA17B;
+
+    --shade-1: #6D4C41;
+    --shade-2: #5D4037;
+    --shade-3: #4E342E;
+    --shade-4: #3E2723;
+    --shade-5: #2E1B18;
+
+    --tint-1: #BCAAA4;
+    --tint-2: #D7CCC8;
+    --tint-3: #EFEFE9;
+    --tint-4: #FAF5F2;
+
+    --action-warning: #E0A800;
+    --action-error: #D84315;
+    --action-success: #8CBF9F;
   }
   .dark {
     --background: 34 50% 5%;

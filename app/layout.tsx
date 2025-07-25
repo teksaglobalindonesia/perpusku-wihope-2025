@@ -1,5 +1,5 @@
 import { Toaster } from '@/components/ui/sonner';
-import { Roboto } from 'next/font/google';
+import { Inter, Roboto } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
 import './globals.css';
 import 'animate.css/animate.compat.css';
@@ -11,6 +11,12 @@ const robotoFont = Roboto({
   variable: '--font-roboto'
 });
 
+const interFont = Inter({
+  subsets: ['latin'],
+  weight: ['300', '500', '700'],
+  variable: '--font-inter'
+});
+
 export default async function RootLayout({
   children
 }: {
@@ -20,7 +26,8 @@ export default async function RootLayout({
     <ReactQueryClientProvider>
       <html
         lang="en"
-        className={`${robotoFont.variable}`}
+        className={`${robotoFont.variable} ${interFont.variable}`}
+        
         suppressHydrationWarning={true}
       >
         <body>

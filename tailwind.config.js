@@ -11,7 +11,7 @@ module.exports = {
   ],
   theme: {
     container: {
-      center: 'true',
+      center: true,
       padding: '2rem',
       screens: {
         '2xl': '1400px'
@@ -61,7 +61,33 @@ module.exports = {
           'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))'
-        }
+        },
+
+        'brand-primary': 'var(--brand-primary)',
+        'brand-secondary': 'var(--brand-secondary)',
+        'brand-info': 'var(--brand-info)',
+
+        'neutral-dbrown': 'var(--neutral-dbrown)',
+        'neutral-mbrown': 'var(--neutral-mbrown)',
+        'neutral-sbrown': 'var(--neutral-sbrown)',
+        'neutral-beige': 'var(--neutral-beige)',
+        'neutral-cream': 'var(--neutral-cream)',
+        'neutral-white': 'var(--neutral-white)',
+
+        'shade-1': 'var(--shade-1)',
+        'shade-2': 'var(--shade-2)',
+        'shade-3': 'var(--shade-3)',
+        'shade-4': 'var(--shade-4)',
+        'shade-5': 'var(--shade-5)',
+
+        'tint-1': 'var(--tint-1)',
+        'tint-2': 'var(--tint-2)',
+        'tint-3': 'var(--tint-3)',
+        'tint-4': 'var(--tint-4)',
+
+        'action-warning': 'var(--action-warning)',
+        'action-error': 'var(--action-error)',
+        'action-success': 'var(--action-success)'
       },
       fontSize: {
         '2xs': ['10px', '16px']
@@ -76,20 +102,12 @@ module.exports = {
       },
       keyframes: {
         'accordion-down': {
-          from: {
-            height: '0'
-          },
-          to: {
-            height: 'var(--radix-accordion-content-height)'
-          }
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' }
         },
         'accordion-up': {
-          from: {
-            height: 'var(--radix-accordion-content-height)'
-          },
-          to: {
-            height: '0'
-          }
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' }
         }
       },
       animation: {
@@ -98,5 +116,8 @@ module.exports = {
       }
     }
   },
-  plugins: [require('tailwindcss-animate'), require('@tailwindcss/line-clamp')]
+  plugins: [
+    require('tailwindcss-animate'),
+    require('@tailwindcss/line-clamp')
+  ]
 };
