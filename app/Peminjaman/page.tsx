@@ -3,6 +3,8 @@
 import { CardSimple } from "@/components/custom/card/cardsimple";
 import { useState } from "react";
 import { Navbar } from "@/components/custom/navbar";
+import { PeminjamanHero } from "@/components/custom/peminjamanHero";
+import { Footer } from "@/components/custom/footer";
 
 interface Peminjaman {
   title: string;
@@ -63,9 +65,9 @@ export default function PeminjamanPage() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-white px-10 py-6">
-        <div className="flex justify-between mb-6">
-          <h1 className="text-[24px] font-bold">Peminjaman</h1>
+      <PeminjamanHero />
+      <div className="min-h-screen bg-tint-4 px-10 py-6">
+        <div className="flex justify-center items-center mb-6">
           <div className="flex gap-2">
             <input
               type="text"
@@ -74,7 +76,7 @@ export default function PeminjamanPage() {
               onChange={(e) => setSearch(e.target.value)}
               className="border px-3 py-1 rounded text-sm"
             />
-            <button className="bg-action-success text-white px-4 py-1 rounded text-sm">
+            <button className="bg-action-success text-neutral-white px-4 py-1 rounded text-sm">
               TAMBAH
             </button>
           </div>
@@ -87,7 +89,7 @@ export default function PeminjamanPage() {
             .map((item, index) => (
               <div
                 key={index}
-                className="border rounded-md px-6 py-4 shadow bg-white flex justify-between items-center"
+                className="border rounded-md px-6 py-4 shadow bg-neutral-white flex justify-between items-center"
               >
                 <div>
                   <CardSimple
@@ -96,13 +98,13 @@ export default function PeminjamanPage() {
                     borrowedAt={item.borrowedAt}
                     returnAt={item.returnAt}
                   />
-                  <button className="mt-3 bg-green-200 text-black px-4 py-1 rounded text-sm">
+                  <button className="mt-3 bg-action-success font-medium text-neutral-white px-4 py-1 rounded text-sm">
                     KEMBALIKAN
                   </button>
                 </div>
 
                 {item.status === "TERLAMBAT" && (
-                  <span className="text-white text-sm font-bold px-4 py-1 rounded bg-action-error">
+                  <span className="text-neutral-white text-sm font-bold px-4 py-1 rounded bg-action-error">
                     TERLAMBAT
                   </span>
                 )}
@@ -118,6 +120,7 @@ export default function PeminjamanPage() {
             <a href="#" className="px-4 py-2 border rounded-md">&raquo;</a>
         </div>
       </div>
+      <Footer />
     </>
   );
 }
