@@ -31,7 +31,7 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
     const handlePrev = () => {
         if (page > 1) setPage((prev) => prev - 1);
     };
-
+ // INI CUMA LOG KE CONSOLE BUAT MEMUDAHKAN SAYA DALAM DEBUGING
     const handleEdit = (id: number) => {
         console.log("EDIT item pada produk:", id);
     };
@@ -44,7 +44,7 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
             setShowDeleteModal(true);
         }
     };
-
+ // INI CUMA LOG KE CONSOLE BUAT MEMUDAHKAN SAYA DALAM DEBUGING
     const confirmDelete = () => {
         if (bookToDeleteId !== null) {
             console.log("MENGHAPUS buku ID:", bookToDeleteId);

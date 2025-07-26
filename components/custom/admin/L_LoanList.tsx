@@ -31,7 +31,7 @@ export const L_LoanList = ({ statusBukuItems = StatusBuku, maxData = 5 }: Status
                         className="w-64 h-10 px-4 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
                     />
                     <Link
-                        href="/dashboard/books/add"
+                        href="/dashboard/loans/add"
                         className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-all duration-200 hover:scale-105 shadow-sm hover:shadow-md"
                     >
                         Tambah Peminjaman

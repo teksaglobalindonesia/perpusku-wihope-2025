@@ -1,7 +1,7 @@
 import { D_LoanBooks } from "@/components/custom/admin/D_LoanBook";
 import { D_ReturnBooks } from "@/components/custom/admin/D_ReturnBook";
 import { D_EmptyBook } from "@/components/custom/admin/D_EmptyBook";
-import { D_Header } from "@/components/custom/admin/header";
+// import { D_Header } from "@/components/custom/admin/header";
 
 export const StatusBuku = [
     {
@@ -255,6 +255,11 @@ export const BookList = [
 
 export const User = [
     {
+        name: "AMan Aja Dulu",
+        uid: "UID0011",
+        email: "aman@example.com",
+    },
+    {
         name: "Alicia",
         uid: "UID001",
         email: "alicia@example.com",
@@ -308,7 +313,7 @@ export default function Dashboard() {
 
     return (
         <>
-            <D_Header items={D_NavLinks} />
+            {/* <D_Header items={D_NavLinks} /> */}
             <D_EmptyBook bookListItems={BookList} />
             <D_LoanBooks statusBukuItems={StatusBuku} />
             <D_ReturnBooks statusBukuItems={StatusBuku} />

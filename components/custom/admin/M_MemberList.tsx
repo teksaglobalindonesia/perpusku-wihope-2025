@@ -29,11 +29,11 @@ export const M_MemberList = ({ userItems = [], maxData = 5 }: UserType) => {
     const handlePrev = () => {
         if (page > 1) setPage((prev) => prev - 1);
     };
-
+     // INI CUMA LOG KE CONSOLE BUAT MEMUDAHKAN SAYA DALAM DEBUGING
     const handleEdit = (uid: string) => {
         console.log("EDIT item pada produk:", uid);
     };
-
+     // INI CUMA LOG KE CONSOLE BUAT MEMUDAHKAN SAYA DALAM DEBUGING
     const handlePeminjaman = (uid: string) => {
         console.log("Melihat peminjaman item pada produk:", uid);
     };
@@ -42,7 +42,7 @@ export const M_MemberList = ({ userItems = [], maxData = 5 }: UserType) => {
         setSelectedUser({ uid, name });
         setShowDeleteModal(true);
     };
-
+     // INI CUMA LOG KE CONSOLE BUAT MEMUDAHKAN SAYA DALAM DEBUGING
     const confirmDelete = () => {
         if (selectedUser) {
             console.log("Menghapus user:", selectedUser.uid);

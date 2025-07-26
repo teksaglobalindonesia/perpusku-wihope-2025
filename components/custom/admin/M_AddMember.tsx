@@ -1,4 +1,24 @@
+'use client';
+import { useState } from 'react';
+
 export const M_AddMember = () => {
+    const [name, setName] = useState('');
+    const [uid, setUID] = useState('');
+    const [email, setEmail] = useState('');
+
+     // INI CUMA LOG KE CONSOLE BUAT MEMUDAHKAN SAYA DALAM DEBUGING
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const formData = {
+            name,
+            uid,
+            email,
+        };
+
+        console.log('Data Anggota:', formData);
+    };
+
     return (
         <div className="flex flex-col mx-10 my-10 border-2 border-gray-200 rounded-lg shadow-md bg-white">
             <div className="flex flex-row justify-between py-5 px-6 items-center border-b border-gray-200">
@@ -6,40 +26,46 @@ export const M_AddMember = () => {
             </div>
 
             <div className="px-6 py-6">
-                <form className="space-y-6">
+                <form className="space-y-6" onSubmit={handleSubmit}>
                     <div className="grid grid-cols-2 gap-6">
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="title" className="text-sm font-medium text-gray-700">
+                            <label htmlFor="name" className="text-sm font-medium text-gray-700">
                                 Nama
                             </label>
                             <input
                                 type="text"
-                                name="title"
-                                id="title"
+                                name="name"
+                                id="name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
                                 className="w-full h-10 px-4 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
                                 placeholder="Azrea Natalie"
                             />
                         </div>
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="author" className="text-sm font-medium text-gray-700">
+                            <label htmlFor="uid" className="text-sm font-medium text-gray-700">
                                 UID
                             </label>
                             <input
                                 type="text"
-                                name="author"
-                                id="author"
+                                name="uid"
+                                id="uid"
+                                value={uid}
+                                onChange={(e) => setUID(e.target.value)}
                                 className="w-full h-10 px-4 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
                                 placeholder="M_001"
                             />
                         </div>
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="publisher" className="text-sm font-medium text-gray-700">
+                            <label htmlFor="email" className="text-sm font-medium text-gray-700">
                                 Email
                             </label>
                             <input
                                 type="email"
-                                name="publisher"
-                                id="publisher"
+                                name="email"
+                                id="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 className="w-full h-10 px-4 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
                                 placeholder="azreanatalie@example.com"
                             />
