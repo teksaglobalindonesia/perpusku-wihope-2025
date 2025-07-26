@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useState } from 'react';
 
 export const ListPeminjamanSection = ({ data }: { data: any }) => {
@@ -31,6 +32,12 @@ export const ListPeminjamanSection = ({ data }: { data: any }) => {
               className="rounded-[5px] border-2 border-neutral-silver px-4 py-1 outline-none"
               placeholder="Search..."
             />
+            <Link
+              href={`/borrows/new`}
+              className="rounded-[5px] bg-brand-primary px-4 py-2 text-white"
+            >
+              Tambah
+            </Link>
           </div>
         </div>
         {/*  */}

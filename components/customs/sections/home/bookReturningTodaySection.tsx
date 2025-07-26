@@ -28,8 +28,6 @@ export const BookReturningTodaySection = ({
     if (page > 1) setPage((prev) => prev - 1);
   };
 
-  console.log(paginatedData[0]);
-
   return (
     <>
       <div className="mt-[20px]  py-[20px]">
