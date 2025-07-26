@@ -55,6 +55,11 @@ export default function NewBorrowPage() {
     bookDatas: []
   });
 
+  const handleCreateNewBorrowed = () => {
+    window.document.body.style.overflow = 'auto';
+    router.back();
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -132,7 +137,7 @@ export default function NewBorrowPage() {
           <button
             type="submit"
             className="mt-4 w-full rounded bg-green-500 py-2 text-white transition hover:bg-green-600"
-            onClick={() => router.back()}
+            onClick={handleCreateNewBorrowed}
           >
             SIMPAN
           </button>

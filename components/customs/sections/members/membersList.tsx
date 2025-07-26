@@ -76,13 +76,13 @@ export const MembersList = ({ data, title }: BooksOutOfStockProps) => {
             >
               <div className="flex flex-col justify-center gap-[5px]">
                 <p className="text-bold text-2xl font-semibold">{data?.nama}</p>
-                <p>{data?.id}</p>
+                <p>{data?.nomor}</p>
                 <p>{data?.email}</p>
               </div>
               <div className="mt-[20px] flex items-center gap-[20px]">
                 <Link
                   href={`/members/${data.id}/borrowed`}
-                  className="rounded-sm bg-brand-blue px-4 py-1 text-white"
+                  className="rounded-sm bg-brand-primary px-4 py-1 text-white"
                 >
                   PEMINJAMAN
                 </Link>
@@ -93,7 +93,7 @@ export const MembersList = ({ data, title }: BooksOutOfStockProps) => {
                   EDIT
                 </Link>
                 <button
-                  className="rounded-sm bg-brand-blue px-4 py-1 text-white"
+                  className="rounded-sm bg-action-error px-4 py-1 text-white"
                   onClick={() =>
                     setShowDialog({ isShow: true, bookId: data.id })
                   }
