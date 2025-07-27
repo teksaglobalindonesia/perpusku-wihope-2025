@@ -15,9 +15,7 @@ export default function Page() {
         {/* <CardGambar /> */}
         <DPinjaman />
         <DPengembalian />
-        <div className="my-10">
-          
-        </div>
+        <div className="my-10"></div>
       </div>
     </>
   );
