@@ -126,7 +126,7 @@ export default function NewBorrowPage() {
           <div className="mb-4">
             <label className="mb-1 block font-medium">Durasi Peminjaman</label>
             <select className="w-full rounded border px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-400">
-              {d.map((item) => (
+              {(d ?? []).map((item) => (
                 <option key={item.id} value={item.value}>
                   {item.label}
                 </option>

@@ -1,3 +1,4 @@
+'use client';
 import { BooksList } from '@/components/customs/sections/books/booksList';
 import {
   Header,

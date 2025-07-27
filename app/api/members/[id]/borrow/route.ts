@@ -8,7 +8,7 @@ export async function GET(req: NextRequest, { params }: { params: any }) {
 
   const borrowed = dummyPeminjaman
     .filter((item) => item.userId === params.id)
-    .map((peminjaman) => {
+    ?.map((peminjaman) => {
       const book = dummyBooks.find((book) => book.id === peminjaman.bukuId);
       return { ...peminjaman, buku: book };
     });

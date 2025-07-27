@@ -12,13 +12,13 @@ type MemberListDialogProps = {
 
 export const BooksListDialog = ({ show, setShow }: MemberListDialogProps) => {
   const maxData = 3;
-  const totalPages = Math.ceil(show?.bookDatas.length / maxData);
+  const totalPages = Math.ceil(show?.bookDatas?.length / maxData);
 
   console.log(show?.bookDatas);
 
   const [page, setPage] = useState<number>(1);
 
-  const paginatedData = show?.bookDatas.slice(
+  const paginatedData = show?.bookDatas?.slice(
     (page - 1) * maxData,
     page * maxData
   );
