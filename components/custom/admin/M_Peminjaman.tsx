@@ -35,7 +35,7 @@ export type StatusBukuType = {
 export const M_Peminjaman = ({ statusBukuItems = PinjamanALicia, maxData = 5, }: StatusBukuType) => {
     const [page, setPage] = useState<number>(1);
     const totalPages = Math.ceil(statusBukuItems.length / maxData);
-    
+
     const paginatedData = statusBukuItems.slice(
         (page - 1) * maxData,
         page * maxData
@@ -92,10 +92,10 @@ export const M_Peminjaman = ({ statusBukuItems = PinjamanALicia, maxData = 5, }:
                             <div>
                                 <p
                                     className={`py-2 px-4 text-sm font-semibold rounded-full ${item.status === 0
-                                            ? 'bg-yellow-100 text-yellow-800'
-                                            : item.status === 1
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-red-100 text-red-800'
+                                        ? 'bg-yellow-100 text-yellow-800'
+                                        : item.status === 1
+                                            ? 'bg-green-100 text-green-800'
+                                            : 'bg-red-100 text-red-800'
                                         }`}
                                 >
                                     {item.status === 0
@@ -115,13 +115,12 @@ export const M_Peminjaman = ({ statusBukuItems = PinjamanALicia, maxData = 5, }:
             )}
 
             {/* Pagination */}
-            <div className="flex justify-center gap-4 py-4 px-6 border-t">
+            <div className="flex justify-center gap-4 py-4 px-6 border-t items-center">
                 <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${
-                        page === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-                    }`}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${page === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                        }`}
                 >
                     Prev
                 </button>
@@ -129,9 +128,8 @@ export const M_Peminjaman = ({ statusBukuItems = PinjamanALicia, maxData = 5, }:
                 <button
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${
-                        page === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-                    }`}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${page === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                        }`}
                 >
                     Next
                 </button>

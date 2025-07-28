@@ -81,7 +81,7 @@ export const M_MemberList = ({ userItems = [], maxData = 5 }: UserType) => {
                 <div className="text-center py-8 text-gray-500">Tidak ada anggota untuk ditampilkan</div>
             )}
 
-            <div className="flex justify-center gap-4 py-4 px-6 border-t">
+            <div className="flex justify-center gap-4 py-4 px-6 border-t items-center">
                 <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}

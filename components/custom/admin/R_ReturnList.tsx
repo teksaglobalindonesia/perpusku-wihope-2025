@@ -65,13 +65,12 @@ export const R_ReturnList = ({ statusBukuItems = StatusBuku, maxData = 5 }: Stat
                 </div>
             )}
 
-            <div className="flex justify-center gap-4 py-4 px-6 border-t">
+            <div className="flex justify-center gap-4 py-4 px-6 border-t items-center">
                 <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${
-                        page === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-                    }`}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${page === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                        }`}
                 >
                     Prev
                 </button>
@@ -79,9 +78,8 @@ export const R_ReturnList = ({ statusBukuItems = StatusBuku, maxData = 5 }: Stat
                 <button
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${
-                        page === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-                    }`}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${page === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                        }`}
                 >
                     Next
                 </button>

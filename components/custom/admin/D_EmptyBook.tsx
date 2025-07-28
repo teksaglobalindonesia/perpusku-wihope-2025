@@ -68,7 +68,7 @@ export const D_EmptyBook = ({ bookListItems = [], maxData = 2 }: BookListType) =
                 </div>
             )}
             {/* Pagination */}
-            <div className="flex justify-center gap-4 py-4 px-6 border-t">
+            <div className="flex justify-center gap-4 py-4 px-6 border-t items-center">
                 <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}

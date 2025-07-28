@@ -76,7 +76,7 @@ export const L_LoanList = ({ statusBukuItems = StatusBuku, maxData = 5 }: Status
                 <div className="text-center py-8 text-gray-500">Tidak ada data peminjaman.</div>
             )}
 
-            <div className="flex justify-center gap-4 py-4 px-6 border-t">
+            <div className="flex justify-center gap-4 py-4 px-6 border-t items-center">
                 <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}

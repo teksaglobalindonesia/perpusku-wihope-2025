@@ -114,8 +114,8 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
                             <div>
                                 <p
                                     className={`py-2 px-4 text-sm font-medium rounded-full ${item.stock === 0
-                                            ? 'bg-red-100 text-red-800'
-                                            : 'bg-green-100 text-green-800'
+                                        ? 'bg-red-100 text-red-800'
+                                        : 'bg-green-100 text-green-800'
                                         }`}
                                 >
                                     {item.stock === 0 ? 'HABIS' : `${item.stock} TERSEDIA`}
@@ -131,7 +131,7 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
             )}
 
             {/* Pagination */}
-            <div className="flex justify-center gap-4 py-4 px-6 border-t">
+            <div className="flex justify-center gap-4 py-4 px-6 border-t items-center">
                 <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
