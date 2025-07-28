@@ -1,9 +1,9 @@
 import { Header } from '@/components/customs/layouts/header';
-import { ListPeminjamanSection } from '@/components/customs/sections/borrowed/borrowedList';
+import { ReturningListSection } from '@/components/customs/sections/returning/returningList';
 import { fetcher } from '@/lib/fetcher';
 
-export default async function Peminjaman() {
-  const response = await fetcher({ path: '/api/peminjaman' });
+export default async function ReturningPage() {
+  const data = await fetcher({ path: '/api/peminjaman' });
 
   const NavDatas = [
     {
@@ -29,11 +29,11 @@ export default async function Peminjaman() {
   ];
 
   return (
-    <div>
+    <>
       <Header navLinks={NavDatas} title="" />
       <div className="px-[50px]">
-        <ListPeminjamanSection data={response} />
+        <ReturningListSection data={data?.data?.data} />
       </div>
-    </div>
+    </>
   );
 }

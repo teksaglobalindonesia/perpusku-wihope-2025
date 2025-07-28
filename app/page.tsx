@@ -27,7 +27,7 @@ export default async function Page() {
     },
     {
       label: 'Pengembalian',
-      href: '/returns'
+      href: '/returning'
     }
   ];
 

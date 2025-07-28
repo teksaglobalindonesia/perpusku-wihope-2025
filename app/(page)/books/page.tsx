@@ -25,7 +25,7 @@ export default async function BukuPage() {
     },
     {
       label: 'Pengembalian',
-      href: '/returns'
+      href: '/returning'
     }
   ];
 

@@ -1,6 +1,6 @@
 'use client';
-import { BooksListDialog } from '@/components/customs/sections/peminjaman/dialog/booksListDialog';
-import { MemberListDialog } from '@/components/customs/sections/peminjaman/dialog/membersListDialog';
+import { BooksListDialog } from '@/components/customs/sections/borrowed/dialog/booksListDialog';
+import { MemberListDialog } from '@/components/customs/sections/borrowed/dialog/membersListDialog';
 import { useRouter } from 'next/navigation';
 import { fetcher } from '@/lib/fetcher';
 import { useState, useEffect } from 'react';
