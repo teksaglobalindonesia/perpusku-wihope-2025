@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { books } from '@/app/bukuDummy/data';
+import Pagination from '../pagination';
 
 type Item = {
   id: number;
@@ -97,17 +98,7 @@ const Book = () => {
           ))}
         </div>
 
-        {/* Pagination */}
-        <div className="mt-6 flex justify-center space-x-2 text-sm text-gray-700">
-          {['<', 1, 2, '...', 20, '>'].map((item, index) => (
-            <div
-              key={index}
-              className="cursor-pointer rounded-md border px-3 py-1 hover:bg-gray-200"
-            >
-              {item}
-            </div>
-          ))}
-        </div>
+        <Pagination />
       </div>
 
       {/* Popup Konfirmasi */}

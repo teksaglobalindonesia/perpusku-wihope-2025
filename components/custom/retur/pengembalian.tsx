@@ -1,11 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import Pagination from '../pagination';
+import { usePathname } from 'next/navigation';
 
-const Peminjaman = [
+const Pengembalian = [
   {
     judulBuku: 'Buku A',
     peminjam: 'Gw',
@@ -20,7 +19,7 @@ const Peminjaman = [
     peminjam: 'John Doe',
     tanggal: 20,
     waktu: '07-2025',
-    targetKembali: 22,
+    targetKembali: 27,
     tanggalKembali: 25,
     waktuKembali: '07-2025'
   },
@@ -80,17 +79,17 @@ const Peminjaman = [
   }
 ];
 
-const Pinjam = () => {
+const Kembali = () => {
   const pathname = usePathname();
-  const [lending, setLending] = useState(Peminjaman);
+  const [retur, setRetur] = useState(Pengembalian);
 
   return (
     <div className="min-h-[540px] w-full">
       <div className="mt-6 flex flex-row justify-between p-4 px-9 font-light">
-        <h1 className="ml-12 rounded-lg bg-purple-200 px-3 py-1 text-3xl">
-          {'🛒'}
-          <span className="font-normal text-purple-900 underline">
-            List Peminjaman
+        <h1 className="ml-12 rounded-lg bg-teal-400 px-3 py-1 text-3xl">
+          {'✨'}
+          <span className="font-normal text-teal-900 underline">
+            List Pengembalian
           </span>
         </h1>
         <div>
@@ -99,18 +98,18 @@ const Pinjam = () => {
             placeholder="Search..."
             className="rounded border px-3 py-1"
           />
-          <Link href="/peminjaman/add">
+          {/* <Link href="/peminjaman/add">
             <button className="text-md mx-2 rounded-md bg-green-400 px-2 py-1 font-bold text-gray-700 hover:bg-green-300">
               Tambah Peminjaman
             </button>
-          </Link>
+          </Link> */}
         </div>
       </div>
 
       {/* Tabel */}
       <div className="mx-8 mb-8 rounded-md p-4">
         <div className="space-y-4">
-          {lending.map((item) => {
+          {retur.map((item) => {
             const Terlambat =
               item.targetKembali > item.tanggalKembali ? '' : 'Terlambat';
             return (
@@ -126,12 +125,15 @@ const Pinjam = () => {
                       Tanggal Peminjaman: {item.tanggal}-{item.waktu}
                     </p>
                     <p className="text-sm">
-                      Tanggal Pengembalian: {item.targetKembali}-
+                      Jadwal Kembali: {item.targetKembali}-{item.waktu}
+                    </p>
+                    <p className="text-sm">
+                      Tanggal Pengembalian: {item.tanggalKembali}-
                       {item.waktuKembali}
                     </p>
-                    <button className="my-1 mr-1 rounded bg-purple-500 px-5 py-2 text-sm font-bold text-white">
+                    {/* <button className="my-1 mr-1 rounded bg-purple-500 px-5 py-2 text-sm font-bold text-white">
                       Kembalikan
-                    </button>
+                    </button> */}
                   </div>
                 </div>
                 {Terlambat && (
@@ -149,4 +151,4 @@ const Pinjam = () => {
   );
 };
 
-export default Pinjam;
+export default Kembali;
