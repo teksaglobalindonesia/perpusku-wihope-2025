@@ -1,3 +1,4 @@
+'use client';
 import {
   Header,
   NavLinkHeadeDataTypes
@@ -33,7 +34,7 @@ export default async function Page() {
 
   const books: any = await fetcher({ path: '/api/books' });
   const peminjaman = await fetcher({ path: '/api/peminjaman' });
-
+  console.log('trigger');
   // console.log({ data: peminjaman?.data?.data?. });
 
   return (

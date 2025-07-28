@@ -69,7 +69,7 @@ export const MembersList = ({ data, title }: BooksOutOfStockProps) => {
         {/*  */}
 
         <div className="grid gap-[15px]">
-          {paginatedData.map((data: any, i: number) => (
+          {paginatedData?.map((data: any, i: number) => (
             <div
               className="rounded-[10px] bg-neutral-silver px-4 py-2 "
               key={i}

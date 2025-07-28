@@ -10,11 +10,11 @@ export type BooksOutOfStockProps = {
 export const BooksOutOfStock = ({ data, title }: BooksOutOfStockProps) => {
   const maxData = 5;
   const filteredData = data?.data?.data?.filter((data: any) => data.stock == 0);
-  const totalPages = Math.ceil(filteredData.length / maxData);
+  const totalPages = Math.ceil(filteredData?.length / maxData);
 
   const [page, setPage] = useState<number>(1);
 
-  const paginatedData = filteredData.slice(
+  const paginatedData = filteredData?.slice(
     (page - 1) * maxData,
     page * maxData
   );
@@ -43,7 +43,7 @@ export const BooksOutOfStock = ({ data, title }: BooksOutOfStockProps) => {
         {/*  */}
 
         <div className="grid gap-[15px]">
-          {paginatedData.map((data: any, i: number) => (
+          {paginatedData?.map((data: any, i: number) => (
             <div
               className="flex justify-between rounded-[10px] bg-neutral-silver px-4 py-2 "
               key={i}

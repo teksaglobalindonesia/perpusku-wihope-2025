@@ -42,7 +42,7 @@ export const BookBorrowedSection = ({ data, title }: BooksBowrrowedProps) => {
         {/*  */}
 
         <div className="grid gap-[15px]">
-          {paginatedData.map((data: any, i: number) => (
+          {paginatedData?.map((data: any, i: number) => (
             <div
               className="flex justify-between rounded-[10px] bg-neutral-silver px-4 py-2 "
               key={i}

@@ -1,3 +1,4 @@
+'use client';
 import { Header } from '@/components/customs/layouts/header';
 import { ListPeminjamanSection } from '@/components/customs/sections/borrowed/borrowedList';
 import { fetcher } from '@/lib/fetcher';

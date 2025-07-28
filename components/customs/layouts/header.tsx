@@ -18,7 +18,7 @@ export const Header = ({
         <h1 className="text-[20px] font-bold text-brand-primary">Perpus Ku</h1>
       </div>
       <div className="flex gap-[5px]">
-        {navLinks.map((data: NavLinkHeadeDataTypes, i: number) => (
+        {navLinks?.map((data: NavLinkHeadeDataTypes, i: number) => (
           <Link
             href={data.href}
             className="rounded-sm px-4 py-2 font-semibold hover:bg-brand-primary hover:text-neutral-silver"
