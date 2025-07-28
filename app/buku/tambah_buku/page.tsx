@@ -1,6 +1,6 @@
-import Header from "@/components/customs/header";
-import Footer from "@/components/customs/footer";
-import TambahBuku from "@/components/customs/tambah-buku";
+import Header from "@/components/customs/layouts/header";
+import Footer from "@/components/customs/layouts/footer";
+import TambahBuku from "@/components/customs/buku/tambah-buku";
 
 export default function Page(){
     return(

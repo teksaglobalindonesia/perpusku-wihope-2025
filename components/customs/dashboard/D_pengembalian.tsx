@@ -33,9 +33,9 @@ export default function Pengembali(){
                         <div className="flex flex-col sm:flex-row sm:gap-7 w-full">
                             <div className="text-sm sm:text-lg font-cyrodiil space-y-1 sm:space-y-0">
                                 <h1 className="font-semibold line-clamp-1">{kembali.title}</h1>
-                                <h2 className="line-clamp-1 text-gray-600">Borrower: {kembali.peminjam}</h2>
-                                <h3 className="line-clamp-1 text-gray-600">Borrowing: {kembali.peminjaman}</h3>
-                                <h4 className="line-clamp-1 text-gray-600">Returning: {kembali.pengembalian}</h4>
+                                <h2 className="line-clamp-1">Borrower: {kembali.peminjam}</h2>
+                                <h3 className="line-clamp-1">Borrowing: {kembali.peminjaman}</h3>
+                                <h4 className="line-clamp-1">Returning: {kembali.pengembalian}</h4>
                             </div>
                         </div>
                         

@@ -1,12 +1,12 @@
 import Header from "@/components/customs/layouts/header";
+import Pengembalian from "@/components/customs/pengembalian/pengembalian";
 import Footer from "@/components/customs/layouts/footer";
-import TambahMemb from "@/components/customs/anggota/M_tambah";
 
 export default function Page(){
     return(
         <>
         <Header/>
-        <TambahMemb/>
+        <Pengembalian/>
         <Footer/>
         </>
     )

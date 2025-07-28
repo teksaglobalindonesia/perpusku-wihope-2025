@@ -1,6 +1,6 @@
-import Header from "@/components/customs/header";
-import Footer from "@/components/customs/footer";
-import TambahPemjmn from "@/components/customs/P_tambah";
+import Header from "@/components/customs/layouts/header";
+import Footer from "@/components/customs/layouts/footer";
+import TambahPemjmn from "@/components/customs/peminjaman/P_tambah";
 
 export default function Page(){
     return(

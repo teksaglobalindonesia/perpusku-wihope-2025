@@ -1,6 +1,6 @@
-import Header from "@/components/customs/header";
-import Peminjaman from "@/components/customs/peminjaman";
-import Footer from "@/components/customs/footer";
+import Header from "@/components/customs/layouts/header";
+import Peminjaman from "@/components/customs/peminjaman/peminjaman";
+import Footer from "@/components/customs/layouts/footer";
 
 export default function Page(){
     return(

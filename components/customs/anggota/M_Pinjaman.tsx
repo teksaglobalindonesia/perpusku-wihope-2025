@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { members } from "@/components/customs/list-anggota";
+import { members } from "@/components/customs/anggota/list-anggota";
 import Link from "next/link";
 
 export default function PinjamanMemb(){

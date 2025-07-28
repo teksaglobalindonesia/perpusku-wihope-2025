@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
-import { books } from "@/components/customs/list-buku";
-import { members } from "./list-anggota";
+import { books } from "@/components/customs/buku/list-buku";
+import { members } from "../anggota/list-anggota";
 
 export default function TambahPemjmn(){
     const [munculBuku, setMunculBuku] = useState(false);

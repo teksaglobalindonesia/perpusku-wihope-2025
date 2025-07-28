@@ -1,6 +1,6 @@
-import Header from "@/components/customs/header";
-import Footer from "@/components/customs/footer";
-import EditMemb from "@/components/customs/edit_member";
+import Header from "@/components/customs/layouts/header";
+import Footer from "@/components/customs/layouts/footer";
+import EditMemb from "@/components/customs/anggota/edit_member";
 
 export default function Page(){
     return(

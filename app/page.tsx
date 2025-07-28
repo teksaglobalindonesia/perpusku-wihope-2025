@@ -1,10 +1,10 @@
-import Header from "@/components/customs/header";
-import Welcome from "@/components/customs/welcome";
-import Habis from "@/components/customs/stok-habis";
-import Pinjaman from "@/components/customs/pinjaman";
-import Pengembali from "@/components/customs/pengembalian";
-import Goodbye from "@/components/customs/goodbye";
-import Footer from "@/components/customs/footer";
+import Header from "@/components/customs/layouts/header";
+import Welcome from "@/components/customs/layouts/welcome";
+import Habis from "@/components/customs/dashboard/stok-habis";
+import Pinjaman from "@/components/customs/dashboard/D_pinjaman";
+import Pengembali from "@/components/customs/dashboard/D_pengembalian";
+import Goodbye from "@/components/customs/layouts/goodbye";
+import Footer from "@/components/customs/layouts/footer";
 
 export default function Page() {
   return (

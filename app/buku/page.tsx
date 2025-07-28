@@ -1,7 +1,7 @@
-import Header from "@/components/customs/header";
-import ListBuku from "@/components/customs/list-buku";
-import Footer from "@/components/customs/footer";
-import Welcome from "@/components/customs/welcome";
+import Header from "@/components/customs/layouts/header";
+import ListBuku from "@/components/customs/buku/list-buku";
+import Footer from "@/components/customs/layouts/footer";
+import Welcome from "@/components/customs/layouts/welcome";
 
 export default function Page(){
     return(

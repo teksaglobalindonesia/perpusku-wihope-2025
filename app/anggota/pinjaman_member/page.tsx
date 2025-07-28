@@ -1,6 +1,6 @@
-import Header from "@/components/customs/header";
-import Footer from "@/components/customs/footer";
-import PinjamanMemb from "@/components/customs/M_Pinjaman";
+import Header from "@/components/customs/layouts/header";
+import Footer from "@/components/customs/layouts/footer";
+import PinjamanMemb from "@/components/customs/anggota/M_Pinjaman";
 
 export default function Page(){
     return(

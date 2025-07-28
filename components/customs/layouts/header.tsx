@@ -32,7 +32,7 @@ export default function Header() {
             <Link href="/buku" className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 px-[40px] py-[10px] clip-custom font-morrisroman cursor-pointer">Books</Link>
             <Link href="/anggota" className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 px-[30px] py-[10px] clip-custom font-morrisroman cursor-pointer">Member</Link>
             <Link href="/peminjaman" className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 px-[20px] py-[10px] clip-custom font-morrisroman cursor-pointer">Borrowing</Link>
-            <Link href="" className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 px-[30px] py-[10px] clip-custom font-morrisroman cursor-pointer">Returning</Link>
+            <Link href="/pengembalian" className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 px-[30px] py-[10px] clip-custom font-morrisroman cursor-pointer">Returning</Link>
         </div>
         <button className="md:hidden text-white focus:outline-none" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? (

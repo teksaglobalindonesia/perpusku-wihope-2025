@@ -31,9 +31,9 @@ export default function Pinjaman() {
                         <div className="flex flex-col sm:gap-7 w-full">
                             <div className="text-sm sm:text-lg font-cyrodiil space-y-1 sm:space-y-2">
                                 <h1 className="font-semibold line-clamp-1">{pinjam.title}</h1>
-                                <h2 className="line-clamp-1 text-gray-700">Borrower: {pinjam.peminjam}</h2>
-                                <h3 className="line-clamp-1 text-gray-700">Borrowing: {pinjam.peminjaman}</h3>
-                                <h4 className="line-clamp-1 text-gray-700">Returning: {pinjam.pengembalian}</h4>
+                                <h2 className="line-clamp-1">Borrower: {pinjam.peminjam}</h2>
+                                <h3 className="line-clamp-1">Borrowing: {pinjam.peminjaman}</h3>
+                                <h4 className="line-clamp-1">Returning: {pinjam.pengembalian}</h4>
                             </div>
                         </div>
                     </div>
