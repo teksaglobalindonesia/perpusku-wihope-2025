@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { useState } from 'react';
+import { DialogClose } from '../ui/dialog';
 export type MCardProps = {
   cardItems?: Array<{
     name?: string;
@@ -10,6 +11,7 @@ export type MCardProps = {
   onEdit?: (index: number) => void;
   onDelete?: (index: number) => void;
   onPeminjaman?: (index: number) => void;
+  showSelectButton?: boolean
 };
 
 export const MembersCard = ({ ...props }: MCardProps) => {
@@ -118,6 +120,13 @@ export const MembersCard = ({ ...props }: MCardProps) => {
               </div>
             </div>
 
+            {props.showSelectButton && (
+              <DialogClose asChild>
+                <button onClick={()=> props.onEdit?.(index)} className='rounded-md border border-vintage-sage bg-vintage-sage/90 px-4 py-1.5 text-sm text-beige-100 shadow-inner hover:bg-vintage-sage'>
+                Pilih
+                </button>
+              </DialogClose>
+            )}
             {items.buttons && items.buttons.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2 border-t border-beige-300 pt-3 sm:gap-3">
                 <Link

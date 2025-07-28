@@ -21,7 +21,7 @@ export default function Page() {
                       duration-200 focus:border-beige-400 focus:bg-white 
                       focus:outline-none sm:w-48"
           />
-          <Link href="">
+          <Link href="/peminjaman/addPeminjaman">
             <button
               className="w-full rounded-md border border-vintage-sage bg-vintage-sage px-6 py-2 font-vintage
                           text-beige-100 shadow-md transition-colors duration-300

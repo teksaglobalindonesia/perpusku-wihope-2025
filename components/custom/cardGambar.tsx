@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-
+import { DialogClose } from '@/components/ui/dialog';
 export type CardGambarProps = {
   cardItems?: Array<{
     imageSrc: string;
@@ -13,6 +13,7 @@ export type CardGambarProps = {
   }>;
   onEdit?: (index: number) => void;
   onDelete?: (index: number) => void;
+  showSelectButton?: boolean;
 };
 
 export const CardGambar = ({ ...props }: CardGambarProps) => {
@@ -107,6 +108,16 @@ export const CardGambar = ({ ...props }: CardGambarProps) => {
                 <span className="font-medium text-beige-800">Pengarang:</span>{' '}
                 {item.author}
               </p>
+              {props.showSelectButton && (
+                <DialogClose asChild>
+                  <button
+                    onClick={() => props.onEdit?.(index)}
+                    className="rounded-md border border-vintage-sage bg-vintage-sage/90 px-4 py-1.5 text-sm text-beige-100 shadow-inner hover:bg-vintage-sage"
+                  >
+                    Pilih
+                  </button>
+                </DialogClose>
+              )}
 
               {/* Tombol Edit dan Delete */}
               {item.buttons && item.buttons.length > 0 && (

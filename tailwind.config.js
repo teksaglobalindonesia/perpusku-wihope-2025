@@ -33,6 +33,42 @@ module.exports = {
           800: '#4e4633',
           900: '#343022'
         },
+        botanical: {
+          50: '#f5f7f2',
+          100: '#e5e9db',
+          200: '#d0d8c0', // Sage
+          300: '#b5c19f', // Olive
+          400: '#94a57b', // Forest Green
+          500: '#75895e', // Dark Green
+          600: '#5a6a47', // Hunter Green
+          700: '#434f35',
+          800: '#2d3524',
+          900: '#181d15'
+        },
+        dusty: {
+          50: '#f9f7f3',
+          100: '#f0eae1',
+          200: '#e0d5c4', // Dusty Pink
+          300: '#d1bda8', // Muted Rose
+          400: '#b89d8f', // Dusty Teal
+          500: '#9a7f72', // Dusty Green
+          600: '#7a645a', // Dusty Blue
+          700: '#5d4b43',
+          800: '#40332e',
+          900: '#261e1b'
+        },
+        terracotta: {
+          50: '#fbf6f2',
+          100: '#f4e8de',
+          200: '#e8d1be', // Light Terracotta
+          300: '#d9b599', // Terracotta
+          400: '#c59270', // Burnt Orange
+          500: '#a05c3a', // Rust
+          600: '#80452d', // Dark Rust
+          700: '#603321',
+          800: '#402215',
+          900: '#24120a'
+        },
         vintage: {
           brown: '#6b4f3b', // Dark Brown
           terracotta: '#a05c3a', // Warm accent

@@ -20,7 +20,17 @@ const dummyMembers = [
   { name: 'Charlie Wilson', UID: 1005, email: 'charlie@example.com' },
   { name: 'Diana Lee', UID: 1006, email: 'diana@example.com' },
   { name: 'Eva Green', UID: 1007, email: 'eva@example.com' },
-  { name: 'Frank White', UID: 1008, email: 'frank@example.com' }
+  { name: 'Frank White', UID: 1008, email: 'frank@example.com' },
+  { name: 'Frank White', UID: 1008, email: 'frank@example.com' },
+  { name: 'Frank White', UID: 1008, email: 'frank@example.com' },
+  { name: 'Frank White', UID: 1008, email: 'frank@example.com' },
+  { name: 'Frank White', UID: 1008, email: 'frank@example.com' },
+  { name: 'Frank White', UID: 1008, email: 'frank@example.com' },
+  { name: 'Frank White', UID: 1008, email: 'frank@example.com' },
+  { name: 'Frank White', UID: 1008, email: 'frank@example.com' },
+  { name: 'Frank White', UID: 1008, email: 'frank@example.com' },
+  { name: 'Frank White', UID: 1008, email: 'frank@example.com' },
+  { name: 'Frank White', UID: 1008, email: 'frank@example.com' },
 ];
 
 export default function Page() {
