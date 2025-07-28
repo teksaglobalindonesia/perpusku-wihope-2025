@@ -42,12 +42,11 @@ export default function EditPage() {
   return (
     <>
       <Navbar />
-      <div className="bg-neutral-white min-h-screen p-10 flex">
-        <div className="w-[500px] p-6">
-          <h1 className="text-neutral-dbrown font-bold font-inter text-[30px] mb-4">
+      <div className="bg-neutral-white h-[670px] flex flex-col justify-center items-center">
+        <h1 className="text-neutral-dbrown font-bold font-inter text-[30px] mb-10">
             Edit Anggota
           </h1>
-
+        <div className="bg-neutral-white border border-neutral-300 rounded-xl shadow-lg w-full max-w-lg p-8">
           <form className="relative" onSubmit={handleSubmit}>
             {inputFields.map((field) => (
               <InputText

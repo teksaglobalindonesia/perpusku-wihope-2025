@@ -6,9 +6,10 @@ type Props = {
   borrower?: string;
   borrowedAt?: string;
   returnAt?: string;
+  returned?: string;
 };
 
-export const CardSimple = ({ title, borrower, borrowedAt, returnAt }: Props) => {
+export const CardSimple = ({ title, borrower, borrowedAt, returnAt, returned }: Props) => {
   return (
     <div className="flex gap-4 items-start w-full">
       <div>
@@ -16,7 +17,8 @@ export const CardSimple = ({ title, borrower, borrowedAt, returnAt }: Props) => 
         <p className="text-[14px] font-medium text-neutral-mbrown mt-1 leading-relaxed">
           Peminjam: {borrower} <br />
           Peminjaman: {borrowedAt} <br />
-          Pengembalian: {returnAt}
+          Pengembalian: {returnAt} <br />
+          Dikembalikan: {returned}
         </p>
       </div>
     </div>

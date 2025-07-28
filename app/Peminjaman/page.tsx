@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Navbar } from "@/components/custom/navbar";
 import { PeminjamanHero } from "@/components/custom/peminjamanHero";
 import { Footer } from "@/components/custom/footer";
+import Link from "next/link";
 
 interface Peminjaman {
   title: string;
@@ -72,13 +73,14 @@ export default function PeminjamanPage() {
             <input
               type="text"
               placeholder="Search..."
+              className="border px-3 py-1 rounded text-sm"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="border px-3 py-1 rounded text-sm"
             />
-            <button className="bg-action-success text-neutral-white px-4 py-1 rounded text-sm">
-              TAMBAH
-            </button>
+
+            <Link href="/Peminjaman/tambah">
+              <button className="bg-action-success text-neutral-white px-4 py-1 rounded text-sm">TAMBAH</button>
+            </Link>
           </div>
         </div>
         <div className="space-y-4">
