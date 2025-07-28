@@ -15,7 +15,7 @@ export const Navbar = () => {
                 <Link href="/buku">Buku</Link>
                 <Link href="/anggota">Anggota</Link>
                 <Link href="/peminjam">Peminjaman</Link>
-                <Link href="#">Pengembalian</Link>
+                <Link href="/pengembalian">Pengembalian</Link>
             </div>
 
         </div>

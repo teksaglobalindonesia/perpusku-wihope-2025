@@ -2,7 +2,7 @@
 export const Tambah_buku = () => {
     return (
         <div className="max-w-2xl mx-auto bg-white p-10 rounded-2xl shadow-lg">
-            <h1 className="text-3xl font-bold text-[#96742C] mb-8 pb-4">✏️ Tambah Data Buku</h1>
+            <h1 className="text-3xl font-bold mb-8 pb-4">✏️ Tambah Data Buku</h1>
 
             <form className="space-y-6">
                 <div>
@@ -61,7 +61,7 @@ export const Tambah_buku = () => {
                     </div>
                     <div className="flex flex-wrap gap-3">
                         {["Romantis", "Horror", "Komedi", "Boy Love"].map((genre) => (
-                            <label key={genre} className="flex items-center space-x-2 bg-[#f3f0e8] px-3 py-1 rounded-full cursor-pointer hover:bg-[#5bbd87] transition">
+                            <label key={genre} className="flex items-center space-x-2 bg-[#f3f0e8] px-3 py-1 rounded-full cursor-pointer hover:bg-[#dfd8c8] transition">
                                 <input type="checkbox" className="accent-[#96742C]" />
                                 <span className="text-sm">{genre}</span>
                             </label>

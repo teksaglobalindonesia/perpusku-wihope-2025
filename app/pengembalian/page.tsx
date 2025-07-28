@@ -1,25 +1,25 @@
-import { Pinjamya } from "@/components/custom/peminjam";
+import { Kembaliya } from "@/components/custom/pengembalian";
 
 export default async function Page() {
 
     return (
         <>
-            <Pinjamya items={[
+            <Kembaliya items={[
                 {
                     title: 'Inazuma',
                     nama: 'Ayu Dea',
                     Peminjaman: '11 juni 2025, 08.00',
                     Pengembalian: '20 juni 2025',
                     status: true,
-                    info: true
+                    dikembali: '29 juni 2025',
                 },
                 {
-                    title: 'Inazuma',
-                    nama: 'Ayu Dea',
+                    title: 'Sejarah Indonesia',
+                    nama: 'Siapapun',
                     Peminjaman: '11 juni 2025, 08.00',
-                    Pengembalian: '20 juni 2025',
+                    Pengembalian: '10 juni 2025',
                     status: false,
-                    info: false
+                    dikembali: '15 juni 2025',
                 },
                 {
                     title: 'Inazuma',
@@ -27,15 +27,15 @@ export default async function Page() {
                     Peminjaman: '11 juni 2025, 08.00',
                     Pengembalian: '20 juni 2025',
                     status: true,
-                    info: true
+                    dikembali: '29 juni 2025',
                 },
                 {
-                    title: 'Inazuma',
-                    nama: 'Ayu Dea',
+                    title: 'Sejarah Indonesia',
+                    nama: 'Siapapun',
                     Peminjaman: '11 juni 2025, 08.00',
-                    Pengembalian: '20 juni 2025',
+                    Pengembalian: '10 juni 2025',
                     status: false,
-                    info: false
+                    dikembali: '15 juni 2025',
                 },
                 {
                     title: 'Inazuma',
@@ -43,31 +43,15 @@ export default async function Page() {
                     Peminjaman: '11 juni 2025, 08.00',
                     Pengembalian: '20 juni 2025',
                     status: true,
-                    info: true
+                    dikembali: '29 juni 2025',
                 },
                 {
-                    title: 'Inazuma',
-                    nama: 'Ayu Dea',
+                    title: 'Sejarah Indonesia',
+                    nama: 'Siapapun',
                     Peminjaman: '11 juni 2025, 08.00',
-                    Pengembalian: '20 juni 2025',
-                    status: true,
-                    info: true
-                },
-                {
-                    title: 'Inazuma',
-                    nama: 'Ayu Dea',
-                    Peminjaman: '11 juni 2025, 08.00',
-                    Pengembalian: '20 juni 2025',
-                    status: true,
-                    info: true
-                },
-                {
-                    title: 'Inazuma',
-                    nama: 'Ayu Dea',
-                    Peminjaman: '11 juni 2025, 08.00',
-                    Pengembalian: '20 juni 2025',
+                    Pengembalian: '10 juni 2025',
                     status: false,
-                    info: false
+                    dikembali: '15 juni 2025',
                 },
                 {
                     title: 'Inazuma',
@@ -75,31 +59,31 @@ export default async function Page() {
                     Peminjaman: '11 juni 2025, 08.00',
                     Pengembalian: '20 juni 2025',
                     status: true,
-                    info: true
+                    dikembali: '29 juni 2025',
                 },
                 {
-                    title: 'Inazuma',
-                    nama: 'Ayu Dea',
+                    title: 'Sejarah Indonesia',
+                    nama: 'Siapapun',
                     Peminjaman: '11 juni 2025, 08.00',
-                    Pengembalian: '20 juni 2025',
-                    status: true,
-                    info: true
-                },
-                {
-                    title: 'Inazuma',
-                    nama: 'Ayu Dea',
-                    Peminjaman: '11 juni 2025, 08.00',
-                    Pengembalian: '20 juni 2025',
+                    Pengembalian: '10 juni 2025',
                     status: false,
-                    info: false
+                    dikembali: '15 juni 2025',
                 },
                 {
                     title: 'Inazuma',
                     nama: 'Ayu Dea',
                     Peminjaman: '11 juni 2025, 08.00',
                     Pengembalian: '20 juni 2025',
+                    status: true,
+                    dikembali: '29 juni 2025',
+                },
+                {
+                    title: 'Sejarah Indonesia',
+                    nama: 'Siapapun',
+                    Peminjaman: '11 juni 2025, 08.00',
+                    Pengembalian: '10 juni 2025',
                     status: false,
-                    info: false
+                    dikembali: '15 juni 2025',
                 },
                 {
                     title: 'Inazuma',
@@ -107,15 +91,23 @@ export default async function Page() {
                     Peminjaman: '11 juni 2025, 08.00',
                     Pengembalian: '20 juni 2025',
                     status: true,
-                    info: true
+                    dikembali: '29 juni 2025',
                 },
                 {
                     title: 'Inazuma',
                     nama: 'Ayu Dea',
                     Peminjaman: '11 juni 2025, 08.00',
                     Pengembalian: '20 juni 2025',
+                    status: true,
+                    dikembali: '29 juni 2025',
+                },
+                {
+                    title: 'Sejarah Indonesia',
+                    nama: 'Siapapun',
+                    Peminjaman: '11 juni 2025, 08.00',
+                    Pengembalian: '10 juni 2025',
                     status: false,
-                    info: false
+                    dikembali: '15 juni 2025',
                 },
                 {
                     title: 'Inazuma',
@@ -123,15 +115,15 @@ export default async function Page() {
                     Peminjaman: '11 juni 2025, 08.00',
                     Pengembalian: '20 juni 2025',
                     status: true,
-                    info: true
+                    dikembali: '29 juni 2025',
                 },
                 {
-                    title: 'Inazuma',
-                    nama: 'Ayu Dea',
+                    title: 'Sejarah Indonesia',
+                    nama: 'Siapapun',
                     Peminjaman: '11 juni 2025, 08.00',
-                    Pengembalian: '20 juni 2025',
+                    Pengembalian: '10 juni 2025',
                     status: false,
-                    info: false
+                    dikembali: '15 juni 2025',
                 },
                 {
                     title: 'Inazuma',
@@ -139,31 +131,15 @@ export default async function Page() {
                     Peminjaman: '11 juni 2025, 08.00',
                     Pengembalian: '20 juni 2025',
                     status: true,
-                    info: true
+                    dikembali: '29 juni 2025',
                 },
                 {
-                    title: 'Inazuma',
-                    nama: 'Ayu Dea',
+                    title: 'Sejarah Indonesia',
+                    nama: 'Siapapun',
                     Peminjaman: '11 juni 2025, 08.00',
-                    Pengembalian: '20 juni 2025',
-                    status: true,
-                    info: true
-                },
-                {
-                    title: 'Inazuma',
-                    nama: 'Ayu Dea',
-                    Peminjaman: '11 juni 2025, 08.00',
-                    Pengembalian: '20 juni 2025',
-                    status: true,
-                    info: true
-                },
-                {
-                    title: 'Inazuma',
-                    nama: 'Ayu Dea',
-                    Peminjaman: '11 juni 2025, 08.00',
-                    Pengembalian: '20 juni 2025',
+                    Pengembalian: '10 juni 2025',
                     status: false,
-                    info: false
+                    dikembali: '15 juni 2025',
                 },
                 {
                     title: 'Inazuma',
@@ -171,7 +147,15 @@ export default async function Page() {
                     Peminjaman: '11 juni 2025, 08.00',
                     Pengembalian: '20 juni 2025',
                     status: true,
-                    info: true
+                    dikembali: '29 juni 2025',
+                },
+                {
+                    title: 'Sejarah Indonesia',
+                    nama: 'Siapapun',
+                    Peminjaman: '11 juni 2025, 08.00',
+                    Pengembalian: '10 juni 2025',
+                    status: false,
+                    dikembali: '15 juni 2025',
                 },
                 {
                     title: 'Inazuma',
@@ -179,25 +163,25 @@ export default async function Page() {
                     Peminjaman: '11 juni 2025, 08.00',
                     Pengembalian: '20 juni 2025',
                     status: true,
-                    info: true
+                    dikembali: '29 juni 2025',
+                },
+                {
+                    title: 'Sejarah Indonesia',
+                    nama: 'Siapapun',
+                    Peminjaman: '11 juni 2025, 08.00',
+                    Pengembalian: '10 juni 2025',
+                    status: false,
+                    dikembali: '15 juni 2025',
                 },
                 {
                     title: 'Inazuma',
                     nama: 'Ayu Dea',
                     Peminjaman: '11 juni 2025, 08.00',
                     Pengembalian: '20 juni 2025',
-                    status: false,
-                    info: false
+                    status: true,
+                    dikembali: '29 juni 2025',
                 },
-                {
-                    title: 'Inazuma',
-                    nama: 'Ayu Dea',
-                    Peminjaman: '11 juni 2025, 08.00',
-                    Pengembalian: '20 juni 2025',
-                    status: false,
-                    info: false
-                },
-            ]} />
+            ]}/>
         </>
     );
 }

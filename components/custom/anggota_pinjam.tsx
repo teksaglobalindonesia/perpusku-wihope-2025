@@ -86,15 +86,22 @@ const [currentPage, setCurrentPage] = useState(1);
                     >
                         &lt;
                     </button>
-                    {Array.from({ length: totalPages }, (_, index) => (
-                        <button
-                            key={index}
-                            onClick={() => handlePageChange(index + 1)}
-                            className={`px-3 py-1 rounded ${currentPage === index + 1 ? 'bg-[#5bbd87] text-white' : 'bg-gray-200'}`}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
+                    {[...Array(2)].map((_, index) => {
+                                const page = currentPage + index;
+                                if (page > totalPages) return null;
+                                return (
+                                    <button
+                                        key={page}
+                                        onClick={() => handlePageChange(page)}
+                                        className={`px-3 py-1 rounded ${currentPage === page
+                                            ? "bg-[#5bbd87] text-white"
+                                            : "bg-gray-200"
+                                            }`}
+                                    >
+                                        {page}
+                                    </button>
+                                );
+                            })}
                     <button
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}

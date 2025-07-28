@@ -2,7 +2,7 @@
 export const Tambah_anggota = () => {
     return (
         <div className="max-w-2xl mx-auto bg-white p-10 rounded-2xl shadow-lg">
-            <h1 className="text-3xl font-bold text-[#000000] mb-8 pb-4">✏️ Tambah Anggota</h1>
+            <h1 className="text-3xl font-bold text-[#000000] mb-8 pb-4">✏️ Tambah Data Anggota</h1>
 
             <form className="space-y-6">
                 <div>

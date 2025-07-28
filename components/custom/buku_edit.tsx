@@ -60,7 +60,7 @@ export const Edit_buku = () => {
                     </div>
                     <div className="flex flex-wrap gap-3">
                         {["Romantis", "Horror", "Komedi", "Boy Love"].map((genre) => (
-                            <label key={genre} className="flex items-center space-x-2 bg-[#f3f0e8] px-3 py-1 rounded-full cursor-pointer hover:bg-[#5bbd87] transition">
+                            <label key={genre} className="flex items-center space-x-2 bg-[#f3f0e8] px-3 py-1 rounded-full cursor-pointer hover:bg-[#dfd8c8] transition">
                                 <input type="checkbox" className="accent-[#96742C]" />
                                 <span className="text-sm">{genre}</span>
                             </label>

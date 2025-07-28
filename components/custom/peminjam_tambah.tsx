@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Image from "next/image";
 
 type Item = {
     title?: string;
@@ -9,6 +10,7 @@ type Item = {
     nama?: string;
     id?: string;
     email?: string;
+    coverBuku?: string;
     type?: "buku" | "anggota";
 };
 
@@ -76,9 +78,22 @@ export const Tah_pinjam = ({ items = [] }: Props) => {
                             >
                                 {modalType === "buku" ? (
                                     <>
-                                        <h3 className="font-bold text-gray-800">{item.title}</h3>
-                                        <p className="text-sm text-gray-600">{item.genre}</p>
-                                        <p className="text-sm text-gray-600">{item.penulis}</p>
+                                        <div className="flex flex-row gap-4">
+                                            <div>
+                                                <Image
+                                                    src={item.coverBuku || "/coverbook.jpg"}
+                                                    alt="book cover"
+                                                    width={60}
+                                                    height={70}
+                                                    className=""
+                                                />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-gray-800">{item.title}</h3>
+                                                <p className="text-sm text-gray-600">{item.genre}</p>
+                                                <p className="text-sm text-gray-600">{item.penulis}</p>
+                                            </div>
+                                        </div>
                                     </>
                                 ) : (
                                     <>
@@ -98,18 +113,23 @@ export const Tah_pinjam = ({ items = [] }: Props) => {
                             >
                                 &lt;
                             </button>
-                            {Array.from({ length: totalPages }, (_, i) => (
-                                <button
-                                    key={i}
-                                    onClick={() => handlePageChange(i + 1)}
-                                    className={`px-3 py-1 rounded ${currentPage === i + 1
-                                        ? "bg-[#5bbd87] text-white"
-                                        : "bg-gray-200"
-                                        }`}
-                                >
-                                    {i + 1}
-                                </button>
-                            ))}
+                            {[...Array(2)].map((_, index) => {
+                                const page = currentPage + index;
+                                if (page > totalPages) return null;
+                                return (
+                                    <button
+                                        key={page}
+                                        onClick={() => handlePageChange(page)}
+                                        className={`px-3 py-1 rounded ${currentPage === page
+                                            ? "bg-[#5bbd87] text-white"
+                                            : "bg-gray-200"
+                                            }`}
+                                    >
+                                        {page}
+                                    </button>
+                                );
+                            })}
+
                             <button
                                 onClick={() => handlePageChange(currentPage + 1)}
                                 disabled={currentPage === totalPages}
