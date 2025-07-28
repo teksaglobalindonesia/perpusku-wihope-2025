@@ -24,14 +24,7 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
     const totalPages = Math.ceil(bookListItems.length / maxData);
     const paginatedData = bookListItems.slice((page - 1) * maxData, page * maxData);
 
-    const handleNext = () => {
-        if (page < totalPages) setPage((prev) => prev + 1);
-    };
-
-    const handlePrev = () => {
-        if (page > 1) setPage((prev) => prev - 1);
-    };
- // INI CUMA LOG KE CONSOLE BUAT MEMUDAHKAN SAYA DALAM DEBUGING
+    // INI CUMA LOG KE CONSOLE BUAT MEMUDAHKAN SAYA DALAM DEBUGING
     const handleEdit = (id: number) => {
         console.log("EDIT item pada produk:", id);
     };
@@ -44,11 +37,11 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
             setShowDeleteModal(true);
         }
     };
- // INI CUMA LOG KE CONSOLE BUAT MEMUDAHKAN SAYA DALAM DEBUGING
+    // INI CUMA LOG KE CONSOLE BUAT MEMUDAHKAN SAYA DALAM DEBUGING
     const confirmDelete = () => {
         if (bookToDeleteId !== null) {
             console.log("MENGHAPUS buku ID:", bookToDeleteId);
-            
+
         }
         setShowDeleteModal(false);
         setBookToDeleteId(null);
@@ -120,11 +113,10 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
                             {/* Status Buku */}
                             <div>
                                 <p
-                                    className={`py-2 px-4 text-sm font-medium rounded-full ${
-                                        item.stock === 0
+                                    className={`py-2 px-4 text-sm font-medium rounded-full ${item.stock === 0
                                             ? 'bg-red-100 text-red-800'
                                             : 'bg-green-100 text-green-800'
-                                    }`}
+                                        }`}
                                 >
                                     {item.stock === 0 ? 'HABIS' : `${item.stock} TERSEDIA`}
                                 </p>
@@ -139,29 +131,21 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
             )}
 
             {/* Pagination */}
-            <div className="flex gap-4 flex-row justify-center py-4 px-6 items-center border-t border-gray-200">
+            <div className="flex justify-center gap-4 py-4 px-6 border-t">
                 <button
-                    onClick={handlePrev}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition duration-200 ${
-                        page === 1
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-                    }`}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${page === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                        }`}
                 >
                     Prev
                 </button>
-                <span className="px-4 py-2 text-sm text-gray-600 font-medium">
-                    {page} / {totalPages}
-                </span>
+                <span className="text-sm text-gray-600 font-medium">{page} / {totalPages}</span>
                 <button
-                    onClick={handleNext}
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition duration-200 ${
-                        page === totalPages
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-                    }`}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${page === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                        }`}
                 >
                     Next
                 </button>

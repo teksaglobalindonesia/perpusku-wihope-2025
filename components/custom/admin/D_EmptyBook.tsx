@@ -9,14 +9,6 @@ export const D_EmptyBook = ({ bookListItems = [], maxData = 2 }: BookListType) =
     const totalPages = Math.ceil(emptyBooks.length / maxData);
     const paginatedData = emptyBooks.slice((page - 1) * maxData, page * maxData);
 
-    const handleNext = () => {
-        if (page < totalPages) setPage((prev) => prev + 1);
-    };
-
-    const handlePrev = () => {
-        if (page > 1) setPage((prev) => prev - 1);
-    };
-
     return (
         <div className="flex flex-col mx-10 my-10 border-2 border-gray-200 rounded-lg shadow-md bg-white">
             <div className="flex flex-row justify-between py-5 px-6 items-center border-b border-gray-200">
@@ -76,26 +68,20 @@ export const D_EmptyBook = ({ bookListItems = [], maxData = 2 }: BookListType) =
                 </div>
             )}
             {/* Pagination */}
-            <div className="flex gap-4 flex-row justify-center py-4 px-6 items-center border-t border-gray-200">
+            <div className="flex justify-center gap-4 py-4 px-6 border-t">
                 <button
-                    onClick={handlePrev}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition duration-200 ${page === 1
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${page === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
                         }`}
                 >
                     Prev
                 </button>
-                <span className="px-4 py-2 text-sm text-gray-600 font-medium">
-                    {page} / {totalPages}
-                </span>
+                <span className="text-sm text-gray-600 font-medium">{page} / {totalPages}</span>
                 <button
-                    onClick={handleNext}
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition duration-200 ${page === totalPages
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${page === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
                         }`}
                 >
                     Next

@@ -9,6 +9,7 @@ export const StatusBuku = [
         borrower: "Alicia",
         borrowedAt: "2025-07-10",
         returnedAt: "2025-07-15",
+        actualReturnedAt: "2025-07-15",
         status: 1
     },
     {
@@ -16,6 +17,7 @@ export const StatusBuku = [
         borrower: "Samuel",
         borrowedAt: "2025-07-11",
         returnedAt: "2025-07-18",
+        actualReturnedAt: "null",
         status: 0
     },
     {
@@ -23,6 +25,7 @@ export const StatusBuku = [
         borrower: "Jonathan",
         borrowedAt: "2025-07-12",
         returnedAt: "2025-07-19",
+        actualReturnedAt: "2025-07-19",
         status: 1
     },
     {
@@ -30,6 +33,7 @@ export const StatusBuku = [
         borrower: "Fajar",
         borrowedAt: "2025-07-13",
         returnedAt: "2025-07-20",
+        actualReturnedAt: "null",
         status: 0
     },
     {
@@ -37,6 +41,7 @@ export const StatusBuku = [
         borrower: "Alicia",
         borrowedAt: "2025-07-14",
         returnedAt: "2025-07-21",
+        actualReturnedAt: "2025-07-21",
         status: 1
     },
     {
@@ -44,6 +49,7 @@ export const StatusBuku = [
         borrower: "Aquman",
         borrowedAt: "2025-07-15",
         returnedAt: "2025-07-22",
+        actualReturnedAt: "null",
         status: 0
     },
     {
@@ -51,6 +57,7 @@ export const StatusBuku = [
         borrower: "Samuel",
         borrowedAt: "2025-07-15",
         returnedAt: "2025-07-22",
+        actualReturnedAt: "null",
         status: 0
     },
     {
@@ -58,6 +65,7 @@ export const StatusBuku = [
         borrower: "Alicia",
         borrowedAt: "2025-07-16",
         returnedAt: "2025-07-23",
+        actualReturnedAt: "2025-07-23",
         status: 1
     },
     {
@@ -65,6 +73,7 @@ export const StatusBuku = [
         borrower: "Jonathan",
         borrowedAt: "2025-07-17",
         returnedAt: "2025-07-24",
+        actualReturnedAt: "null",
         status: 0
     },
     {
@@ -72,6 +81,7 @@ export const StatusBuku = [
         borrower: "Fajar",
         borrowedAt: "2025-07-18",
         returnedAt: "2025-07-25",
+        actualReturnedAt: "null",
         status: 0
     },
     {
@@ -79,6 +89,7 @@ export const StatusBuku = [
         borrower: "Jonathan",
         borrowedAt: "2025-07-17",
         returnedAt: "2025-07-24",
+        actualReturnedAt: "2025-07-26", // terlambat 2 hari
         status: 2
     },
     {
@@ -86,9 +97,11 @@ export const StatusBuku = [
         borrower: "Fajar",
         borrowedAt: "2025-07-18",
         returnedAt: "2025-07-25",
+        actualReturnedAt: "2025-07-27", // terlambat 2 hari
         status: 2
     }
 ];
+
 
 export const BookList = [
     {

@@ -1,14 +1,13 @@
 'use client';
 import { useState, useMemo } from 'react';
-import Link from 'next/link';
 import { StatusBukuType } from './D_LoanBook';
 import { StatusBuku } from '@/app/dashboard/page';
 
-export const L_LoanList = ({ statusBukuItems = StatusBuku, maxData = 5 }: StatusBukuType) => {
+export const R_ReturnList = ({ statusBukuItems = StatusBuku, maxData = 5 }: StatusBukuType) => {
     const [page, setPage] = useState(1);
 
     const filteredItems = useMemo(() => {
-        return statusBukuItems.filter(item => item.status === 0 || item.status === 2);
+        return statusBukuItems.filter((item) => item.status === 1 || item.status === 2);
     }, [statusBukuItems]);
 
     const totalPages = Math.ceil(filteredItems.length / maxData);
@@ -36,19 +35,11 @@ export const L_LoanList = ({ statusBukuItems = StatusBuku, maxData = 5 }: Status
         <div className="flex flex-col mx-10 my-10 border-2 border-gray-200 rounded-lg shadow-md bg-white">
             <div className="flex justify-between py-5 px-6 items-center border-b border-gray-200">
                 <h3 className="font-semibold text-2xl text-gray-800">Peminjaman</h3>
-                <div className="flex gap-5">
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        className="w-64 h-10 px-4 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                    />
-                    <Link
-                        href="/dashboard/loans/add"
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition hover:scale-105 shadow-sm hover:shadow-md"
-                    >
-                        Tambah Peminjaman
-                    </Link>
-                </div>
+                <input
+                    type="text"
+                    placeholder="Search..."
+                    className="w-64 h-10 px-4 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                />
             </div>
 
             {paginatedData.length > 0 ? (
@@ -60,11 +51,7 @@ export const L_LoanList = ({ statusBukuItems = StatusBuku, maxData = 5 }: Status
                                 <p className="text-base text-gray-600">Peminjam: {item.borrower}</p>
                                 <p className="text-base text-gray-600">Tanggal Peminjaman: {item.borrowedAt}</p>
                                 <p className="text-base text-gray-600">Tanggal Pengembalian: {item.returnedAt}</p>
-                                <div className="flex gap-2 mt-2">
-                                    <button className="bg-yellow-300 hover:bg-yellow-400 text-primary-dark px-6 py-2 rounded-md font-medium transition hover:scale-105 shadow-sm hover:shadow-md">
-                                        KEMBALIKAN
-                                    </button>
-                                </div>
+                                <p className="text-base text-gray-600">Tanggal Pengembalian Aktual: {item.actualReturnedAt}</p>
                             </div>
                             <p className={`py-2 px-4 text-sm font-semibold rounded-full ${getStatusClass(item.status)}`}>
                                 {getStatusLabel(item.status)}
@@ -73,15 +60,18 @@ export const L_LoanList = ({ statusBukuItems = StatusBuku, maxData = 5 }: Status
                     </div>
                 ))
             ) : (
-                <div className="text-center py-8 text-gray-500">Tidak ada data peminjaman.</div>
+                <div className="text-center py-8 text-gray-500">
+                    Tidak ada data peminjaman.
+                </div>
             )}
 
             <div className="flex justify-center gap-4 py-4 px-6 border-t">
                 <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${page === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-                        }`}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${
+                        page === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                    }`}
                 >
                     Prev
                 </button>
@@ -89,8 +79,9 @@ export const L_LoanList = ({ statusBukuItems = StatusBuku, maxData = 5 }: Status
                 <button
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${page === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-                        }`}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${
+                        page === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                    }`}
                 >
                     Next
                 </button>
