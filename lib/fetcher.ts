@@ -1,4 +1,9 @@
 import axios from 'axios';
+import { BASE_URL, AUTHORIZATION_TOKEN, WIHOPE_NAME } from './constant';
+
+type a = {
+  [key: string]: any;
+};
 
 type FetcherType = {
   path: string;
@@ -15,20 +20,22 @@ export const fetcher = async ({
   headers = {},
   method = 'GET'
 }: FetcherType) => {
-  const url: string = `${process.env.NEXT_PUBLIC_BASE_URL}${
-    query ? `${path}?${query}` : path
-  }`;
+  const url: string = `${BASE_URL}/api${query ? `${path}?${query}` : path}`;
   try {
     const response = await axios({
       method,
       url,
-      headers,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `bearer ${AUTHORIZATION_TOKEN}`,
+        'x-wihope-name': WIHOPE_NAME
+      },
       data: body
     });
 
     return {
       status: response?.status,
-      data: response?.data
+      data: response?.data || []
     };
   } catch (err: any) {
     return {

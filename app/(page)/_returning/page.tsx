@@ -1,6 +1,7 @@
 import { Header } from '@/components/customs/layouts/header';
 import { ReturningListSection } from '@/components/customs/sections/returning/returningList';
 import { fetcher } from '@/lib/fetcher';
+import axios from 'axios';
 
 export default async function ReturningPage() {
   const data = await fetcher({ path: '/api/peminjaman' });

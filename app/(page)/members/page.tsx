@@ -1,4 +1,3 @@
-'use client';
 import {
   Header,
   NavLinkHeadeDataTypes
@@ -30,7 +29,7 @@ export default async function Members() {
     }
   ];
 
-  const members = await fetcher({ path: '/api/members' });
+  const members = await fetcher({ path: '/member/list' });
   return (
     <div>
       <Header navLinks={NavDatas} title="My Perpus (Gwah)" />

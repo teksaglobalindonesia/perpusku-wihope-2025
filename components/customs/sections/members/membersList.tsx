@@ -17,6 +17,8 @@ export const MembersList = ({ data, title }: BooksOutOfStockProps) => {
     bookId: string;
   }>({ bookId: '', isShow: false });
 
+  console.log(data);
+
   const paginatedData = data?.data?.data?.slice(
     (page - 1) * maxData,
     page * maxData
@@ -75,8 +77,8 @@ export const MembersList = ({ data, title }: BooksOutOfStockProps) => {
               key={i}
             >
               <div className="flex flex-col justify-center gap-[5px]">
-                <p className="text-bold text-2xl font-semibold">{data?.nama}</p>
-                <p>{data?.nomor}</p>
+                <p className="text-bold text-2xl font-semibold">{data?.name}</p>
+                <p>{data?.address}</p>
                 <p>{data?.email}</p>
               </div>
               <div className="mt-[20px] flex items-center gap-[20px]">

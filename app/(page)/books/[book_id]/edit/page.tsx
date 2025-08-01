@@ -1,8 +1,21 @@
-export default function AddBookForm({ params }: { params: any }) {
+import { BASE_URL } from '@/lib/constant';
+import { fetcher } from '@/lib/fetcher';
+
+export default async function AddBookForm({ params }: { params: any }) {
   const bookId = decodeURIComponent(params?.book_id);
+
+  const bookData = await fetcher({
+    path: `/surya-books/${bookId}`,
+    query: 'populate=cover&populate=categories'
+  });
+  // console.log(bookData.data?.data);
+
   return (
     <div className="mx-auto  flex flex-col items-center justify-center rounded-md border p-6 shadow-md">
-      <h2 className="mb-4 text-xl font-semibold">Edit Buku {bookId}</h2>
+      <h2 className="mb-4 text-xl font-semibold">
+        Edit Buku{' '}
+        <span className="text-brand-primary">{bookData.data?.data?.title}</span>
+      </h2>
 
       <div className="w-[75%] rounded-[20px] bg-neutral-silver p-[30px]">
         <div>
@@ -10,6 +23,7 @@ export default function AddBookForm({ params }: { params: any }) {
           <input
             type="text"
             className="w-full rounded border px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            value={bookData?.data?.data?.title}
           />
         </div>
 
@@ -18,6 +32,7 @@ export default function AddBookForm({ params }: { params: any }) {
           <input
             type="text"
             className="w-full rounded border px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            value={bookData?.data?.data?.writer}
           />
         </div>
 
@@ -26,6 +41,7 @@ export default function AddBookForm({ params }: { params: any }) {
           <input
             type="text"
             className="w-full rounded border px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            value={bookData?.data?.data?.publisher}
           />
         </div>
 
@@ -34,6 +50,7 @@ export default function AddBookForm({ params }: { params: any }) {
           <input
             type="text"
             className="w-full rounded border px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            value={bookData?.data?.data?.published_year}
           />
         </div>
 
@@ -46,22 +63,12 @@ export default function AddBookForm({ params }: { params: any }) {
             TAMBAH KATEGORI
           </button>
           <div className="ml-1 space-y-1">
-            <label className="flex items-center space-x-2">
-              <input type="checkbox" />
-              <span>Animek</span>
-            </label>
-            <label className="flex items-center space-x-2">
-              <input type="checkbox" />
-              <span>Animek</span>
-            </label>
-            <label className="flex items-center space-x-2">
-              <input type="checkbox" />
-              <span>Animek</span>
-            </label>
-            <label className="flex items-center space-x-2">
-              <input type="checkbox" />
-              <span>Animek</span>
-            </label>
+            {bookData?.data?.data?.categories?.map((data: any, i: number) => (
+              <div key={i} className="flex w-max gap-[2px]">
+                <input type="checkbox" checked />
+                <label htmlFor="">{data?.name}</label>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -70,6 +77,7 @@ export default function AddBookForm({ params }: { params: any }) {
           <input
             type="number"
             className="w-full rounded border px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            value={bookData?.data?.data?.stock}
           />
         </div>
 
@@ -80,8 +88,12 @@ export default function AddBookForm({ params }: { params: any }) {
             <input type="file" accept="image/*" className="hidden" />
           </label>
 
-          <div className="mt-3 flex h-24 w-24 items-center justify-center rounded border bg-blue-200">
-            <h1>Preview</h1>
+          <div className=" mt-2">
+            <img
+              src={`${BASE_URL}${bookData?.data?.data?.cover?.url}`}
+              alt=""
+              className="w-[300px] rounded-[10px] object-cover"
+            />
           </div>
         </div>
 

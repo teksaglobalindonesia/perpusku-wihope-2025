@@ -1,4 +1,3 @@
-'use client';
 import {
   Header,
   NavLinkHeadeDataTypes
@@ -7,6 +6,7 @@ import { BookBorrowedSection } from '@/components/customs/sections/home/bookBorr
 import { BookReturningTodaySection } from '@/components/customs/sections/home/bookReturningTodaySection';
 import { BooksOutOfStock } from '@/components/customs/sections/home/booskOutOfStockSection';
 import { fetcher } from '@/lib/fetcher';
+import axios from 'axios';
 
 export default async function Page() {
   const NavDatas: Array<NavLinkHeadeDataTypes> = [
@@ -32,10 +32,15 @@ export default async function Page() {
     }
   ];
 
-  const books: any = await fetcher({ path: '/api/books' });
-  const peminjaman = await fetcher({ path: '/api/peminjaman' });
-  console.log('trigger');
-  // console.log({ data: peminjaman?.data?.data?. });
+  const bookOutOfStockDatas = await fetcher({
+    path: '/book/list',
+    query: ''
+  });
+
+  const loanList = await fetcher({
+    path: '/loan/list',
+    query: 'status=loaned'
+  });
 
   return (
     <div className="w-full">
@@ -45,11 +50,17 @@ export default async function Page() {
           <h1 className="text-2xl">Dashboard</h1>
         </div>
         <div className="flex w-full flex-col gap-[30px] ">
-          <BooksOutOfStock title="Buku Stock Habis" data={books} />
-          <BookBorrowedSection title="Peminjaman Hari Ini" data={peminjaman} />
+          <BooksOutOfStock
+            title="Buku Stock Habis"
+            data={bookOutOfStockDatas.data?.data}
+          />
+          <BookBorrowedSection
+            title="Peminjaman Hari Ini"
+            data={loanList.data?.data}
+          />
           <BookReturningTodaySection
             title="Pengembalian Hari Ini"
-            data={peminjaman}
+            data={loanList.data?.data}
           />
         </div>
       </div>

@@ -1,5 +1,6 @@
 'use client';
 import { Button } from '@/components/ui/button';
+import { BASE_URL } from '@/lib/constant';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
@@ -79,22 +80,33 @@ export const BooksList = ({ data, title }: BooksOutOfStockProps) => {
                 <div className="flex gap-[15px]">
                   <div>
                     <img
-                      src={data?.image}
+                      src={`${BASE_URL}${data?.cover?.url}`}
                       alt=""
-                      className="aspect-square w-[150px] rounded-[10px] object-cover"
+                      className="w-[150px] rounded-[10px] object-cover"
                     />
                   </div>
                   <div className="flex flex-col justify-center gap-[5px]">
                     <p className="text-bold text-2xl font-semibold">
-                      {data.judul}
+                      {data.title}
                     </p>
-                    <p>{data.genre}</p>
-                    <p>{data.penulis}</p>
+                    <div className="mt-2 flex gap-2">
+                      {data?.categories?.map((data: any, i: number) => (
+                        <p
+                          key={i}
+                          className="rounded-md border-2 border-neutral-gray px-2 py-[2px] text-sm text-neutral-gray"
+                        >
+                          {data.name}
+                        </p>
+                      ))}
+                    </div>
+                    <p>{data.writer}</p>
+                    <p>{data.publisher}</p>
+                    <p>{data.published_year}</p>
                   </div>
                 </div>
                 <div className="mt-[10px] flex gap-[10px]">
                   <Link
-                    href={`/books/${data.id}/edit`}
+                    href={`/books/${data.documentId}/edit`}
                     className="rounded-sm bg-brand-blue px-4 py-1 text-white"
                   >
                     EDIT

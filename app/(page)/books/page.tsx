@@ -1,4 +1,3 @@
-'use client';
 import { BooksList } from '@/components/customs/sections/books/booksList';
 import {
   Header,
@@ -30,7 +29,7 @@ export default async function BukuPage() {
     }
   ];
 
-  const books: any = await fetcher({ path: '/api/books' });
+  const books: any = await fetcher({ path: '/book/list' });
   return (
     <div className="min-h-screen ">
       <Header title="My Perpus Gwah" navLinks={NavDatas} />
