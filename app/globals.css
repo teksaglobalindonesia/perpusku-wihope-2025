@@ -24,6 +24,21 @@
     --input: 34 30% 18%;
     --ring: 34 100% 63.7%;
     --radius: 0.5rem;
+
+    /* colors */
+    --neutral-black: #263238;
+    --neutral-dgray: #4d4d4d;
+    --neutral-gray: #717171;
+    --neutral-lgray: #89939e;
+    --neutral-gray-blue: #abbed1;
+    --neutral-silver: #f5f7fa;
+    --neutral-white: #fff;
+
+    --brand-primary: #4caf4f;
+    --brand-blue: #2194f3;
+    --brand-yellow: #fbc02d;
+    --brand-error: #e53835;
+    --brand-green: #2e7d31;
   }
   .dark {
     --background: 34 50% 5%;
