@@ -34,17 +34,17 @@ export const M_MemberList = ({ userItems = [], maxData = 5 }: UserType) => {
         return range;
     };
 
-    const handleEdit = (nomor_anggota: string) => console.log('EDIT item pada produk:', nomor_anggota);
-    const handlePeminjaman = (nomor_anggota: string) =>
-        console.log('Melihat peminjaman item pada produk:', nomor_anggota);
+    // const handleEdit = (nomor_anggota: string) => console.log('EDIT item pada produk:', nomor_anggota);
+    // const handlePeminjaman = (nomor_anggota: string) =>
+    //     console.log('Melihat peminjaman item pada produk:', nomor_anggota);
 
-    const handleDelete = (nomor_anggota: string, name: string) => {
-        setSelectedUser({ nomor_anggota, name });
-        setShowDeleteModal(true);
-    };
+    // const handleDelete = (nomor_anggota: string, name: string) => {
+    //     setSelectedUser({ nomor_anggota, name });
+    //     setShowDeleteModal(true);
+    // };
 
     const confirmDelete = () => {
-        if (selectedUser) console.log('Menghapus user:', selectedUser.nomor_anggota);
+        // if (selectedUser) console.log('Menghapus user:', selectedUser.nomor_anggota);
         setShowDeleteModal(false);
         setSelectedUser(null);
     };
@@ -114,20 +114,27 @@ export const M_MemberList = ({ userItems = [], maxData = 5 }: UserType) => {
                                                     href="/dashboard/members/loan"
                                                     className="bg-black text-center text-white border-2 border-black px-6 py-3 text-sm font-bold tracking-wider hover:bg-white hover:text-black transition-colors duration-300"
                                                 >
-                                                    <button onClick={() => handlePeminjaman(item.id_member)}>PEMINJAMAN</button>
+                                                    <button>PEMINJAMAN</button>
+                                                    {/* <button onClick={() => handlePeminjaman(item.id_member)}>PEMINJAMAN</button> */}
                                                 </Link>
                                                 <Link
                                                     href="/dashboard/members/edit"
                                                     className="bg-white text-center text-black border-2 border-black px-6 py-3 text-sm font-bold tracking-wider hover:bg-black hover:text-white transition-colors duration-300"
                                                 >
-                                                    <button onClick={() => handleEdit(item.id_member)}>EDIT</button>
+                                                    <button>EDIT</button>
+                                                    {/* <button onClick={() => handleEdit(item.id_member)}>EDIT</button> */}
                                                 </Link>
                                                 <button
-                                                    onClick={() => handleDelete(item.id_member, item.name)}
                                                     className="bg-white text-black border-2 border-black px-6 py-3 text-sm font-bold tracking-wider hover:bg-black hover:text-white transition-colors duration-300"
                                                 >
                                                     HAPUS
                                                 </button>
+                                                {/* <button
+                                                    onClick={() => handleDelete(item.id_member, item.name)}
+                                                    className="bg-white text-black border-2 border-black px-6 py-3 text-sm font-bold tracking-wider hover:bg-black hover:text-white transition-colors duration-300"
+                                                >
+                                                    HAPUS
+                                                </button> */}
                                             </div>
                                         </div>
                                     </div>

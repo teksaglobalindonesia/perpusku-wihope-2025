@@ -64,7 +64,6 @@ export default async function Dashboard() {
     );
 
     const { data: dataPeminjaman } = await responseLoan.json();
-    console.log(dataPeminjaman)
 
     const responseReturn = await fetch(
         `${BASE_URL}/api/return/list`,

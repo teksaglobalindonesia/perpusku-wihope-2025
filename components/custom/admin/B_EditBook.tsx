@@ -5,19 +5,19 @@ export const B_EditBook = () => {
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const formData = new FormData(e.currentTarget);
+        // const formData = new FormData(e.currentTarget);
 
-        const bookData = {
-            title: formData.get('title'),
-            author: formData.get('author'),
-            publisher: formData.get('publisher'),
-            year: formData.get('year'),
-            genres: formData.getAll('genre'),
-            stock: formData.get('stock'),
-            image: formData.get('image'),
-        };
+        // const bookData = {
+        //     title: formData.get('title'),
+        //     author: formData.get('author'),
+        //     publisher: formData.get('publisher'),
+        //     year: formData.get('year'),
+        //     genres: formData.getAll('genre'),
+        //     stock: formData.get('stock'),
+        //     image: formData.get('image'),
+        // };
 
-        console.log('Submitted Book Data:', bookData);
+        // console.log('Submitted Book Data:', bookData);
     };
 
     return (

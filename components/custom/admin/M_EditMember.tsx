@@ -9,13 +9,13 @@ export const M_EditMember = () => {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const formData = {
-            name,
-            uid,
-            email,
-        };
+        // const formData = {
+        //     name,
+        //     uid,
+        //     email,
+        // };
 
-        console.log('Data Anggota:', formData);
+        // console.log('Data Anggota:', formData);
     };
 
     return (
