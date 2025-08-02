@@ -1,3 +1,4 @@
+'use client';
 import HapusDialog from "@/components/custom/buku/hapuusbuku";
 
 export default function BukuPage() {
