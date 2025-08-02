@@ -1,7 +1,8 @@
 import Anggota from "@/components/custom/anggota/anggota";
 
 
-export default function AnggotaPage () {
+export default async function AnggotaPage () {
+  
     return (
         <>
           <Anggota />

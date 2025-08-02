@@ -8,15 +8,13 @@ export default function Header() {
 
   const isActive = (path: string) => pathname === path;
 
-  const baseClass =
-    "px-4 py-1 border border-white rounded-full shadow-md transition";
+  const baseClass = "px-4 py-1 border border-white rounded-full shadow-md transition";
   const activeClass = "bg-white text-navy font-semibold";
-  const inactiveClass =
-    "text-white hover:bg-white hover:text-navy";
+  const inactiveClass = "text-white hover:bg-white hover:text-navy";
 
   return (
     <header className="bg-navy p-6">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <div className="max-w-7xl mx-auto flex items-center flex-col sm:flex-row sm:items-center sm:justify-between gap-4">  
         {/* Judul */}
         <div className="flex items-center gap-2">
           <span className="text-2xl font-extrabold text-white tracking-wide font-serif italic drop-shadow-md">
@@ -25,7 +23,7 @@ export default function Header() {
         </div>
 
         {/* Navigasi */}
-        <nav className="flex items-center gap-3 text-sm font-medium">
+        <nav className="flex flex-wrap items-center gap-2 text-sm font-medium">
           <Link
             href="/"
             className={`${baseClass} ${
