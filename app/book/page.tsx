@@ -1,7 +1,21 @@
 import { BCard } from '@/components/custom/BCard';
+import { BASE_URL, TOKEN, WIHOPE_NAME } from '@/lib/constant';
 import Link from 'next/link';
 
-export default function Page() {
+
+export default async function Page() {
+        const bukus = await fetch(`${BASE_URL}/api/book/list`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization:
+            TOKEN,
+          'x-wihope-name':WIHOPE_NAME
+        },
+        cache:'no-store'
+      });
+      console.log(bukus)
+      const result = await bukus.json()
   return (
     <div className="min-h-screen bg-beige-50 px-8 py-8">
       {/* Header Section */}
@@ -34,7 +48,7 @@ export default function Page() {
 
       {/* Content Section */}
       <div className="rounded-xl border border-beige-200 bg-beige-100 p-6 shadow-inner">
-        <BCard />
+        <BCard data={result.data} />
       </div>
     </div>
   );

@@ -24,7 +24,11 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'images.unsplash.com'
-      }
+      },
+      {
+        protocol: 'https',
+        hostname: 'cms-perpusku.widhimp.my.id'
+      },
     ]
   },
   transpilePackages: ['geist']
