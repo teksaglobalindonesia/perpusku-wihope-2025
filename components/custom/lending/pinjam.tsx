@@ -1,88 +1,135 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Pagination from '../pagination';
+import { BASE_URL, TOKEN, WIHOPE_NAME } from '@/lib/constant';
+import { date } from 'zod';
 
-const Peminjaman = [
-  {
-    judulBuku: 'Buku A',
-    peminjam: 'Gw',
-    tanggal: 1,
-    waktu: '07-2025',
-    targetKembali: 14,
-    tanggalKembali: 12,
-    waktuKembali: '07-2025'
-  },
-  {
-    judulBuku: 'Bumi',
-    peminjam: 'John Doe',
-    tanggal: 20,
-    waktu: '07-2025',
-    targetKembali: 22,
-    tanggalKembali: 25,
-    waktuKembali: '07-2025'
-  },
-  {
-    judulBuku: 'Laskar Pelangi',
-    peminjam: 'Jane Smith',
-    tanggal: 18,
-    waktu: '07-2025',
-    targetKembali: 20,
-    tanggalKembali: 25,
-    waktuKembali: '07-2025'
-  },
-  {
-    judulBuku: 'Hujan',
-    peminjam: 'Dimas Saputra',
-    tanggal: 21,
-    waktu: '07-2025',
-    targetKembali: 28,
-    tanggalKembali: 28,
-    waktuKembali: '07-2025'
-  },
-  {
-    judulBuku: 'Rindu',
-    peminjam: 'Alya Rahma',
-    tanggal: 22,
-    waktu: '07-2025',
-    targetKembali: 30,
-    tanggalKembali: 29,
-    waktuKembali: '07-2025'
-  },
-  {
-    judulBuku: 'Negeri 5 Menara',
-    peminjam: 'Andi Pratama',
-    tanggal: 5,
-    waktu: '07-2025',
-    targetKembali: 12,
-    tanggalKembali: 15,
-    waktuKembali: '07-2025'
-  },
-  {
-    judulBuku: 'Perahu Kertas',
-    peminjam: 'Siti Aminah',
-    tanggal: 10,
-    waktu: '07-2025',
-    targetKembali: 18,
-    tanggalKembali: 17,
-    waktuKembali: '07-2025'
-  },
-  {
-    judulBuku: 'Ayah',
-    peminjam: 'Raka Nugroho',
-    tanggal: 8,
-    waktu: '07-2025',
-    targetKembali: 14,
-    tanggalKembali: 14,
-    waktuKembali: '07-2025'
-  }
-];
-
+// const Peminjaman = [
+//   {
+//     judulBuku: 'Buku A',
+//     peminjam: 'Gw',
+//     tanggal: 1,
+//     waktu: '07-2025',
+//     targetKembali: 14,
+//     tanggalKembali: 12,
+//     waktuKembali: '07-2025'
+//   },
+//   {
+//     judulBuku: 'Bumi',
+//     peminjam: 'John Doe',
+//     tanggal: 20,
+//     waktu: '07-2025',
+//     targetKembali: 22,
+//     tanggalKembali: 25,
+//     waktuKembali: '07-2025'
+//   },
+//   {
+//     judulBuku: 'Laskar Pelangi',
+//     peminjam: 'Jane Smith',
+//     tanggal: 18,
+//     waktu: '07-2025',
+//     targetKembali: 20,
+//     tanggalKembali: 25,
+//     waktuKembali: '07-2025'
+//   },
+//   {
+//     judulBuku: 'Hujan',
+//     peminjam: 'Dimas Saputra',
+//     tanggal: 21,
+//     waktu: '07-2025',
+//     targetKembali: 28,
+//     tanggalKembali: 28,
+//     waktuKembali: '07-2025'
+//   },
+//   {
+//     judulBuku: 'Rindu',
+//     peminjam: 'Alya Rahma',
+//     tanggal: 22,
+//     waktu: '07-2025',
+//     targetKembali: 30,
+//     tanggalKembali: 29,
+//     waktuKembali: '07-2025'
+//   },
+//   {
+//     judulBuku: 'Negeri 5 Menara',
+//     peminjam: 'Andi Pratama',
+//     tanggal: 5,
+//     waktu: '07-2025',
+//     targetKembali: 12,
+//     tanggalKembali: 15,
+//     waktuKembali: '07-2025'
+//   },
+//   {
+//     judulBuku: 'Perahu Kertas',
+//     peminjam: 'Siti Aminah',
+//     tanggal: 10,
+//     waktu: '07-2025',
+//     targetKembali: 18,
+//     tanggalKembali: 17,
+//     waktuKembali: '07-2025'
+//   },
+//   {
+//     judulBuku: 'Ayah',
+//     peminjam: 'Raka Nugroho',
+//     tanggal: 8,
+//     waktu: '07-2025',
+//     targetKembali: 14,
+//     tanggalKembali: 14,
+//     waktuKembali: '07-2025'
+//   }
+// ];
+type Lending = {
+  book: {
+    title: string;
+    id: number;
+  };
+  member: {
+    name: string;
+  };
+  loan_date: number;
+  return_date: number;
+  actual_return_date: number;
+};
 const Pinjam = () => {
   const pathname = usePathname();
-  const [lending, setLending] = useState(Peminjaman);
+  const [loading, setLoading] = useState(true);
+  const [lending, setLending] = useState<Lending[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `${BASE_URL}/api/loan/list?status=loaned`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: TOKEN,
+              'x-wihope-name': WIHOPE_NAME
+            },
+            cache: 'no-store'
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Gagal mengambil data');
+        }
+
+        const json = await response.json();
+        setLending(json.data || []);
+      } catch (err: any) {
+        console.error('❌ Error saat fetch:', err);
+        setError(err.message || 'Terjadi kesalahan saat memuat data');
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
   return (
     <div className="min-h-[540px] w-full">
@@ -93,11 +140,11 @@ const Pinjam = () => {
             List Peminjaman
           </span>
         </h1>
-        <div>
+        <div className="ml-12">
           <input
             type="text"
             placeholder="Search..."
-            className="rounded border px-3 py-1"
+            className="mb-3 rounded border px-3 py-1"
           />
           <Link href="/peminjaman/add">
             <button className="text-md mx-2 rounded-md bg-green-400 px-2 py-1 font-bold text-gray-700 hover:bg-green-300">
@@ -110,35 +157,36 @@ const Pinjam = () => {
       {/* Tabel */}
       <div className="mx-8 mb-8 rounded-md p-4">
         <div className="space-y-4">
-          {lending.map((item) => {
-            const Terlambat =
-              item.targetKembali > item.tanggalKembali ? '' : 'Terlambat';
+          {lending.map((Lending) => {
+            // const Terlambat =
+            // > Lending.return_date
+            //     ? ''
+            //     : 'Terlambat';
             return (
               <div
-                key={item.judulBuku}
+                key={Lending.book.id}
                 className="flex items-center justify-between rounded border p-4"
               >
                 <div className="mx-4 flex items-center gap-4">
                   <div>
-                    <p className="font-semibold">{item.judulBuku}</p>
-                    <p className="text-sm">Peminjam: {item.peminjam}</p>
+                    <p className="font-semibold">{Lending.book.title}</p>
+                    <p className="text-sm">Peminjam: {Lending.member.name}</p>
                     <p className="text-sm">
-                      Tanggal Peminjaman: {item.tanggal}-{item.waktu}
+                      Tanggal Peminjaman: {Lending.loan_date}
                     </p>
                     <p className="text-sm">
-                      Tanggal Pengembalian: {item.targetKembali}-
-                      {item.waktuKembali}
+                      Tanggal Pengembalian: {Lending.return_date}
                     </p>
                     <button className="my-1 mr-1 rounded bg-purple-500 px-5 py-2 text-sm font-bold text-white">
                       Kembalikan
                     </button>
                   </div>
                 </div>
-                {Terlambat && (
+                {/* {Terlambat && (
                   <span className="rounded bg-red-500 px-6 py-2 text-white">
                     {Terlambat}
                   </span>
-                )}
+                )} */}
               </div>
             );
           })}

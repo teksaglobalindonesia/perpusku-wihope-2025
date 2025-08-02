@@ -35,3 +35,27 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# Next auth https://next-auth.js.org/configuration/options
+# Run this command to generate a a new NEXTAUTH_SECRET
+# $ openssl rand -base64 32
+
+NEXTAUTH_URL = http://localhost:3000
+NEXTAUTH_SECRET=
+
+# Go to github and setup the oauth configuration
+# https://next-auth.js.org/providers/github#configuration
+# https://github.com/settings/developers
+
+GITHUB_ID = 
+GITHUB_SECRET = 
+
+# Strapi Configuration
+# URL Strapi Anda
+NEXT_PUBLIC_STRAPI_URL=http://localhost:1337
+
+# Token Strapi (dapatkan dari Strapi Admin Panel)
+NEXT_PUBLIC_STRAPI_TOKEN=a24d6a7e8be343406cd81ac59c5ecc3216ef47e100d270c8644f5b7a03dab5b5feccfab65b0a2f091513f8e8bc29b9c8430a0117f04fac4577955a2d38da7b643432c66153b1ff38b4216da853e6c961dfd0493d27d844a45d7206322773c0af8c3344615aa0fce4ce584522b6efcc91424435caba545acfac47f35831d2bdef
+
+
+

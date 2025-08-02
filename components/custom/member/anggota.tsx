@@ -1,27 +1,67 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useSearchParams } from 'next/navigation';
+import { BASE_URL, TOKEN, WIHOPE_NAME } from '@/lib/constant';
+// import { useSearchParams } from 'next/navigation';
 import Pagination from '../pagination';
 
-const initialMember = [
-  { nama: 'Joh', noAnggota: '12345', email: 'john@yahodie.com' },
-  { nama: 'Jane', noAnggota: '67890', email: 'jennie@gmail.com' },
-  { nama: 'Doe', noAnggota: '54321', email: 'dodo@gmail.com' }
-];
+// const initialMember = [
+//   { nama: 'Joh', noAnggota: '12345', email: 'john@yahodie.com' },
+//   { nama: 'Jane', noAnggota: '67890', email: 'jennie@gmail.com' },
+//   { nama: 'Doe', noAnggota: '54321', email: 'dodo@gmail.com' }
+// ];
+
+type Members = {
+  name: string;
+  email: string;
+  address: string;
+  id_member: string;
+};
 
 const Anggota = () => {
   const pathname = usePathname();
-  const [members, setMembers] = useState(initialMember);
+  const [members, setMembers] = useState<Members[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${BASE_URL}/api/member/list`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: TOKEN,
+            'x-wihope-name': WIHOPE_NAME
+          },
+          cache: 'no-store'
+        });
 
-  const handleHapusClick = (noAnggota: string) => {
-    const konfirmasi = confirm(`Yakin ingin menghapus anggota ${noAnggota}?`);
-    if (konfirmasi) {
-      setMembers((prev) => prev.filter((m) => m.noAnggota !== noAnggota));
-    }
-  };
+        if (!response.ok) {
+          throw new Error('Gagal mengambil data');
+        }
+
+        const json = await response.json();
+        setMembers(json.data || []);
+      } catch (err: any) {
+        console.error('❌ Error saat fetch:', err);
+        setError(err.message || 'Terjadi kesalahan saat memuat data');
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  // const [members, setMembers] = useState(initialMember);
+
+  // const handleHapusClick = (noAnggota: string) => {
+  //   const konfirmasi = confirm(`Yakin ingin menghapus anggota ${noAnggota}?`);
+  //   if (konfirmasi) {
+  //     setMembers((prev) => prev.filter((m) => m.noAnggota !== noAnggota));
+  //   }
+  // };
 
   const navItems = [{ path: '/anggota/add', label: 'Tambah Anggota' }];
 
@@ -34,11 +74,11 @@ const Anggota = () => {
             List Anggota Perpusku
           </span>
         </h1>
-        <div>
+        <div className="ml-12">
           <input
             type="text"
             placeholder="Search..."
-            className="rounded border px-3 py-1"
+            className="mb-3 rounded border px-3 py-1"
           />
           <Link href={navItems[0].path}>
             <button className="text-md mx-2 rounded-md bg-green-400 px-2 py-1 font-bold text-gray-700 hover:bg-green-300">
@@ -51,19 +91,19 @@ const Anggota = () => {
       {/* Tabel */}
       <div className="mx-8 mb-8 rounded-md p-4">
         <div className="space-y-4">
-          {members.map((item) => (
+          {members.map((Members) => (
             <div
-              key={item.noAnggota}
+              key={Members.id_member}
               className="flex items-center justify-between rounded border p-4"
             >
               <div className="flex items-center gap-4">
                 <div className="flex h-24 w-24 items-center justify-center rounded border border-blue-950 bg-blue-100 p-2">
-                  <img src="/next.svg" alt="" />
+                  <img src="" alt={Members.name} />
                 </div>
                 <div>
-                  <p className="font-semibold">{item.nama}</p>
-                  <p className="text-sm">{item.noAnggota}</p>
-                  <p className="text-sm">{item.email}</p>
+                  <p className="font-semibold">{Members.name}</p>
+                  <p className="text-sm">{Members.id_member}</p>
+                  <p className="text-sm">{Members.email}</p>
 
                   <Link href={`/anggota/anggotaPinjam`}>
                     <button className="my-1 mr-1 rounded bg-yellow-500 px-3 py-1 text-sm font-bold text-white">
@@ -71,7 +111,7 @@ const Anggota = () => {
                     </button>
                   </Link>
 
-                  <Link href={`/anggota/edit?id=${item.noAnggota}`}>
+                  <Link href={`/anggota/edit?id=${Members.id_member}`}>
                     <button className="my-1 rounded bg-yellow-500 px-3 py-1 text-sm font-bold text-white">
                       Edit
                     </button>
@@ -79,7 +119,7 @@ const Anggota = () => {
 
                   <button
                     className="mx-2 my-1 rounded bg-yellow-500 px-3 py-1 text-sm font-bold text-white"
-                    onClick={() => handleHapusClick(item.noAnggota)}
+                    // onClick={() => handleHapusClick(Members.id_member)}
                   >
                     Hapus
                   </button>

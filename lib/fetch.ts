@@ -46,9 +46,9 @@ export async function getPageDetail({ path, slug, locale }: any) {
     });
     console.log(`======== getPageDetail ${slug} ${locale} ok`, res.ok);
     if (!res.ok) notFound();
-    // if (res.status === 404) {
-    //   redirect(`/id${path}`);
-    // }
+    if (res.status === 404) {
+      redirect(`/id${path}`);
+    }
 
     let data = await res.json();
     return data;

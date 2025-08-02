@@ -1,11 +1,12 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import { books } from '@/app/bukuDummy/data';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { getBookByIdFromStrapi, updateBookInStrapi } from '@/lib/constant';
 
 export default function EditBuku() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const id = searchParams.get('id');
 
   const [book, setBook] = useState({
@@ -19,11 +20,26 @@ export default function EditBuku() {
     gambar: '/next.svg'
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    if (id) {
-      const found = books.find((b) => b.id === parseInt(id));
-      if (found) setBook(found);
-    }
+    const loadBook = async () => {
+      if (id) {
+        try {
+          setLoading(true);
+          const bookData = await getBookByIdFromStrapi(parseInt(id));
+          setBook(bookData);
+        } catch (err) {
+          setError('Gagal memuat data buku dari Strapi');
+          console.error('Error loading book:', err);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadBook();
   }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,10 +50,19 @@ export default function EditBuku() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Data baru:', book);
-    alert('Buku berhasil diubah (simulasi saja)');
+    try {
+      setLoading(true);
+      await updateBookInStrapi(book.id, book);
+      alert('Buku berhasil diubah');
+      router.push('/book');
+    } catch (err) {
+      alert('Gagal mengupdate buku');
+      console.error('Error updating book:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -45,6 +70,21 @@ export default function EditBuku() {
       <h1 className="mb-6 mt-12 rounded-lg bg-blue-800 px-3 py-2 text-center text-4xl font-normal text-white underline">
         Edit Buku
       </h1>
+
+      {/* Error Message */}
+      {error && (
+        <div className="mb-4 rounded-md border border-red-400 bg-red-100 px-4 py-3 text-red-700">
+          {error}
+        </div>
+      )}
+
+      {/* Loading State */}
+      {loading && (
+        <div className="mb-4 py-4 text-center">
+          <p>Memuat data buku...</p>
+        </div>
+      )}
+
       {id ? (
         <form onSubmit={handleSubmit}>
           <div className="mb-6 grid grid-cols-2 items-center justify-center gap-y-8 rounded-lg border-2 border-black py-3 pb-8 pr-8 pt-8">

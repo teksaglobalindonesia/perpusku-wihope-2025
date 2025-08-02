@@ -1,38 +1,54 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { books } from '@/app/bukuDummy/data';
+import { BASE_URL, TOKEN, WIHOPE_NAME } from '@/lib/constant';
 import Pagination from '../pagination';
 
 type Item = {
   id: number;
-  judul: string;
+  title: string;
   genre: string;
-  penulis: string;
-  stok: number;
+  writer: string;
+  stock: number;
   gambar: string;
 };
 
 const Book = () => {
   const pathname = usePathname();
-  const [items, setItems] = useState<Item[]>(books);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [selectedNama, setSelectedNama] = useState<string | null>(null);
+  const [items, setItems] = useState<Item[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleHapusClick = (nama: string) => {
-    setSelectedNama(nama);
-    setShowConfirm(true);
-  };
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${BASE_URL}/api/book/list`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: TOKEN,
+            'x-wihope-name': WIHOPE_NAME
+          },
+          cache: 'no-store'
+        });
 
-  const confirmDelete = () => {
-    if (selectedNama !== null) {
-      setItems((prev) => prev.filter((item) => item.judul !== selectedNama));
-      setSelectedNama(null);
-      setShowConfirm(false);
-    }
-  };
+        if (!response.ok) {
+          throw new Error('Gagal mengambil data');
+        }
+
+        const json = await response.json();
+        setItems(json.data || []);
+      } catch (err: any) {
+        console.error('❌ Error saat fetch:', err);
+        setError(err.message || 'Terjadi kesalahan saat memuat data');
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
   return (
     <div className="min-h-[540px] w-full">
@@ -43,11 +59,11 @@ const Book = () => {
             List Buku Perpusku
           </span>
         </h1>
-        <div>
+        <div className="ml-12">
           <input
             type="text"
             placeholder="Search..."
-            className="rounded border px-3 py-1"
+            className="mb-3 rounded border px-3 py-1"
           />
           <Link href="/book/add">
             <button className="text-md mx-2 rounded-md bg-green-400 px-2 py-1 font-bold text-gray-700 hover:bg-green-300">
@@ -56,6 +72,20 @@ const Book = () => {
           </Link>
         </div>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="mx-8 mb-4 rounded-md border border-red-400 bg-red-100 px-4 py-3 text-red-700">
+          {error}
+        </div>
+      )}
+
+      {/* Loading State */}
+      {loading && (
+        <div className="mx-8 mb-4 py-4 text-center">
+          <p>Memuat data buku dari server...</p>
+        </div>
+      )}
 
       {/* Tabel Buku */}
       <div className="mx-8 mb-8 rounded-md p-4">
@@ -67,12 +97,16 @@ const Book = () => {
             >
               <div className="flex items-center gap-4">
                 <div className="flex h-24 w-24 items-center justify-center rounded border border-blue-950 bg-blue-100 p-2">
-                  <img src={item.gambar} alt={item.judul} />
+                  <img
+                    src={item.gambar}
+                    alt={item.title}
+                    className="max-h-full max-w-full object-contain"
+                  />
                 </div>
                 <div>
-                  <p className="font-semibold">{item.judul}</p>
+                  <p className="font-semibold">{item.title}</p>
                   <p className="text-sm">{item.genre}</p>
-                  <p className="text-sm">{item.penulis}</p>
+                  <p className="text-sm">{item.writer}</p>
                   <Link href={`/book/edit?id=${item.id}`}>
                     <button className="my-1 rounded bg-blue-500 px-3 py-1 text-sm font-bold text-white">
                       Edit
@@ -80,15 +114,15 @@ const Book = () => {
                   </Link>
                   <button
                     className="mx-2 my-1 rounded bg-red-500 px-3 py-1 text-sm font-bold text-white"
-                    onClick={() => handleHapusClick(item.judul)}
+                    disabled
                   >
                     Hapus
                   </button>
                 </div>
               </div>
 
-              {item.stok > 0 ? (
-                <p>Stok: {item.stok}</p>
+              {item.stock > 0 ? (
+                <p>Stok: {item.stock}</p>
               ) : (
                 <span className="rounded bg-red-500 px-2 py-1 text-sm text-white">
                   HABIS
@@ -100,31 +134,6 @@ const Book = () => {
 
         <Pagination />
       </div>
-
-      {/* Popup Konfirmasi */}
-      {showConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="rounded-md bg-white p-6 text-center shadow-lg">
-            <p>
-              Apakah kamu yakin ingin menghapus <strong>{selectedNama}</strong>?
-            </p>
-            <div className="mt-4 flex justify-center gap-4">
-              <button
-                className="rounded bg-gray-300 px-4 py-2"
-                onClick={() => setShowConfirm(false)}
-              >
-                Tidak
-              </button>
-              <button
-                className="rounded bg-red-600 px-4 py-2 text-white"
-                onClick={confirmDelete}
-              >
-                Ya, Hapus
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
