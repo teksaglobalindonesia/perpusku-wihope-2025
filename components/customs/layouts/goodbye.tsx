@@ -10,9 +10,9 @@ export default function Goodbye(){
                 </h1>
                 <h2 className="text-gray-600 text-lg sm:text-xl md:text-[42px] px-2 
                 leading-snug md:leading-[1.3]">
-                    Don't forget to return the books...
+                    Don&apos;t forget to return the books...
                     <br className="md:hidden"/> 
-                    or we'll send someone to take you down
+                    or we&apos;ll send someone to take you down
                 </h2>
             </div>
         </div>

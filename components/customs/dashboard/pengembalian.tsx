@@ -27,7 +27,7 @@ export default function Pengembali({ returns }: { returns: any[] }){
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between 
                 font-morrisroman gap-3 sm:gap-0 mb-4 sm:mb-0">
                     <h1 className="text-lg sm:text-xl font-semibold">
-                        Today's Returns
+                        Today&apos;s Returns
                     </h1>
                     <button className="px-4 sm:px-8 border-2 sm:border-4 rounded-md text-sm 
                     sm:text-lg w-full sm:w-auto">

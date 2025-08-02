@@ -26,7 +26,7 @@ export default function Pinjaman({ loans = [] }: { loans?: any[] }) {
             <div className="w-full border-2 md:border-4 rounded-md px-3 py-4 md:py-5">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between font-morrisroman gap-3 sm:gap-0">
                     <h1 className="text-lg sm:text-xl font-semibold">
-                        Today's borrowings
+                        Today&apos;s borrowings
                     </h1>
                     <button className="px-4 sm:px-8 border-2 sm:border-4 rounded-md text-sm sm:text-lg w-full sm:w-auto">
                         Search...
