@@ -1,0 +1,288 @@
+{
+    "data": [
+        {
+            "id": "",
+            "documentId": "",
+            "judul": "",
+            "penulis": "",
+            "penerbit": "",
+            "tahun_terbit": "",
+            "createdAt": "",
+            "updatedAt": "",
+            "publishedAt": "",
+            "stok": "",
+            "cover": {
+                "id": "",
+                "documentId": "",
+                "name": "",
+                "alternativeText": null,
+                "caption": null,
+                "width": "",
+                "height": "",
+                "formats": {
+                    "large": {
+                        "ext": "",
+                        "url": "",
+                        "hash": "",
+                        "mime": "",
+                        "name": "",
+                        "path": null,
+                        "size": "",
+                        "width": "",
+                        "height": "",
+                        "sizeInBytes": ""
+                    },
+                    "small": {
+                        "ext": "",
+                        "url": "",
+                        "hash": "",
+                        "mime": "",
+                        "name": "",
+                        "path": null,
+                        "size": "",
+                        "width": "",
+                        "height": "",
+                        "sizeInBytes": ""
+                    },
+                    "medium": {
+                        "ext": "",
+                        "url": "",
+                        "hash": "",
+                        "mime": "",
+                        "name": "",
+                        "path": null,
+                        "size": "",
+                        "width": "",
+                        "height": "",
+                        "sizeInBytes": ""
+                    },
+                    "thumbnail": {
+                        "ext": "",
+                        "url": "",
+                        "hash": "",
+                        "mime": "",
+                        "name": "",
+                        "path": null,
+                        "size": "",
+                        "width": "",
+                        "height": "",
+                        "sizeInBytes": ""
+                    }
+                },
+                "hash": "",
+                "ext": "",
+                "mime": "",
+                "size": "",
+                "url": "",
+                "previewUrl": null,
+                "provider": "",
+                "provider_metadata": null,
+                "createdAt": "",
+                "updatedAt": "",
+                "publishedAt": ""
+            },
+            "kategorises": [
+                {
+                    "id": "",
+                    "documentId": "",
+                    "nama_kategori": "",
+                    "createdAt": "",
+                    "updatedAt": "",
+                    "publishedAt": ""
+                }
+            ]
+        },
+        {
+            "id": "",
+            "documentId": "",
+            "judul": "",
+            "penulis": "",
+            "penerbit": "",
+            "tahun_terbit": "",
+            "createdAt": "",
+            "updatedAt": "",
+            "publishedAt": "",
+            "stok": "",
+            "cover": {
+                "id": "",
+                "documentId": "",
+                "name": "",
+                "alternativeText": null,
+                "caption": null,
+                "width": "",
+                "height": "",
+                "formats": {
+                    "large": {
+                        "ext": "",
+                        "url": "",
+                        "hash": "",
+                        "mime": "",
+                        "name": "",
+                        "path": null,
+                        "size": "",
+                        "width": "",
+                        "height": "",
+                        "sizeInBytes": ""
+                    },
+                    "small": {
+                        "ext": "",
+                        "url": "",
+                        "hash": "",
+                        "mime": "",
+                        "name": "",
+                        "path": null,
+                        "size": "",
+                        "width": "",
+                        "height": "",
+                        "sizeInBytes": ""
+                    },
+                    "medium": {
+                        "ext": "",
+                        "url": "",
+                        "hash": "",
+                        "mime": "",
+                        "name": "",
+                        "path": null,
+                        "size": "",
+                        "width": "",
+                        "height": "",
+                        "sizeInBytes": ""
+                    },
+                    "thumbnail": {
+                        "ext": "",
+                        "url": "",
+                        "hash": "",
+                        "mime": "",
+                        "name": "",
+                        "path": null,
+                        "size": "",
+                        "width": "",
+                        "height": "",
+                        "sizeInBytes": ""
+                    }
+                },
+                "hash": "",
+                "ext": "",
+                "mime": "",
+                "size": "",
+                "url": "",
+                "previewUrl": null,
+                "provider": "",
+                "provider_metadata": null,
+                "createdAt": "",
+                "updatedAt": "",
+                "publishedAt": ""
+            },
+            "kategorises": [
+                {
+                    "id": "",
+                    "documentId": "",
+                    "nama_kategori": "",
+                    "createdAt": "",
+                    "updatedAt": "",
+                    "publishedAt": ""
+                }
+            ]
+        },
+        {
+            "id": "",
+            "documentId": "",
+            "judul": "",
+            "penulis": "",
+            "penerbit": "",
+            "tahun_terbit": "",
+            "createdAt": "",
+            "updatedAt": "",
+            "publishedAt": "",
+            "stok": "",
+            "cover": {
+                "id": "",
+                "documentId": "",
+                "name": "",
+                "alternativeText": null,
+                "caption": null,
+                "width": "",
+                "height": "",
+                "formats": {
+                    "large": {
+                        "ext": "",
+                        "url": "",
+                        "hash": "",
+                        "mime": "",
+                        "name": "",
+                        "path": null,
+                        "size": "",
+                        "width": "",
+                        "height": "",
+                        "sizeInBytes": ""
+                    },
+                    "small": {
+                        "ext": "",
+                        "url": "",
+                        "hash": "",
+                        "mime": "",
+                        "name": "",
+                        "path": null,
+                        "size": "",
+                        "width": "",
+                        "height": "",
+                        "sizeInBytes": ""
+                    },
+                    "medium": {
+                        "ext": "",
+                        "url": "",
+                        "hash": "",
+                        "mime": "",
+                        "name": "",
+                        "path": null,
+                        "size": "",
+                        "width": "",
+                        "height": "",
+                        "sizeInBytes": ""
+                    },
+                    "thumbnail": {
+                        "ext": "",
+                        "url": "",
+                        "hash": "",
+                        "mime": "",
+                        "name": "",
+                        "path": null,
+                        "size": "",
+                        "width": "",
+                        "height": "",
+                        "sizeInBytes": ""
+                    }
+                },
+                "hash": "",
+                "ext": "",
+                "mime": "",
+                "size": "",
+                "url": "",
+                "previewUrl": null,
+                "provider": "",
+                "provider_metadata": null,
+                "createdAt": "",
+                "updatedAt": "",
+                "publishedAt": ""
+            },
+            "kategorises": [
+                {
+                    "id": "",
+                    "documentId": "",
+                    "nama_kategori": "",
+                    "createdAt": "",
+                    "updatedAt": "",
+                    "publishedAt": ""
+                }
+            ]
+        }
+    ],
+    "meta": {
+        "pagination": {
+            "page": 1,
+            "pageSize": 25,
+            "pageCount": 1,
+            "total": 0
+        }
+    }
+}

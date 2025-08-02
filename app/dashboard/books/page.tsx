@@ -1,16 +1,30 @@
 import { B_BookList } from "@/components/custom/admin/B_BookList";
-// import { D_Header } from "@/components/custom/admin/header";
-import { BookList } from '@/app/dashboard/page'
+import { BASE_URL, NAME, TOKEN } from "@/lib/api";
+import { Book } from "@/type/api-response";
 
+export type BookListType = {
+    bookListItems?: Book[];
+    maxData?: number;
+};
 
+export default async function B_Books() {
+    const bukus = await fetch(
+        `${BASE_URL}/api/book/list`,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: TOKEN,
+                'x-wihope-name': NAME,
+            },
+            cache: 'no-store',
+        }
+    );
+    const {data} = await bukus.json();
 
-const B_Books = () => {
     return (
         <>
-            {/* <D_Header items={D_NavLinks} /> */}
-            <B_BookList bookListItems={BookList} />
+            <B_BookList bookListItems={data} maxData={5} />
         </>
     );
 }
-
-export default B_Books;

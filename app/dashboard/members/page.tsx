@@ -1,13 +1,32 @@
-// import { D_Header } from "@/components/custom/admin/header";
-// import { D_NavLinks } from "../page";
 import { M_MemberList } from "@/components/custom/admin/M_MemberList";
-import { User } from "@/app/dashboard/page"
+import { BASE_URL, NAME, TOKEN } from "@/lib/api";
+import { Member } from "@/type/api-response";
 
-export default function M_Members() {
+export type UserType = {
+    userItems?: Member[]
+    maxData?: number;
+};
+
+export default async function M_Members() {
+
+    const anggotas = await fetch(
+            `${BASE_URL}/api/member/list`,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: TOKEN,
+                    'x-wihope-name': NAME,
+                },
+                cache: 'no-store',
+            }
+        );
+        const {data} = await anggotas.json();
+
     return (
         <>
             {/* <D_Header items={D_NavLinks} /> */}
-            <M_MemberList userItems={User}/>
+            <M_MemberList userItems={data}/>
         </>
     );
 }

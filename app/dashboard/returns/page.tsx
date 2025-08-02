@@ -1,10 +1,33 @@
-import { R_ReturnList } from '@/components/custom/admin/R_ReturnList';
-import React from 'react'
 
-export default function R_Return() {
+import { L_ReturnList } from "@/components/custom/admin/R_ReturnList";
+import { BASE_URL, NAME, TOKEN } from "@/lib/api";
+import { Member, ReturnRecord } from "@/type/api-response";
+
+export type StatusBukuType = {
+    statusBukuItems?: ReturnRecord[];
+    member: Member[];
+    maxData?: number;
+};
+
+export default async function R_Return() {
+    const anggotas = await fetch(
+        `${BASE_URL}/api/return/list`,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: TOKEN,
+                'x-wihope-name': NAME,
+            },
+            cache: 'no-store',
+        }
+    );
+    const { data } = await anggotas.json();
+
     return (
         <>
-            <R_ReturnList/>
+            {/* <D_Header items={D_NavLinks} /> */}
+            <L_ReturnList statusBukuItems={data} member={data}/>
         </>
     );
 }

@@ -41,14 +41,6 @@ export const M_Peminjaman = ({ statusBukuItems = PinjamanALicia, maxData = 5, }:
         page * maxData
     );
 
-    // const hitungDurasiHari = (start: string, end: string) => {
-    //     const startDate = new Date(start);
-    //     const endDate = new Date(end);
-    //     const diffTime = endDate.getTime() - startDate.getTime();
-    //     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    //     return diffDays;
-    // };
-
     return (
         <div className="flex flex-col mx-10 my-10 border-2 border-gray-200 rounded-lg shadow-md bg-white">
             <div className="flex flex-row justify-between py-5 px-6 items-center border-b border-gray-200">

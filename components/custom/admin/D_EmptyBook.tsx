@@ -1,92 +1,175 @@
-'use client'
+'use client';
+import { StatusBukuType } from '@/app/dashboard/page';
+import { BASE_URL } from '@/lib/api';
 import Image from 'next/image';
 import { useState } from 'react';
-import { BookListType } from './B_BookList';
 
-export const D_EmptyBook = ({ bookListItems = [], maxData = 2 }: BookListType) => {
+export const D_EmptyBook = ({ statusBukuItems = [], maxData = 2 }: StatusBukuType) => {
     const [page, setPage] = useState<number>(1);
-    const emptyBooks = bookListItems.filter((item) => item.stock === 0); //ini buat filter yang stoknya = 0, klo stoknya ga = 0 mmaka item tidak akan ditampilkan (sederhananya ini filter ygy)
+    const emptyBooks = statusBukuItems.filter((item: any) => item.stock === 0);
     const totalPages = Math.ceil(emptyBooks.length / maxData);
     const paginatedData = emptyBooks.slice((page - 1) * maxData, page * maxData);
 
+    // Range pagination dengan ellipsis
+    const paginationRange = () => {
+        const delta = 2;
+        const range: (number | string)[] = [];
+        const left = Math.max(2, page - delta);
+        const right = Math.min(totalPages - 1, page + delta);
+
+        for (let i = left; i <= right; i++) {
+            range.push(i);
+        }
+
+        if (left > 2) range.unshift('...');
+        if (right < totalPages - 1) range.push('...');
+
+        range.unshift(1);
+        if (totalPages > 1) range.push(totalPages);
+
+        return range;
+    };
+
     return (
-        <div className="flex flex-col mx-10 my-10 border-2 border-gray-200 rounded-lg shadow-md bg-white">
-            <div className="flex flex-row justify-between py-5 px-6 items-center border-b border-gray-200">
-                <h3 className="font-semibold text-2xl text-gray-800">Buku Stok Habis</h3>
-                <div className="relative">
-                    <input
-                        type="text"
-                        name="search"
-                        id="search"
-                        placeholder="Search..."
-                        className="w-64 h-10 px-4 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-                    />
-                    <svg className="w-5 h-5 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
+        <div className="max-h-[80%] bg-gray-50 px-5 md:px-10 pb-16">
+            <div className="mx-auto">
+                {/* Search Section */}
+                <div className="mb-12 w-full flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+                    {/* Kiri: Judul */}
+                    <div className="flex-1">
+                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-black leading-tight tracking-tight mb-4">
+                            BUKU STOK HABIS
+                        </h1>
+                        <div className="inline-block bg-black text-white px-8 py-4 text-sm font-medium tracking-wider ">
+                            {emptyBooks.length === 0 ? 'EMPTY' : `${emptyBooks.length} ITEMS`}
+                        </div>
+                    </div>
+
+                    {/* Kanan: Pencarian */}
+                    <div className="w-full sm:max-w-md relative">
+                        <input
+                            type="text"
+                            placeholder="Cari buku..."
+                            className="w-full h-12 px-6 bg-white border-2 border-black text-base font-medium focus:outline-none placeholder-gray-400 "
+                        />
+                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                            <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            {/* Display */}
-            {paginatedData.length > 0 ? (
-                paginatedData.map((item, index) => (
-                    <div key={index} className="flex flex-col gap-3 mx-6 my-4">
-                        {/* Card */}
-                        <div className="px-6 py-4 flex flex-row justify-between items-center border border-gray-200 rounded-md hover:shadow-lg transition-shadow duration-200">
-                            {/* Informasi Buku */}
-                            <div className="flex flex-row items-center gap-6">
-                                {/* Image */}
-                                <div>
-                                    <Image
-                                        src={item.image}
-                                        alt={item.title}
-                                        width={128}
-                                        height={176}
-                                        className="w-32 h-44 object-cover rounded-md"
-                                    />
-                                </div>
-                                {/* Informasi */}
-                                <div className="flex flex-col gap-4">
-                                    <div>
-                                        <h3 className="text-xl font-medium text-gray-900">{item.title}</h3>
-                                        <p className="text-base text-gray-600">{item.genre}</p>
-                                        <p className="text-base text-gray-500">{item.author}</p>
+
+                {/* Content Grid */}
+                <div className="space-y-8">
+                    {paginatedData.length > 0 ? (
+                        paginatedData.map((item, index) => (
+                            <div
+                                key={index}
+                                className="bg-white border-2 border-black hover:bg-gray-50 transition-colors duration-300"
+                            >
+                                <div className="p-8">
+                                    <div className="sm:grid flex-col flex gap-8 sm:grid-cols-12 sm:items-center">
+                                        {/* Book Image */}
+                                        <div className="sm:col-span-2 flex justify-center sm:justify-start">
+                                            <div className="w-full max-w-[150px] aspect-[3/4] bg-gray-100 border-2 border-black overflow-hidden">
+                                                <Image
+                                                    src={item.cover?.url ? `${BASE_URL}${item.cover.url}` : "/default-book.png"}
+                                                    alt={item.title}
+                                                    width={150}
+                                                    height={200}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Book Information */}
+                                        <div className="sm:col-span-7 space-y-3 text-center sm:text-left">
+                                            <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">
+                                                {item.categories[0]?.name}
+                                            </div>
+                                            <h2 className="text-3xl font-bold text-black leading-tight">
+                                                {item.title}
+                                            </h2>
+                                            <div className="text-lg text-gray-600 font-medium">
+                                                {item.writer}
+                                            </div>
+                                        </div>
+
+                                        {/* Status and Year */}
+                                        <div className="sm:col-span-3 flex flex-col items-center sm:items-end gap-4">
+                                            <div className="text-sm text-gray-500 font-medium">{item.published_year}</div>
+                                            <div className="bg-black max-sm:w-full text-white px-6 py-3 text-sm font-bold text-center tracking-wider inline-block">
+                                                STOK HABIS
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            {/* Status Buku */}
-                            <div>
-                                <p className="py-2 px-4 bg-red-100 text-red-800 text-sm font-medium rounded-full">
-                                    {item.stock === 0 ? 'HABIS' : `${item.stock} Tersedia`}
+                        ))
+                    ) : (
+                        <div className="bg-white border-2 border-black">
+                            <div className="p-16 text-center">
+                                <h2 className="text-4xl font-bold text-black mb-4">
+                                    SEMUA STOK<br />TERSEDIA
+                                </h2>
+                                <p className="text-lg text-gray-600 font-medium">
+                                    Tidak ada buku yang kehabisan stok
                                 </p>
                             </div>
                         </div>
-                    </div>
-                ))
-            ) : (
-                <div className="text-center py-8 text-gray-500">
-                    Tidak ada buku stok habis untuk ditampilkan
+                    )}
                 </div>
-            )}
-            {/* Pagination */}
-            <div className="flex justify-center gap-4 py-4 px-6 border-t items-center">
-                <button
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${page === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-                        }`}
-                >
-                    Prev
-                </button>
-                <span className="text-sm text-gray-600 font-medium">{page} / {totalPages}</span>
-                <button
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    disabled={page === totalPages}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${page === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-                        }`}
-                >
-                    Next
-                </button>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <div className="mt-16 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">
+                            HALAMAN {page} DARI {totalPages}
+                        </div>
+
+                        <div className="flex flex-wrap justify-center gap-2">
+                            <button
+                                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                disabled={page === 1}
+                                className={`px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors ${page === 1
+                                    ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
+                                    : 'bg-white text-black border-black hover:bg-black hover:text-white'
+                                    }`}
+                            >
+                                SEBELUMNYA
+                            </button>
+
+                            <div className="flex flex-wrap items-center gap-1">
+                                {paginationRange().map((pageNum, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => typeof pageNum === 'number' && setPage(pageNum)}
+                                        disabled={pageNum === '...'}
+                                        className={`w-10 h-10 border-2 text-sm font-bold transition-colors ${pageNum === page
+                                            ? 'bg-black text-white border-black'
+                                            : 'bg-white text-black border-black hover:bg-black hover:text-white'
+                                            } ${pageNum === '...' && 'cursor-default'}`}
+                                    >
+                                        {pageNum}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <button
+                                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                                disabled={page === totalPages}
+                                className={`px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors ${page === totalPages
+                                    ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
+                                    : 'bg-white text-black border-black hover:bg-black hover:text-white'
+                                    }`}
+                            >
+                                SELANJUTNYA
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
-}
+};

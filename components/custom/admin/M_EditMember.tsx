@@ -1,67 +1,97 @@
+'use client';
+import { useState } from 'react';
+
 export const M_EditMember = () => {
+    const [name, setName] = useState('');
+    const [uid, setUID] = useState('');
+    const [email, setEmail] = useState('');
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const formData = {
+            name,
+            uid,
+            email,
+        };
+
+        console.log('Data Anggota:', formData);
+    };
+
     return (
-        <div className="flex flex-col mx-10 my-10 border-2 border-gray-200 rounded-lg shadow-md bg-white">
-            <div className="flex flex-row justify-between py-5 px-6 items-center border-b border-gray-200">
-                <h3 className="font-semibold text-2xl text-gray-800">Edit Anggota</h3>
-            </div>
+        <div className="max-h-[80%] bg-gray-50 px-5 md:px-10 pb-16">
+            <div className="mx-auto">
+                {/* Header Section */}
+                <div className="mb-12 w-full">
+                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-black leading-tight tracking-tight mb-4">
+                        TAMBAH ANGGOTA
+                    </h1>
+                </div>
 
-            <div className="px-6 py-6">
-                <form className="space-y-6">
-                    <div className="grid grid-cols-2 gap-6">
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="title" className="text-sm font-medium text-gray-700">
-                                Nama
-                            </label>
-                            <input
-                                type="text"
-                                name="title"
-                                id="title"
-                                className="w-full h-10 px-4 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-                                placeholder="Azrea Natalie"
-                            />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="author" className="text-sm font-medium text-gray-700">
-                                UID
-                            </label>
-                            <input
-                                type="text"
-                                name="author"
-                                id="author"
-                                className="w-full h-10 px-4 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-                                placeholder="M_001"
-                            />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="publisher" className="text-sm font-medium text-gray-700">
-                                Email
-                            </label>
-                            <input
-                                type="email"
-                                name="publisher"
-                                id="publisher"
-                                className="w-full h-10 px-4 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-                                placeholder="azreanatalie@example.com"
-                            />
-                        </div>
-                    </div>
+                {/* Form Section */}
+                <div className="bg-white border-2 border-black p-8 rounded">
+                    <form className="space-y-8" onSubmit={handleSubmit}>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Nama */}
+                            <div className="flex flex-col gap-2">
+                                <label htmlFor="name" className="text-sm font-medium text-gray-700 uppercase tracking-wider">
+                                    Nama
+                                </label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    id="name"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    placeholder="Azrea Natalie"
+                                    className="w-full h-12 px-6 bg-white border-2 border-black text-base font-medium focus:outline-none placeholder-gray-400 rounded"
+                                />
+                            </div>
 
-                    {/* Submit Button */}
-                    <div className="flex justify-end pt-4 border-t border-gray-200 gap-3">
-                        <button
-                            type="submit"
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-md font-medium transition-all duration-200 shadow-sm hover:shadow-md"
-                        >
-                            Simpan Anggota
-                        </button>
-                        <button
-                            type="submit"
-                            className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-md font-medium transition-all duration-200 shadow-sm hover:shadow-md"
-                        >
-                            Hapus Anggota
-                        </button>
-                    </div>
-                </form>
+                            {/* UID */}
+                            <div className="flex flex-col gap-2">
+                                <label htmlFor="uid" className="text-sm font-medium text-gray-700 uppercase tracking-wider">
+                                    UID
+                                </label>
+                                <input
+                                    type="text"
+                                    name="uid"
+                                    id="uid"
+                                    value={uid}
+                                    onChange={(e) => setUID(e.target.value)}
+                                    placeholder="M_001"
+                                    className="w-full h-12 px-6 bg-white border-2 border-black text-base font-medium focus:outline-none placeholder-gray-400 rounded"
+                                />
+                            </div>
+
+                            {/* Email */}
+                            <div className="flex flex-col gap-2">
+                                <label htmlFor="email" className="text-sm font-medium text-gray-700 uppercase tracking-wider">
+                                    Email
+                                </label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    id="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="azreanatalie@example.com"
+                                    className="w-full h-12 px-6 bg-white border-2 border-black text-base font-medium focus:outline-none placeholder-gray-400 rounded"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Submit Button */}
+                        <div className="flex justify-end pt-6 border-t border-black">
+                            <button
+                                type="submit"
+                                className="bg-black text-white px-8 py-3 text-sm font-bold tracking-wider rounded hover:bg-gray-800 transition-colors duration-300"
+                            >
+                                SIMPAN ANGGOTA
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     );
