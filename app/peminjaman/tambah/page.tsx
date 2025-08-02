@@ -1,8 +1,10 @@
 import Header from "@/components/customs/layouts/header";
 import Footer from "@/components/customs/layouts/footer";
-import TambahPemjmn from "@/components/customs/peminjaman/P_tambah";
+import TambahPemjmn from "@/components/customs/peminjaman/tambah";
+import { fetchBooks } from "@/lib/api";
 
-export default function Page(){
+export default async function Page(){
+    const { data } = await fetchBooks();
     return(
         <>
         <Header/>

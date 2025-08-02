@@ -9,10 +9,13 @@ export default function TambahMemb(){
                     Add a New Member
                 </h1>
             </div>
-            <div className="w-full px-4 md:px-[64px] py-5 bg-[#6C4E31] rounded-lg text-white font-cyrodiil text-base md:text-lg">
+            <div className="w-full px-4 md:px-[64px] py-5 bg-[#6C4E31] rounded-lg 
+            text-white font-cyrodiil text-base md:text-lg">
                 <div className="w-full px-2 md:px-4">
                     <div className="py-2">
-                        <label>NIM</label>
+                        <label>
+                            NIM
+                        </label>
                         <input 
                             type="text" 
                             className="w-full mt-2 md:mt-4 py-2 px-3 border-2 rounded-md text-black" 
@@ -20,7 +23,9 @@ export default function TambahMemb(){
                         />
                     </div>
                     <div className="py-2">
-                        <label>Name</label>
+                        <label>
+                            Name
+                        </label>
                         <input 
                             type="text" 
                             className="w-full mt-2 md:mt-4 py-2 px-3 border-2 rounded-md text-black" 
@@ -36,7 +41,9 @@ export default function TambahMemb(){
                         />
                     </div>
                     <div className="py-2">
-                        <label>Address</label>
+                        <label>
+                            Address
+                        </label>
                         <input 
                             type="text" 
                             className="w-full mt-2 md:mt-4 py-2 px-3 border-2 rounded-md text-black" 
@@ -46,12 +53,14 @@ export default function TambahMemb(){
                     <div className="flex flex-col sm:flex-row gap-3 py-4">
                         <Link 
                             href="/anggota" 
-                            className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 text-black py-2 px-4 clip-custom text-center"
+                            className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 
+                            text-black py-2 px-4 clip-custom text-center"
                         >
                             ← Back
                         </Link>
                         <button 
-                            className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 text-black py-2 px-4 clip-custom"
+                            className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 
+                            text-black py-2 px-4 clip-custom"
                         >
                             Save Member
                         </button>
