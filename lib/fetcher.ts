@@ -11,6 +11,10 @@ type FetcherType = {
   body?: object;
   headers?: object;
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  pagination?: {
+    pageSize: number;
+    page: number;
+  };
 };
 
 export const fetcher = async ({
@@ -18,9 +22,17 @@ export const fetcher = async ({
   query,
   body = {},
   headers = {},
-  method = 'GET'
+  method = 'GET',
+  pagination = {
+    page: 1,
+    pageSize: 10
+  }
 }: FetcherType) => {
-  const url: string = `${BASE_URL}/api${query ? `${path}?${query}` : path}`;
+  // const paginationQuery = `page=${pagination.page}&page_size=${pagination.pageSize}`;
+  const paginationQuery = '';
+  const url: string = `${BASE_URL}/api${
+    query ? `${path}?${query}` : `${path}`
+  }`;
   try {
     const response = await axios({
       method,

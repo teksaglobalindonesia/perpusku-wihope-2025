@@ -1,4 +1,5 @@
 'use client';
+import { dateFormat } from '@/lib/dateFormat';
 import { useState } from 'react';
 type ReturningListSectionProps = {
   data: any;
@@ -10,10 +11,7 @@ export const ReturningListSection = ({ data }: ReturningListSectionProps) => {
 
   const [page, setPage] = useState<number>(1);
 
-  const paginatedData = data
-    ?.filter((data: any) => data.status === 'returned')
-    ?.slice((page - 1) * maxData, page * maxData);
-  // ?.filter((book: any) => book.book?.stock > 0)
+  const paginatedData = data?.slice((page - 1) * maxData, page * maxData);
 
   const handleNext = () => {
     if (page < totalPages) setPage((prev) => prev + 1);
@@ -21,6 +19,20 @@ export const ReturningListSection = ({ data }: ReturningListSectionProps) => {
 
   const handlePrev = () => {
     if (page > 1) setPage((prev) => prev - 1);
+  };
+
+  const isLate = (returnDate: string, returnData: any) => {
+    if (
+      new Date(returnDate) > new Date() &&
+      typeof returnData === 'undefined'
+    ) {
+      return true;
+    }
+
+    if (new Date(returnData?.actual_return_date) > new Date(returnDate)) {
+      return true;
+    }
+    return false;
   };
   return (
     <>
@@ -46,16 +58,32 @@ export const ReturningListSection = ({ data }: ReturningListSectionProps) => {
               <div className="">
                 <div className="flex flex-col justify-center gap-[5px]">
                   <p className="text-bold text-2xl font-semibold">
-                    {data?.book?.judul}
+                    {data?.book?.title}
                   </p>
-                  <p>Peminjam: {data?.user?.nama}</p>
-                  <p>Peminjaman: {data.tanggalPinjam}</p>
-                  <p>Pengembalian: {data?.tanggalPengembalian}</p>
+                  <p>Peminjam: {data?.member?.name}</p>
+                  <p>Peminjaman: {dateFormat(data?.loan_date)}</p>
+                  <p>Pengembalian: {dateFormat(data?.return_date)}</p>
+                  <p>
+                    Dikembalikan: {dateFormat(data?.return?.actual_return_date)}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center">
-                <p className="rounded-[5px] bg-action-error px-4 py-2 text-white">
-                  Status...
+                {/* {isLate(data?.return_date, data?.return) && (
+                  <p className="rounded-[5px] bg-action-error px-4 py-2 text-white">
+                    Terlambat
+                  </p>
+                  )} */}
+                <p
+                  className={`rounded-[5px] px-4 py-2 text-white ${
+                    isLate(data?.return_date, data?.return)
+                      ? 'bg-action-error'
+                      : 'bg-action-green'
+                  }`}
+                >
+                  {isLate(data?.return_date, data?.return)
+                    ? 'Terlambar'
+                    : 'Dipinjam'}
                 </p>
               </div>
             </div>

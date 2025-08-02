@@ -8,7 +8,6 @@ export default async function AddBookForm({ params }: { params: any }) {
     path: `/surya-books/${bookId}`,
     query: 'populate=cover&populate=categories'
   });
-  // console.log(bookData.data?.data);
 
   return (
     <div className="mx-auto  flex flex-col items-center justify-center rounded-md border p-6 shadow-md">

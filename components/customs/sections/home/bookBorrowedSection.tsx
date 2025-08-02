@@ -1,4 +1,5 @@
 'use client';
+import { dateFormat } from '@/lib/dateFormat';
 import { DateValidation } from '@/lib/dateValidation';
 import { useState, useEffect } from 'react';
 
@@ -19,8 +20,6 @@ export const BookBorrowedSection = ({ data, title }: BooksBowrrowedProps) => {
           ?.filter((data: any) => DateValidation(data?.loan_date))
           .slice((page - 1) * maxData, page * maxData)
       : [];
-
-  console.log(paginatedData);
 
   const handleNext = () => {
     if (page < totalPages) setPage((prev) => prev + 1);
@@ -63,8 +62,8 @@ export const BookBorrowedSection = ({ data, title }: BooksBowrrowedProps) => {
                       {data?.book?.title}
                     </p>
                     <p>Peminjam: {data?.member?.name}</p>
-                    <p>Peminjaman: {data?.loan_date}</p>
-                    <p>Pengembalian: {data?.return_date}</p>
+                    <p>Peminjaman: {dateFormat(data?.loan_date)}</p>
+                    <p>Pengembalian: {dateFormat(data?.return_date)}</p>
                   </div>
                 </div>
               </div>

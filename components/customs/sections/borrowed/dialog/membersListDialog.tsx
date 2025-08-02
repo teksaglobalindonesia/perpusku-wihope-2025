@@ -14,8 +14,6 @@ export const MemberListDialog = ({ show, setShow }: MemberListDialogProps) => {
   const maxData = 3;
   const totalPages = Math.ceil(show?.memberDatas?.length / maxData);
 
-  console.log(show?.memberDatas);
-
   const [page, setPage] = useState<number>(1);
 
   const paginatedData = show?.memberDatas?.slice(

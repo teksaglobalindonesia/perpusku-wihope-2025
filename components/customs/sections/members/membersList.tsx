@@ -17,8 +17,6 @@ export const MembersList = ({ data, title }: BooksOutOfStockProps) => {
     bookId: string;
   }>({ bookId: '', isShow: false });
 
-  console.log(data);
-
   const paginatedData = data?.data?.data?.slice(
     (page - 1) * maxData,
     page * maxData

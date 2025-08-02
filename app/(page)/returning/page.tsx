@@ -4,7 +4,7 @@ import { fetcher } from '@/lib/fetcher';
 import axios from 'axios';
 
 export default async function ReturningPage() {
-  const data = await fetcher({ path: '/api/peminjaman' });
+  const data = await fetcher({ path: '/return/list' });
 
   const NavDatas = [
     {

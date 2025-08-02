@@ -1,10 +1,9 @@
-'use client';
 import { Header } from '@/components/customs/layouts/header';
 import { ListPeminjamanSection } from '@/components/customs/sections/borrowed/borrowedList';
 import { fetcher } from '@/lib/fetcher';
 
 export default async function Peminjaman() {
-  const response = await fetcher({ path: '/api/peminjaman' });
+  const response = await fetcher({ path: '/loan/list?status=loaned' });
 
   const NavDatas = [
     {
@@ -33,7 +32,7 @@ export default async function Peminjaman() {
     <div>
       <Header navLinks={NavDatas} title="" />
       <div className="px-[50px]">
-        <ListPeminjamanSection data={response} />
+        <ListPeminjamanSection data={response.data?.data} />
       </div>
     </div>
   );

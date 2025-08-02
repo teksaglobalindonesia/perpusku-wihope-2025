@@ -6,7 +6,6 @@ import { BookBorrowedSection } from '@/components/customs/sections/home/bookBorr
 import { BookReturningTodaySection } from '@/components/customs/sections/home/bookReturningTodaySection';
 import { BooksOutOfStock } from '@/components/customs/sections/home/booskOutOfStockSection';
 import { fetcher } from '@/lib/fetcher';
-import axios from 'axios';
 
 export default async function Page() {
   const NavDatas: Array<NavLinkHeadeDataTypes> = [

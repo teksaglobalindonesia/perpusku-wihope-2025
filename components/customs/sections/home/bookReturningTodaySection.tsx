@@ -1,4 +1,5 @@
 'use client';
+import { dateFormat } from '@/lib/dateFormat';
 import { DateValidation } from '@/lib/dateValidation';
 import { useState, useEffect } from 'react';
 
@@ -63,8 +64,8 @@ export const BookReturningTodaySection = ({
                       {data?.book?.title}
                     </p>
                     <p>Peminjam: {data?.member?.name}</p>
-                    <p>Peminjaman: {data.loan_date}</p>
-                    <p>Pengembalian: {data?.return_date}</p>
+                    <p>Peminjaman: {dateFormat(data.loan_date)}</p>
+                    <p>Pengembalian: {dateFormat(data?.return_date)}</p>
                   </div>
                 </div>
               </div>

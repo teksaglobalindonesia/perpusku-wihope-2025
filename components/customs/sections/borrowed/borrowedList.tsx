@@ -1,17 +1,15 @@
 'use client';
+import { dateFormat } from '@/lib/dateFormat';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export const ListPeminjamanSection = ({ data }: { data: any }) => {
   const maxData = 5;
-  const totalPages = Math.ceil(data?.data?.data?.length / maxData);
+  const totalPages = Math.ceil(data?.length / maxData);
 
   const [page, setPage] = useState<number>(1);
 
-  const paginatedData = data?.data?.data?.slice(
-    (page - 1) * maxData,
-    page * maxData
-  );
+  const paginatedData = data?.slice((page - 1) * maxData, page * maxData);
 
   const handleNext = () => {
     if (page < totalPages) setPage((prev) => prev + 1);
@@ -21,6 +19,23 @@ export const ListPeminjamanSection = ({ data }: { data: any }) => {
     if (page > 1) setPage((prev) => prev - 1);
   };
 
+  useEffect(() => {
+    alert('Fitur status loan blm jalan, masih ada bug di API');
+  }, []);
+
+  // const isLate = (returnDate: string, returnData: any) => {
+  //   if (
+  //     new Date(returnDate) > new Date() &&
+  //     typeof returnData === 'undefined'
+  //   ) {
+  //     return true;
+  //   }
+
+  //   if (new Date(returnData?.actual_return_date) > new Date(returnDate)) {
+  //     return true;
+  //   }
+  //   return false;
+  // };
   return (
     <>
       <div className="mt-[20px]  py-[20px]">
@@ -50,10 +65,10 @@ export const ListPeminjamanSection = ({ data }: { data: any }) => {
             >
               <div className="">
                 <div className="flex flex-col justify-center gap-[5px]">
-                  <p className="text-2xl font-semibold">{data?.book?.judul}</p>
-                  <p>{data?.user?.nama}</p>
-                  <p>Peminjaman: {data.tanggalPinjam}</p>
-                  <p>Pengembalian: {data?.tanggalPengembalian}</p>
+                  <p className="text-2xl font-semibold">{data?.book?.title}</p>
+                  <p>{data?.member?.name}</p>
+                  <p>Peminjaman: {dateFormat(data.loan_date)}</p>
+                  <p>Pengembalian: {dateFormat(data?.return_date)}</p>
                   <div>
                     <button className="mt-2 rounded-sm bg-brand-primary px-4 py-1 text-white">
                       kembalikan

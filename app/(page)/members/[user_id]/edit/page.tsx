@@ -3,9 +3,6 @@ import { useState, useEffect } from 'react';
 import { fetcher } from '@/lib/fetcher';
 
 export default function EditMemberPage({ params }: { params: any }) {
-  // const data = await fetcher({ path: `/api/members/${params.user_id}` });
-  // const [nomber, setN]
-
   return (
     <div className="mx-auto  flex flex-col items-center justify-center rounded-md border p-6 shadow-md">
       <h2 className="mb-4 text-xl font-semibold">Edit Anggota</h2>
