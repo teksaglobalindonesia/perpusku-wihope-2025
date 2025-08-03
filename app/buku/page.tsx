@@ -1,54 +1,22 @@
 import { Buku } from "@/components/custom/buku";
+import { TOKEN,WIHOPE_NAME,BASE_URL} from "@/lib/constant";
 
 export default async function Page() {
   
-  return (
-    <>
-      <Buku items={[
-              {
-                title: 'The Crimes of Steamfield',
-                genre: 'Misteri',
-                penulis: 'Alan captos', 
-                status: 0       
-                
-              },
-              {
-                title: 'Red And White',
-                genre: 'Comedi',
-                penulis: 'Lisa laura',
-                status: 1        
-              },
-              {
-                title: 'Red And White',
-                genre: 'Comedi',
-                penulis: 'Lisa laura',
-                status: 0        
-              },
-              {
-                title: 'Red And White',
-                genre: 'Comedi',
-                penulis: 'Lisa laura',
-                status: 0       
-              },
-              {
-                title: 'Red And White',
-                genre: 'Comedi',
-                penulis: 'Lisa laura',
-                status: 2       
-              },
-              {
-                title: 'Red And White',
-                genre: 'Comedi',
-                penulis: 'Lisa laura',
-                status: 2        
-              },
-              {
-                title: 'Red And White',
-                genre: 'Comedi',
-                penulis: 'Lisa laura',
-                status: 1        
-              },
-            ]}/>
-       </>
+  const res = await fetch(
+    `${BASE_URL}/api/book/list`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: TOKEN,
+        'x-wihope-name': WIHOPE_NAME,
+      },
+      cache: 'no-store'
+    }
   );
+
+  const dataBukus = await res.json();
+  return <Buku items={dataBukus?.data ?? []} />;
 }
+  

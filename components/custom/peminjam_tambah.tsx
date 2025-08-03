@@ -2,15 +2,21 @@
 
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
+import { BASE_URL } from "@/lib/constant";
 
 type Item = {
     title?: string;
-    genre?: string;
-    penulis?: string;
-    nama?: string;
-    id?: string;
+    writer?: string;
+    name?: string;
+    id_member?: string;
     email?: string;
-    coverBuku?: string;
+     cover?: {
+            url?: string;
+        };
+         categories?: Array<{
+            id: number;
+            name: string;
+        }>;
     type?: "buku" | "anggota";
 };
 
@@ -81,7 +87,7 @@ export const Tah_pinjam = ({ items = [] }: Props) => {
                                         <div className="flex flex-row gap-4">
                                             <div>
                                                 <Image
-                                                    src={item.coverBuku || "/coverbook.jpg"}
+                                                   src={BASE_URL + item.cover?.url || "/coverbook.jpg"}
                                                     alt="book cover"
                                                     width={60}
                                                     height={70}
@@ -90,15 +96,15 @@ export const Tah_pinjam = ({ items = [] }: Props) => {
                                             </div>
                                             <div>
                                                 <h3 className="font-bold text-gray-800">{item.title}</h3>
-                                                <p className="text-sm text-gray-600">{item.genre}</p>
-                                                <p className="text-sm text-gray-600">{item.penulis}</p>
+                                                <p className="text-sm text-gray-600">{item.categories?.map((cat) => cat.name).join(", ") ?? "Tanpa kategori"}</p>
+                                                <p className="text-sm text-gray-600">{item.writer}</p>
                                             </div>
                                         </div>
                                     </>
                                 ) : (
                                     <>
-                                        <h3 className="font-bold text-gray-800">{item.nama}</h3>
-                                        <p className="text-sm text-gray-600">{item.id}</p>
+                                        <h3 className="font-bold text-gray-800">{item.name}</h3>
+                                        <p className="text-sm text-gray-600">{item.id_member}</p>
                                         <p className="text-sm text-gray-600">{item.email}</p>
                                     </>
                                 )}
@@ -177,7 +183,7 @@ export const Tah_pinjam = ({ items = [] }: Props) => {
                         <input
                             type="text"
                             id="anggota"
-                            value={selectedAnggota?.nama || ""}
+                            value={selectedAnggota?.name || ""}
                             onClick={() => bukaModal("anggota")}
                             readOnly
                             placeholder="Pilih Anggota"

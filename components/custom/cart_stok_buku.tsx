@@ -33,93 +33,91 @@ export const Cartsatu = ({ items = [] }: cart1props) => {
     };
 
     return (
-        <>
-            <div className="bg-[#edf0f1] mx-[100px] my-[50px] drop-shadow-lg rounded-lg pb-4">
-                <div className=" grid grid-cols-3 px-5 py-5">
-                    <h1 className="text-[24px] text-black font-medium">Stok buku</h1>
-                    <div className="flex flex-row gap-2 justify justify-center">
-                        <Link href="/peminjaman_buku" className="bg-[#0097B2] py-2 px-2 text-white rounded">Peminjaman Buku</Link>
-                        <Link href="/pengembalian_buku" className="bg-[#E0B677] py-2 px-2 text-white rounded">Pengembalian Buku</Link>
-                    </div>
-                    <div className="flex items-center bg-[#ffffff] px-3 py-1 rounded text-black">
-                        🔍
-                        <input
-                            type="text"
-                            placeholder="Pencarian..."
-                            className="ml-2 bg-transparent outline-none placeholder-black w-[150px]"
-                        />
-                    </div>
-                </div>
-                <div className="grid grid-cols-3 gap-4 px-5 py-5">
-                    {currentItems.map((item, index) => (
-                        <div key={index} className="bg-white rounded-lg drop-shadow-md hover:drop-shadow-xl transition duration-300 max-w-md w-full">
-                            <div className="px-4 py-4 flex flex-row justify-between items-center">
-                                <div className="flex flex-row gap-3 items-center">
-                                    <Image
-                                        src={item.coverBuku || '/coverbook.jpg'}
-                                        alt="booknovel"
-                                        width={60}
-                                        height={90}
-                                        className="rounded-md object-cover"
-                                    />
-                                    <div className="flex flex-col justify-between h-full">
-                                        <h1 className="text-lg font-semibold">{item.title}</h1>
-                                        <p className="text-sm text-gray-500">{item.genre}</p>
-                                        <p className="text-sm text-gray-500">{item.penulis}</p>
-                                    </div>
-                                </div>
+        <div className="bg-[#edf0f1] mx-4 md:mx-[60px] my-[30px] drop-shadow-lg rounded-lg pb-4">
 
-                                {item.status ? (
-                                    <div
-                                        className="bg-[#F57373] px-3 py-1 rounded-md"
-                                    >
-                                        <h1 className="text-sm text-white font-medium">Habis</h1>
-                                    </div>
-                                ) : (
-                                    <div
-                                        className="bg-[#5bbd87] px-3 py-1 rounded-md"
-                                    >
-                                        <h1 className="text-sm text-white font-medium">Sedia</h1>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    ))}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-4 md:px-10 py-5">
+                <h1 className="text-[20px] md:text-[24px] text-black font-medium">Stok buku</h1>
+
+                <div className="flex flex-wrap gap-2 justify-center md:justify-center">
+                    <Link href="/peminjaman_buku" className="bg-[#0097B2] py-2 px-3 text-white rounded text-sm md:text-base">Peminjaman Buku</Link>
+                    <Link href="/pengembalian_buku" className="bg-[#E0B677] py-2 px-3 text-white rounded text-sm md:text-base">Pengembalian Buku</Link>
                 </div>
-                <div className="flex justify-center items-center mt-4 gap-2 text-black">
-                    <button
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className="px-3 py-1 rounded bg-gray-300 disabled:opacity-50"
-                    >
-                        &lt;
-                    </button>
-                    {[...Array(2)].map((_, index) => {
-                                const page = currentPage + index;
-                                if (page > totalPages) return null;
-                                return (
-                                    <button
-                                        key={page}
-                                        onClick={() => handlePageChange(page)}
-                                        className={`px-3 py-1 rounded ${currentPage === page
-                                            ? "bg-[#5bbd87] text-white"
-                                            : "bg-gray-200"
-                                            }`}
-                                    >
-                                        {page}
-                                    </button>
-                                );
-                            })}
-                    <button
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className="px-3 py-1 rounded bg-gray-300 disabled:opacity-50"
-                    >
-                        &gt;
-                    </button>
+
+                <div className="flex items-center bg-white px-3 py-2 rounded text-black w-full md:w-auto">
+                    🔍
+                    <input
+                        type="text"
+                        placeholder="Pencarian..."
+                        className="ml-2 bg-transparent outline-none placeholder-black w-full md:w-[150px]"
+                    />
                 </div>
             </div>
-        </>
-    );
 
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-4 md:px-10 py-5">
+                {currentItems.map((item, index) => (
+                    <div key={index} className="bg-white rounded-lg drop-shadow-md hover:drop-shadow-xl transition duration-300 w-full">
+                        <div className="px-4 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div className="flex flex-row gap-3 items-center">
+                                <Image
+                                    src={item.coverBuku || '/coverbook.jpg'}
+                                    alt="booknovel"
+                                    width={60}
+                                    height={90}
+                                    className="rounded-md object-cover"
+                                />
+                                <div className="flex flex-col justify-between h-full">
+                                    <h1 className="text-lg font-semibold">{item.title}</h1>
+                                    <p className="text-sm text-gray-500">{item.genre}</p>
+                                    <p className="text-sm text-gray-500">{item.penulis}</p>
+                                </div>
+                            </div>
+
+                            {item.status ? (
+                                <div className="bg-[#F57373] px-3 py-1 rounded-md">
+                                    <h1 className="text-sm text-white font-medium">Habis</h1>
+                                </div>
+                            ) : (
+                                <div className="bg-[#5bbd87] px-3 py-1 rounded-md">
+                                    <h1 className="text-sm text-white font-medium">Sedia</h1>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            <div className="flex justify-center items-center mt-4 gap-2 text-black flex-wrap px-4">
+                <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1 rounded bg-gray-300 disabled:opacity-50"
+                >
+                    &lt;
+                </button>
+                {[...Array(2)].map((_, index) => {
+                    const page = currentPage + index;
+                    if (page > totalPages) return null;
+                    return (
+                        <button
+                            key={page}
+                            onClick={() => handlePageChange(page)}
+                            className={`px-3 py-1 rounded ${currentPage === page
+                                ? "bg-[#5bbd87] text-white"
+                                : "bg-gray-200"
+                                }`}
+                        >
+                            {page}
+                        </button>
+                    );
+                })}
+                <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1 rounded bg-gray-300 disabled:opacity-50"
+                >
+                    &gt;
+                </button>
+            </div>
+        </div>
+    );
 };
