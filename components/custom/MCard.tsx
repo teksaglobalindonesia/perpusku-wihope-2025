@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { DialogClose } from '../ui/dialog';
+
 export type MCardProps = {
   cardItems?: Array<{
     name?: string;
@@ -11,7 +12,7 @@ export type MCardProps = {
   onEdit?: (index: number) => void;
   onDelete?: (index: number) => void;
   onPeminjaman?: (index: number) => void;
-  showSelectButton?: boolean
+  showSelectButton?: boolean;
 };
 
 export const MembersCard = ({ ...props }: MCardProps) => {
@@ -32,7 +33,7 @@ export const MembersCard = ({ ...props }: MCardProps) => {
     <div className="flex flex-col gap-4">
       {/* POP UP DELETE  */}
       {deleteIndex !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm  ">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-lg border border-beige-400 bg-beige-50 p-6 shadow-xl shadow-beige-800/10">
             <div className="mb-4 flex items-center gap-3">
               <div className="rounded-full bg-vintage-terracotta/10 p-2">
@@ -82,7 +83,7 @@ export const MembersCard = ({ ...props }: MCardProps) => {
       {props.cardItems?.map((items, index) => (
         <div
           key={index}
-          className="rounded-lg border border-beige-300 bg-beige-100 p-4 shadow-vintage-sage/20 drop-shadow-xl transition-all duration-300 hover:shadow-lg  hover:shadow-vintage-sage/50"
+          className="rounded-lg border border-beige-300 bg-beige-100 p-4 transition-all duration-300 hover:shadow-lg hover:shadow-vintage-sage/50"
         >
           <div className="flex flex-col gap-2 font-vintage">
             <h2 className="text-xl font-semibold text-vintage-brown">
@@ -122,22 +123,26 @@ export const MembersCard = ({ ...props }: MCardProps) => {
 
             {props.showSelectButton && (
               <DialogClose asChild>
-                <button onClick={()=> props.onEdit?.(index)} className='rounded-md border border-vintage-sage bg-vintage-sage/90 px-4 py-1.5 text-sm text-beige-100 shadow-inner hover:bg-vintage-sage'>
-                Pilih
+                <button
+                  onClick={() => props.onEdit?.(index)}
+                  className="rounded-md border border-vintage-sage bg-vintage-sage/90 px-4 py-1.5 text-sm text-beige-100 shadow-inner hover:bg-vintage-sage"
+                >
+                  Pilih
                 </button>
               </DialogClose>
             )}
             {items.buttons && items.buttons.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-2 border-t border-beige-300 pt-3 sm:gap-3">
-                <Link
-                  href="/members/PJMember"
-                  className="min-w-[120px] flex-1 sm:flex-none"
-                >
-                  {items.buttons.includes('peminjaman') && (
+              <div className="mt-3 flex flex-wrap gap-2 border-t border-beige-300 pt-3">
+                {items.buttons.includes('peminjaman') && (
+                  <Link
+                    href="/members/PJMember"
+                    className="min-w-[100px] flex-1 lg:flex-none"
+                  >
                     <button
                       onClick={() => props.onPeminjaman?.(index)}
-                      className="flex w-full items-center justify-center gap-1 rounded-md border border-vintage-sage bg-vintage-sage/90 px-3 py-1.5 text-sm text-beige-100 shadow-inner transition-colors hover:bg-vintage-sage sm:w-auto"
+                      className="flex w-full items-center justify-center gap-1 rounded-md border border-vintage-sage bg-vintage-sage/90 px-3 py-1.5 text-sm text-beige-100 shadow-inner transition-colors hover:bg-vintage-sage lg:w-auto"
                     >
+                      {/* Icon dan text tetap sama */}
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-4 w-4"
@@ -148,18 +153,18 @@ export const MembersCard = ({ ...props }: MCardProps) => {
                       </svg>
                       <span className="whitespace-nowrap">Peminjaman</span>
                     </button>
-                  )}
-                </Link>
+                  </Link>
+                )}
 
-                <Link
-                  href="/members/editMember"
-                  className=" flex-1 sm:flex-none"
-                >
-                  {items.buttons.includes('edit') && (
+                {items.buttons.includes('edit') && (
+                  <Link
+                    href="/members/editMember"
+                  >
                     <button
                       onClick={() => props.onEdit?.(index)}
-                      className="flex w-full items-center justify-center gap-1 rounded-md border border-beige-400 bg-beige-200 px-3 py-1.5 text-sm text-beige-800 shadow-inner transition-colors hover:bg-beige-300 sm:w-auto"
+                      className="min-w-[100px] flex-1 lg:flex-none flex w-full items-center justify-center gap-1 rounded-md border border-beige-400 bg-beige-200 py-1.5 text-sm text-beige-800 shadow-inner transition-colors hover:bg-beige-300 lg:w-auto"
                     >
+                      {/* Icon dan text tetap sama */}
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-4 w-4"
@@ -170,15 +175,16 @@ export const MembersCard = ({ ...props }: MCardProps) => {
                       </svg>
                       <span className="whitespace-nowrap">Edit</span>
                     </button>
-                  )}
-                </Link>
+                  </Link>
+                )}
 
                 {items.buttons.includes('delete') && (
-                  <div className="min-w-[120px] flex-1 sm:flex-none">
+                  <div className="min-w-[100px] flex-1 lg:flex-none">
                     <button
                       onClick={() => handleDeleteClick(index)}
-                      className="flex w-full items-center justify-center gap-1 rounded-md border border-vintage-terracotta bg-vintage-terracotta/90 px-3 py-1.5 text-sm text-beige-100 shadow-inner transition-colors hover:bg-vintage-terracotta sm:w-auto"
+                      className="flex w-full items-center justify-center gap-1 rounded-md border border-vintage-terracotta bg-vintage-terracotta/90 px-3 py-1.5 text-sm text-beige-100 shadow-inner transition-colors hover:bg-vintage-terracotta lg:w-auto"
                     >
+                      {/* Icon dan text tetap sama */}
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-4 w-4"

@@ -13,8 +13,8 @@ export default async function Page() {
     });
     const result = await loan.json()
   return (
-    <div className="min-h-screen bg-dusty-300 p-5">
+
       <Return data={result.data}/>
-    </div>
+
   )
 }
