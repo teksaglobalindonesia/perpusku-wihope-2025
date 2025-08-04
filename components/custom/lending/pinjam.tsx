@@ -97,6 +97,7 @@ const Pinjam = () => {
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);
   const [lending, setLending] = useState<Lending[]>([]);
+  const [keyword, setKeyword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -131,6 +132,14 @@ const Pinjam = () => {
     })();
   }, []);
 
+  const hasilPencarian = lending.filter(
+    (pinjam) =>
+      pinjam.book.title.toLowerCase().includes(keyword.toLowerCase()) ||
+      pinjam.member.name.toLowerCase().includes(keyword.toLowerCase()) ||
+      pinjam.loan_date.toString().includes(keyword) ||
+      pinjam.return_date.toString().includes(keyword)
+  );
+
   return (
     <div className="min-h-[540px] w-full">
       <div className="mt-6 flex flex-row justify-between p-4 px-9 font-light">
@@ -143,8 +152,9 @@ const Pinjam = () => {
         <div className="ml-12">
           <input
             type="text"
-            placeholder="Search..."
-            className="mb-3 rounded border px-3 py-1"
+            placeholder="Search by title, name, or date"
+            className="mb-3 w-64 rounded border px-3 py-1"
+            onChange={(e) => setKeyword(e.target.value)}
           />
           <Link href="/peminjaman/add">
             <button className="text-md mx-2 rounded-md bg-green-400 px-2 py-1 font-bold text-gray-700 hover:bg-green-300">
@@ -157,7 +167,7 @@ const Pinjam = () => {
       {/* Tabel */}
       <div className="mx-8 mb-8 rounded-md p-4">
         <div className="space-y-4">
-          {lending.map((Lending) => {
+          {hasilPencarian.map((Lending) => {
             // const Terlambat =
             // > Lending.return_date
             //     ? ''

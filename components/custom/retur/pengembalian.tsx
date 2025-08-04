@@ -98,6 +98,7 @@ const Kembali = () => {
   const [retur, setRetur] = useState<Kembali[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [keyword, setKeyword] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -128,6 +129,14 @@ const Kembali = () => {
     })();
   }, []);
 
+  const hasilPencarian = retur.filter(
+    (balik) =>
+      balik.book.title.toLowerCase().includes(keyword.toLowerCase()) ||
+      balik.member.name.toLowerCase().includes(keyword.toLowerCase()) ||
+      balik.return_date.toString().includes(keyword) ||
+      balik.return.actual_return_date.toString().includes(keyword)
+  );
+
   return (
     <div className="min-h-[540px] w-full">
       <div className="mt-6 flex flex-row justify-between p-4 px-9 font-light">
@@ -140,8 +149,9 @@ const Kembali = () => {
         <div>
           <input
             type="text"
-            placeholder="Search..."
-            className="rounded border px-3 py-1"
+            placeholder="Search by title, name, or date"
+            className="mb-3 w-64 rounded border px-3 py-1"
+            onChange={(e) => setKeyword(e.target.value)}
           />
           {/* <Link href="/peminjaman/add">
             <button className="text-md mx-2 rounded-md bg-green-400 px-2 py-1 font-bold text-gray-700 hover:bg-green-300">
@@ -154,7 +164,7 @@ const Kembali = () => {
       {/* Tabel */}
       <div className="mx-8 mb-8 rounded-md p-4">
         <div className="space-y-4">
-          {retur.map((Kembali) => {
+          {hasilPencarian.map((Kembali) => {
             const Terlambat =
               Kembali.return_date > Kembali.return.actual_return_date
                 ? ''

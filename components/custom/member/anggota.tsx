@@ -25,6 +25,7 @@ const Anggota = () => {
   const [members, setMembers] = useState<Members[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [keyword, setKeyword] = useState('');
   useEffect(() => {
     (async () => {
       try {
@@ -54,6 +55,15 @@ const Anggota = () => {
     })();
   }, []);
 
+  const navItems = [{ path: '/anggota/add', label: 'Tambah Anggota' }];
+
+  const hasilPencarian = members.filter(
+    (anggota) =>
+      anggota.name.toLowerCase().includes(keyword.toLowerCase()) ||
+      anggota.email.toLowerCase().includes(keyword.toLowerCase()) ||
+      anggota.id_member.toLowerCase().includes(keyword.toLowerCase())
+  );
+
   // const [members, setMembers] = useState(initialMember);
 
   // const handleHapusClick = (noAnggota: string) => {
@@ -62,8 +72,6 @@ const Anggota = () => {
   //     setMembers((prev) => prev.filter((m) => m.noAnggota !== noAnggota));
   //   }
   // };
-
-  const navItems = [{ path: '/anggota/add', label: 'Tambah Anggota' }];
 
   return (
     <div className="min-h-[540px] w-full">
@@ -77,8 +85,9 @@ const Anggota = () => {
         <div className="ml-12">
           <input
             type="text"
-            placeholder="Search..."
-            className="mb-3 rounded border px-3 py-1"
+            placeholder="Search by name, email, or id"
+            className="mb-3 w-64 rounded border px-3 py-1"
+            onChange={(e) => setKeyword(e.target.value)}
           />
           <Link href={navItems[0].path}>
             <button className="text-md mx-2 rounded-md bg-green-400 px-2 py-1 font-bold text-gray-700 hover:bg-green-300">
@@ -91,7 +100,7 @@ const Anggota = () => {
       {/* Tabel */}
       <div className="mx-8 mb-8 rounded-md p-4">
         <div className="space-y-4">
-          {members.map((Members) => (
+          {hasilPencarian.map((Members) => (
             <div
               key={Members.id_member}
               className="flex items-center justify-between rounded border p-4"
