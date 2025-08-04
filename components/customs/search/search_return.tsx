@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { fetchReturnSearch } from "@/lib/api";
 
 interface Return {
@@ -33,7 +33,7 @@ export default function SearchReturn({ onSearch }: Props) {
             }
         };
         fetchData();
-    }, [query])
+    }, [query, onSearch])
 
     return(
         <>

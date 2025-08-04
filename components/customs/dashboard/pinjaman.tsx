@@ -75,8 +75,8 @@ export default function Pinjaman({ loans = [], books }: { loans?: any[], books: 
                     const bookData = loan.book ? getBookData(loan.book.id) : null;
                     
                     return(
-                        <div className="w-full flex flex-col gap-3 md:gap-4 mt-3 md:mt-5">
-                            <div key={loan.id} className="flex flex-col sm:flex-row items-start 
+                        <div key={loan.id} className="w-full flex flex-col gap-3 md:gap-4 mt-3 md:mt-5">
+                            <div className="flex flex-col sm:flex-row items-start 
                                 sm:items-center justify-between border-2 md:border-4 rounded-md p-2 md:p-4 gap-2">
                                 <div className="flex flex-col sm:gap-7 w-full">
                                     <div className="flex flex-col sm:flex-row gap-3 md:gap-7 items-start sm:items-center w-full">

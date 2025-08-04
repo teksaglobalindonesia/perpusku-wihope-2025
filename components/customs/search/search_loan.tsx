@@ -34,7 +34,7 @@ export default function SearchLoan({ onSearch, className }: Props) {
             }
         };
         fetchData();
-    }, [query])
+    }, [query, onSearch])
 
     return(
         <>

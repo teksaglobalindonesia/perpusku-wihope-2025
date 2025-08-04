@@ -33,7 +33,7 @@ export default function SearchMember({ onSearch }: Props) {
             }
         };
         fetchData();
-    }, [query]);
+    }, [query, onSearch]);
 
     return(
         <>

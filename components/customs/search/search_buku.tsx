@@ -34,7 +34,7 @@ export default function SearchBook({ onSearch, className }: Props) {
             }
         };
         fetchData();
-    }, [query]);
+    }, [query, onSearch]);
 
 
     return (
