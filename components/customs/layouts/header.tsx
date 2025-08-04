@@ -3,8 +3,33 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from "react";
+import { usePathname } from 'next/navigation';
 
 export default function Header() {
+    const pathname = usePathname();
+
+    const navItems = [
+        {
+            name: "Dashboard",
+            href: "/"
+        },
+        {
+            name: "Books",
+            href: "/buku"
+        },
+        {
+            name: "Member",
+            href: "/anggota"
+        },
+        {
+            name: "Loans",
+            href: "/peminjaman"
+        },
+        {
+            name: "Returns",
+            href: "/pengembalian"
+        }
+    ]
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -23,35 +48,28 @@ export default function Header() {
     ${isScrolled ? "bg-[#4B352A]/70 backdrop-blur-lg shadow-lg" : "bg-[#4B352A]"} 
     transition-all duration-500`}>
         <div className="flex items-center">
-            <div className="relative w-10 h-10 md:w-[50px] md:h-[50px]">
-                <Image src="/image/Header_logo.png" alt="h_logo" fill quality={100} className="object-contain"/>
+            <div className="relative w-20 h-20 md:w-[95px] md:h-[95px]">
+                <Image src="/image/Header_logo (3).png" alt="h_logo" fill quality={100} className="object-contain"/>
             </div>
             <h1 className="text-xl md:text-2xl pl-2 font-semibold text-white font-planewalker">
                 Imperial Library
             </h1>
         </div>
-        <div className="hidden md:flex flex-1 flex-row items-center justify-center gap-[60px] text-lg font-[400]">
-            <Link href="/" className="font-medium hover:bg-[#F2C078] duration-300 bg-[#F0F2BD] 
-            px-[20px] py-[10px] clip-custom font-morrisroman cursor-pointer">
-                Dashboard
-            </Link>
-            <Link href="/buku" className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 px-[40px] py-[10px] 
-            clip-custom font-morrisroman cursor-pointer">
-                Books
-            </Link>
-            <Link href="/anggota" className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 px-[30px] py-[10px] 
-            clip-custom font-morrisroman cursor-pointer">
-                Member
-            </Link>
-            <Link href="/peminjaman" className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 px-[20px] py-[10px] 
-            clip-custom font-morrisroman cursor-pointer">
-                Borrowing
-            </Link>
-            <Link href="/pengembalian" className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 px-[30px] 
-            py-[10px] clip-custom font-morrisroman cursor-pointer">
-                Returning
-            </Link>
-        </div>
+        {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            return(
+                <>
+                <div key={item.href} className="hidden md:flex flex-1 flex-row items-center justify-center gap-[60px] 
+                text-lg font-[400]">
+                    <Link href={item.href} className={`flex justify-center items-center font-medium hover:bg-[#F2C078] duration-300 bg-[#F0F2BD] 
+                    w-[120px] py-[10px] clip-custom font-morrisroman cursor-pointer 
+                    ${isActive ? "bg-[#F2C078]" : "bg-[#F0F2BD] hover:bg-[#F2C078]"}`}>
+                        {item.name}
+                    </Link>
+                </div>
+                </>
+            )
+        })}
         <button className="md:hidden text-white focus:outline-none" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? (
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,33 +83,20 @@ export default function Header() {
         </button>
         {isMenuOpen && (
             <div className="md:hidden absolute top-[70px] left-0 w-full bg-[#4B352A] shadow-lg py-4 px-4">
-                <div className="flex flex-col space-y-4">
-                    <Link href="/" className="font-medium hover:bg-[#F2C078] duration-300 bg-[#F0F2BD] 
-                    px-4 py-3 clip-custom font-morrisroman cursor-pointer text-center" 
-                    onClick={() => setIsMenuOpen(false)}>
-                        Dashboard
-                    </Link>
-                    <Link href="/buku" className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 
-                    px-4 py-3 clip-custom font-morrisroman cursor-pointer text-center" 
-                    onClick={() => setIsMenuOpen(false)}>
-                        Books
-                    </Link>
-                    <Link href="/anggota" className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 
-                    px-4 py-3 clip-custom font-morrisroman cursor-pointer text-center"
-                        onClick={() => setIsMenuOpen(false)}>
-                        Member
-                    </Link>
-                    <Link href="/peminjaman" className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 
-                    px-4 py-3 clip-custom font-morrisroman cursor-pointer text-center" 
-                    onClick={() => setIsMenuOpen(false)}>
-                        Borrowing
-                    </Link>
-                    <Link href="/pengembalian" className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 px-4 py-3 
-                    clip-custom font-morrisroman cursor-pointer text-center" 
-                    onClick={() => setIsMenuOpen(false)}>
-                        Returning
-                    </Link>
-                </div>
+                {navItems.map((item) => {
+                    const isActive2 = pathname === item.href;
+                    return(
+                        <>
+                        <div key={item.href} className="flex flex-col pb-3">
+                            <Link href={item.href} className={`font-medium hover:bg-[#F2C078] duration-300 bg-[#F0F2BD] 
+                            px-4 py-3 clip-custom font-morrisroman cursor-pointer text-center ${isActive2 ? "bg-[#F2C078]" : "bg-[#F0F2BD] hover:bg-[#F2C078]"}`} 
+                            onClick={() => setIsMenuOpen(false)}>
+                                {item.name}
+                            </Link>
+                        </div>
+                        </>
+                    )
+                })}
             </div>
         )}
     </div>

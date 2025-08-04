@@ -2,88 +2,99 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import SearchMember from "../search/search_member";
+import { set } from "date-fns";
 
-export const members = [
-    {
-        id: 1,
-        name: "I Nyoman Triadi Swastika",
-        email: "triadiswas31@gmail.com",
-        nim: 7156
-    },
+// export const members = [
+//     {
+//         id: 1,
+//         name: "I Nyoman Triadi Swastika",
+//         email: "triadiswas31@gmail.com",
+//         nim: 7156
+//     },
 
-    {
-        id: 2,
-        name: "I Putu Surya Widiana",
-        email: "suryawidi19@gmail.com",
-        nim: 7157
-    },
+//     {
+//         id: 2,
+//         name: "I Putu Surya Widiana",
+//         email: "suryawidi19@gmail.com",
+//         nim: 7157
+//     },
 
-    {
-        id: 3,
-        name: "I Made Samuel Ulung Prasetya",
-        email: "samuelprasetya777@gmail.com",
-        nim: 7158
-    },
+//     {
+//         id: 3,
+//         name: "I Made Samuel Ulung Prasetya",
+//         email: "samuelprasetya777@gmail.com",
+//         nim: 7158
+//     },
 
-    {
-        id: 4,
-        name: "Putu Siwi Novianti",
-        email: "siwi28@gmail.com",
-        nim: 7159
-    },
+//     {
+//         id: 4,
+//         name: "Putu Siwi Novianti",
+//         email: "siwi28@gmail.com",
+//         nim: 7159
+//     },
 
-    {
-        id: 5,
-        name: "Daniel Rainhard",
-        email: "daniel4@gmail.com",
-        nim: 7160
-    },
+//     {
+//         id: 5,
+//         name: "Daniel Rainhard",
+//         email: "daniel4@gmail.com",
+//         nim: 7160
+//     },
 
-    {
-        id: 6,
-        name: "Devon Manggala Putra",
-        email: "manggala318@gmail.com",
-        nim: 7161
-    },
+//     {
+//         id: 6,
+//         name: "Devon Manggala Putra",
+//         email: "manggala318@gmail.com",
+//         nim: 7161
+//     },
 
-    {
-        id: 7,
-        name: "I Gusti Ngurah Agung Aby Pradivta Permana",
-        email: "Gungby10@gmail.com",
-        nim: 7162
-    },
-    {
-        id: 8,
-        name: "Ulfric Stormcloak",
-        email: "Skyrimfornords11@gmail.com",
-        nim: 7163
-    },
+//     {
+//         id: 7,
+//         name: "I Gusti Ngurah Agung Aby Pradivta Permana",
+//         email: "Gungby10@gmail.com",
+//         nim: 7162
+//     },
+//     {
+//         id: 8,
+//         name: "Ulfric Stormcloak",
+//         email: "Skyrimfornords11@gmail.com",
+//         nim: 7163
+//     },
 
-    {
-        id: 9,
-        name: "Tullius Merrilus",
-        email: "Fortheempire@gmail.com",
-        nim: 7164
-    },
+//     {
+//         id: 9,
+//         name: "Tullius Merrilus",
+//         email: "Fortheempire@gmail.com",
+//         nim: 7164
+//     },
 
-    {
-        id: 10,
-        name: "Fenris Herald",
-        email: "huntingground28@gmail.com",
-        nim: 7165
-    }
-]
+//     {
+//         id: 10,
+//         name: "Fenris Herald",
+//         email: "huntingground28@gmail.com",
+//         nim: 7165
+//     }
+// ]
+
+interface Member {
+    id: number;
+    name: string;
+    email: string;
+    address: string;
+    id_member: string;
+}
 
 export default function ListAnggota({ members }: { members: any[]}){
     const [currentPage, setCurrentPage] = useState(1);
     const [munculPopup, setMunculPopup] = useState(false);
+    const [filterMember, setFilterMember] = useState<Member[]>(members);
 
     const itemsPerPage = 5;
-    const totalPages = Math.ceil(members.length / itemsPerPage);
+    const totalPages = Math.ceil(filterMember.length / itemsPerPage);
         
     const mulaiIndex = (currentPage - 1) * itemsPerPage;
     const akhirIndex = mulaiIndex + itemsPerPage;
-    const saatiniMember = members.slice(mulaiIndex, akhirIndex);
+    const saatiniMember = filterMember.slice(mulaiIndex, akhirIndex);
         
     const handleprev = () => {
         if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -102,10 +113,11 @@ export default function ListAnggota({ members }: { members: any[]}){
                         Members
                     </h1>
                     <div className="flex flex-col md:flex-row gap-3 md:gap-4 mt-3 md:mt-0">
-                        <button className="px-4 md:px-8 border-2 md:border-4 rounded-md text-sm md:text-lg">
-                            Search...
-                        </button>
-                        <Link href="/anggota/tambah_member" className="px-4 md:px-8 py-2 clip-custom text-sm 
+                        <SearchMember onSearch={(result) => {
+                            setCurrentPage(1)
+                            setFilterMember(result.length ? result : members)
+                        }}/>
+                        <Link href="/anggota/tambah_member" className="px-4 md:px-8 py-4 clip-custom text-sm 
                         md:text-lg font-cyrodiil text-white font-semibold bg-green-500 text-center">
                             Add
                         </Link>

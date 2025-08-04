@@ -3,111 +3,122 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import SearchBook from "../search/search_buku";
 
-export const books = [
-        {
-            id: 1,
-            title: "The Lusty Argonian Maid v.1",
-            category: "Comedy",
-            author: "Crassius Curio",
-            image: "/image/Lusty Argonian.png",
-            stock: 2
-        },
+interface Book {
+  id: number;
+  title: string;
+  cover?: { url: string };
+  categories?: { name: string }[];
+  writer: string;
+  stock: number;
+}
 
-        {
-            id: 2,
-            title: "The Last King of the Ayleids",
-            category: "History",
-            author: "Herminia Cinna",
-            image: "/image/Last King Aylieds.png",
-            stock: 1
-        },
+// export const books = [
+//         {
+//             id: 1,
+//             title: "The Lusty Argonian Maid v.1",
+//             category: "Comedy",
+//             author: "Crassius Curio",
+//             image: "/image/Lusty Argonian.png",
+//             stock: 2
+//         },
 
-        {
-            id: 3,
-            title: "Mixed Unit Tactics",
-            category: "History",
-            author: "Codus Callonus",
-            image: "/image/Mixed Unit.jpg",
-            stock: 0
-        },
+//         {
+//             id: 2,
+//             title: "The Last King of the Ayleids",
+//             category: "History",
+//             author: "Herminia Cinna",
+//             image: "/image/Last King Aylieds.png",
+//             stock: 1
+//         },
 
-        {
-            id: 4,
-            title: "The Rise and Fall of the Blades",
-            category: "History",
-            author: "Anonymous",
-            image: "/image/Rise blades book.png",
-            stock: 0
-        },
+//         {
+//             id: 3,
+//             title: "Mixed Unit Tactics",
+//             category: "History",
+//             author: "Codus Callonus",
+//             image: "/image/Mixed Unit.jpg",
+//             stock: 0
+//         },
 
-        {
-            id: 5,
-            title: "Incident at Necrom",
-            category: "Mystery",
-            author: "Jonquilla Bothe",
-            image: "/image/illusion_skil_book.png",
-            stock: 5
-        },
+//         {
+//             id: 4,
+//             title: "The Rise and Fall of the Blades",
+//             category: "History",
+//             author: "Anonymous",
+//             image: "/image/Rise blades book.png",
+//             stock: 0
+//         },
 
-        {
-            id: 6,
-            title: "Oghma Infinium",
-            category: "Arcane",
-            author: "Xarxes",
-            image: "/image/OghmaInfinium.png",
-            stock: 1
-        },
+//         {
+//             id: 5,
+//             title: "Incident at Necrom",
+//             category: "Mystery",
+//             author: "Jonquilla Bothe",
+//             image: "/image/illusion_skil_book.png",
+//             stock: 5
+//         },
 
-        {
-            id: 7,
-            title: "The Ransom of Zarek",
-            category: "Drama",
-            author: "Marobar Sul",
-            image: "/image/RansomZarek.png",
-            stock: 8
-        },
+//         {
+//             id: 6,
+//             title: "Oghma Infinium",
+//             category: "Arcane",
+//             author: "Xarxes",
+//             image: "/image/OghmaInfinium.png",
+//             stock: 1
+//         },
 
-        {
-            id: 8,
-            title: "The Red Kitchen Reader",
-            category: "Cooking",
-            author: "Simocles Quo",
-            image: "/image/RansomZarek.png",
-            stock: 6
-        },
+//         {
+//             id: 7,
+//             title: "The Ransom of Zarek",
+//             category: "Drama",
+//             author: "Marobar Sul",
+//             image: "/image/RansomZarek.png",
+//             stock: 8
+//         },
 
-        {
-            id: 9,
-            title: "Thief",
-            category: "Drama",
-            author: "Reven",
-            image: "/image/Last King Aylieds.png",
-            stock: 2
-        },
+//         {
+//             id: 8,
+//             title: "The Red Kitchen Reader",
+//             category: "Cooking",
+//             author: "Simocles Quo",
+//             image: "/image/RansomZarek.png",
+//             stock: 6
+//         },
 
-        {
-            id: 10,
-            title: "Withershins",
-            category: "Comedy",
-            author: "Yaqut Tawashi",
-            image: "/image/Restoration.png",
-            stock: 9
-        },
-    ]
+//         {
+//             id: 9,
+//             title: "Thief",
+//             category: "Drama",
+//             author: "Reven",
+//             image: "/image/Last King Aylieds.png",
+//             stock: 2
+//         },
+
+//         {
+//             id: 10,
+//             title: "Withershins",
+//             category: "Comedy",
+//             author: "Yaqut Tawashi",
+//             image: "/image/Restoration.png",
+//             stock: 9
+//         },
+//     ]
 
 export default function ListBuku({ books }: { books: any[] }) {
   const API = "https://cms-perpusku.widhimp.my.id";
 
   const [currentPage, setCurrentPage] = useState(1);
   const [munculPopup, setMunculPopup] = useState(false);
+  const [filterBooks, setFilterBooks] = useState<Book[]>(books);
 
   const itemsPerPage = 5;
-  const totalPages = Math.ceil(books.length / itemsPerPage);
+  const totalPages = Math.ceil(filterBooks.length / itemsPerPage);
 
   const mulaiIndex = (currentPage - 1) * itemsPerPage;
   const akhirIndex = mulaiIndex + itemsPerPage;
-  const saatiniBooks = books.slice(mulaiIndex, akhirIndex);
+  const saatiniBooks = filterBooks.slice(mulaiIndex, akhirIndex);
 
   const handleprev = () => {
         if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -126,12 +137,13 @@ export default function ListBuku({ books }: { books: any[] }) {
               Books
             </h1>
             <div className="flex flex-col md:flex-row gap-3 md:gap-4 mt-3 md:mt-0">
-              <button className="px-4 md:px-8 border-2 md:border-4 rounded-md text-sm md:text-lg">
-                Search...
-              </button>
+              <SearchBook onSearch={(result) => {
+                setCurrentPage(1);
+                setFilterBooks(result.length ? result : books); // jika kosong, kembalikan ke data awal
+              }} />
               <Link
                 href="/buku/tambah_buku"
-                className="px-4 md:px-8 py-2 clip-custom text-sm md:text-lg font-cyrodiil 
+                className="px-4 md:px-8 py-4 clip-custom text-sm md:text-lg font-cyrodiil 
                 text-white font-semibold bg-green-500 text-center"
               >
                 Add
@@ -161,7 +173,7 @@ export default function ListBuku({ books }: { books: any[] }) {
                     </h3>
                     <div className="flex gap-2 md:gap-3 mt-2">
                       <Link
-                        href={`/buku/edit_buku/${book.id}`}
+                        href={`/buku/edit_buku`}
                         className="bg-yellow-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base"
                       >
                         Edit

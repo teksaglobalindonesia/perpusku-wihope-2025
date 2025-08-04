@@ -3,10 +3,9 @@
 import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
-import { books } from "@/components/customs/buku/buku";
-import { members } from "../anggota/anggota";
 
-export default function TambahPemjmn(){
+export default function TambahPemjmn({ books, members}: {books: any[], members: any[] }){
+    const API = "https://cms-perpusku.widhimp.my.id";
     const [munculBuku, setMunculBuku] = useState(false);
     const [munculMember, setMunculMember] = useState(false);
 
@@ -97,23 +96,17 @@ export default function TambahPemjmn(){
                 border-2 md:border-4 rounded-md p-3 md:p-4">
                     <div className="flex flex-col md:flex-row md:gap-7">
                         <div className="relative w-12 h-12 md:w-16 md:h-16 mb-2 md:mb-0">
-                            <Image 
-                            src={book.image ?? "/placeholder.png"} 
-                            alt={book.title ?? "Book image"} 
-                            fill 
-                            quality={100} 
-                            className="object-contain" 
-                            />
+                            <Image src={book.cover ? API + book.cover.url : "/idk"} alt={book.title} fill quality={100} className="object-contain"/>
                         </div>
                         <div className="text-sm md:text-lg font-cyrodiil">
                             <h1 className="font-semibold">
                                 {book.title}
                             </h1>
                             <h2>
-                                {book.category}
+                                {book.categories?.[0]?.name ?? null}
                             </h2>
                             <h3>
-                                by {book.author}
+                                by {book.writer}
                             </h3>
                             <div className="flex mt-2">
                             <button className="bg-green-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base">
@@ -123,14 +116,14 @@ export default function TambahPemjmn(){
                         </div>
                     </div>
                     {book.stock === 0 ? (
-                    <div className="mt-2 md:mt-0 md:ml-auto bg-red-600 text-white px-3 md:px-4 py-1 
-                    md:py-2 clip-custom text-sm md:text-lg font-cyrodiil w-full md:w-auto text-center">
-                        Unavailable
-                    </div>
-                    ) : (
-                    <h1 className="mt-2 md:mt-0 md:ml-auto text-sm md:text-lg font-morrisroman">
-                        Stok: {book.stock}
-                    </h1>
+                        <div className="mt-2 md:mt-0 md:ml-auto bg-red-600 text-white px-3 
+                        md:px-4 py-1 md:py-2 clip-custom text-sm md:text-lg font-cyrodiil w-full md:w-auto text-center">
+                            Unavailable
+                        </div>
+                        ) : (
+                        <h1 className="mt-2 md:mt-0 md:ml-auto text-sm md:text-lg font-morrisroman">
+                            Stok: {book.stock}
+                        </h1>
                     )}
                 </div>
                 ))}
@@ -157,7 +150,7 @@ export default function TambahPemjmn(){
                                 {member.name}
                             </h1>
                             <h2 className="line-clamp-1 md:line-clamp-none">
-                                {member.nim}
+                                {member.id_member}
                             </h2>
                             <h3 className="line-clamp-1 md:line-clamp-none">
                                 {member.email}

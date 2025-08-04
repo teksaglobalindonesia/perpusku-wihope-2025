@@ -5,7 +5,7 @@ import Welcome from "@/components/customs/layouts/welcome";
 import { fetchBooks } from "@/lib/api";
 
 export default async function Page() {
-  const { data } = await fetchBooks();
+  const { data: books } = await fetchBooks();
 
   return (
     <>
@@ -14,7 +14,7 @@ export default async function Page() {
         title="Welcome to Our Books Collections"
         subtitle="These are the books that you can borrow"
       />
-      <ListBuku books={data} />
+      <ListBuku books={books}/>
       <Footer />
     </>
   );

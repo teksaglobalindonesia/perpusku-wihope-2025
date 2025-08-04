@@ -22,7 +22,9 @@ import { fetchReturn } from "@/lib/api";
         subtitle="The Central Library of All Tamriel"
       />
       <Habis books={books}/>
-      <Pinjaman loans={loans}/>
+      <Pinjaman 
+      loans={loans}
+      books={books}/>
       <Pengembali returns={returns}/>
       <Goodbye/>
       <Footer/>

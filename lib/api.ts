@@ -43,3 +43,27 @@ export async function fetchLoans() {
 export async function fetchReturn() {
     return fetchAPI("/api/return/list")
 }
+
+export async function fetchBookSearch(keyword: string) {
+    const encoded = encodeURIComponent(keyword);
+    const res = await fetchAPI(`/api/book/list?search=${encoded}`);
+    return res.data;
+}
+
+export async function fetchLoanSearch(keyword: string) {
+    const encoded = encodeURIComponent(keyword);
+    const res = await fetchAPI(`/api/loan/list?search=${encoded}`);
+    return res.data;
+}
+
+export async function fetchMemberSearch(keyword: string) {
+    const encoded = encodeURIComponent(keyword);
+    const res = await fetchAPI(`/api/member/list?search=${encoded}`);
+    return res.data;
+}
+
+export async function fetchReturnSearch(keyword: string) {
+    const encoded = encodeURIComponent(keyword);
+    const res = await fetchAPI(`/api/return/list?search=${encoded}`);
+    return res.data; 
+}

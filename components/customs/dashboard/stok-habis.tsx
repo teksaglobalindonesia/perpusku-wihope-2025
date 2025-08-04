@@ -2,11 +2,23 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import SearchBook from "../search/search_buku";
+
+interface Book {
+    id: number;
+    title: string;
+    cover?: { url: string };
+    categories?: { name: string }[];
+    writer: string;
+    stock: number;
+}
 
 export default function Habis({ books }: { books: any[] }){
     const API = "https://cms-perpusku.widhimp.my.id";
 
-    const bukuHabis = books.filter((book) => book.stock === 0);
+    const [filterBook, setFilterBook] = useState<Book[]>(books);
+
+    const bukuHabis = filterBook.filter((book) => book.stock === 0);
 
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -38,10 +50,13 @@ export default function Habis({ books }: { books: any[] }){
                         <h1 className="text-lg md:text-xl font-semibold">
                             Out of Stock Book
                             </h1>
-                        <button className="px-4 md:px-8 border-2 md:border-4 rounded-md 
-                        text-base md:text-lg w-full md:w-auto">
-                            Search...
-                        </button>
+                        <SearchBook onSearch={(result) => {
+                            setCurrentPage(1);
+                            setFilterBook(result.length ? result : books);
+                        }}
+                        className="px-4 sm:px-8 border-2 sm:border-4 rounded-md text-sm 
+                    sm:text-lg w-full sm:w-auto" 
+                        />
                     </div>
                     <div className="w-full flex flex-col gap-3 md:gap-4 mt-3 md:mt-5">
                         {saatiniHabis.map((book) => {

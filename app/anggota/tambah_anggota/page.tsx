@@ -1,6 +1,6 @@
 import Header from "@/components/customs/layouts/header";
 import Footer from "@/components/customs/layouts/footer";
-import TambahMemb from "@/components/customs/anggota/tambah";
+import TambahMemb from "@/components/customs/member/tambah";
 
 export default function Page(){
     return(

@@ -9,9 +9,9 @@ export default function Footer(){
                 <div className="w-full md:w-[350px] mb-8  md:mb-[74.33px] flex flex-col 
                 items-center md:items-start">
                     <div className="flex items-center">
-                        <div className="relative w-10 h-10 md:w-[50px] md:h-[50px]">
+                        <div className="relative w-20 h-20 md:w-[100px] md:h-[100px]">
                         <Image 
-                            src="/image/Header_logo.png" 
+                            src="/image/Header_logo (3).png" 
                             alt="h_logo" 
                             fill    
                             quality={100} 
