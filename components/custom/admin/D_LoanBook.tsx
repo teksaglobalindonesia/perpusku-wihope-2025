@@ -80,7 +80,7 @@ export const D_LoanBooks = ({ statusBookItems = [], maxData = 2 }: StatusBukuTyp
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-black leading-tight tracking-tight mb-4">
                             PEMINJAMAN HARI INI
                         </h1>
-                        <div className="inline-block bg-black text-white px-8 py-4 text-sm font-medium tracking-wider rounded">
+                        <div className="inline-block bg-black text-white px-8 py-4 text-sm font-medium tracking-wider">
                             {filteredLoans.length === 0 ? 'EMPTY' : `${filteredLoans.length} ITEMS`}
                         </div>
                     </div>

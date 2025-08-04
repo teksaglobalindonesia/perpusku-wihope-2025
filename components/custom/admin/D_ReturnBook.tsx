@@ -88,7 +88,7 @@ export const D_ReturnBooks = ({ maxData = 2 }: StatusBukuType) => {
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-black leading-tight tracking-tight mb-4">
                             PENGEMBALIAN HARI INI
                         </h1>
-                        <div className="inline-block bg-black text-white px-8 py-4 text-sm font-medium tracking-wider rounded">
+                        <div className="inline-block bg-black text-white px-8 py-4 text-sm font-medium tracking-wider">
                             {filteredReturn.length === 0 ? 'EMPTY' : `${filteredReturn.length} ITEMS`}
                         </div>
                     </div>
