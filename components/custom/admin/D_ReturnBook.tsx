@@ -1,33 +1,18 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { BASE_URL, NAME, TOKEN } from '@/lib/api';
-
-// Define ReturnRecord type
-export type ReturnRecord = {
-    id: number;
-    book: { title: string };
-    member: { name: string };
-    loan_date: string;
-    actual_return_date: string | null;
-};
-
-// Update StatusBukuType to use ReturnRecord
-export type StatusBukuType = {
-    statusBookItems?: ReturnRecord[];
-    maxData?: number;
-};
+import { StatusBukuType } from '@/app/dashboard/page';
+import { ReturnRecord } from '@/type/api-response';
 
 export const D_ReturnBooks = ({ maxData = 2 }: StatusBukuType) => {
     const [page, setPage] = useState<number>(1);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [filteredReturn, setFilteredReturn] = useState<ReturnRecord[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
             const fetchReturns = async () => {
-                setIsLoading(true);
                 setError(null);
                 try {
                     const response = await fetch(
@@ -47,14 +32,15 @@ export const D_ReturnBooks = ({ maxData = 2 }: StatusBukuType) => {
                     }
                     const { data } = await response.json();
                     setFilteredReturn(data || []);
-                } catch (error) {
-                    console.error('Error fetching returns:', error);
+                } catch (error: any) {
+                    console.error('Error fetching returns:', error.message);
                     setFilteredReturn([]);
+                    setError('Gagal mengambil data pengembalian');
                 }
             };
 
             fetchReturns();
-        }, 500); 
+        }, 500);
 
         return () => clearTimeout(debounceTimer);
     }, [searchQuery]);
@@ -88,9 +74,9 @@ export const D_ReturnBooks = ({ maxData = 2 }: StatusBukuType) => {
         setSearchQuery(e.target.value);
     };
 
-    const getStatusLabel = (actualReturnDate: string | null) => {
+    const getStatusLabel = (returnDate: string, actualReturnDate: string | null) => {
         if (!actualReturnDate) return 'BELUM DIKEMBALIKAN';
-        return 'DIKEMBALIKAN';
+        return returnDate <= actualReturnDate ? 'TEPAT WAKTU' : 'TERLAMBAT';
     };
 
     return (
@@ -124,9 +110,7 @@ export const D_ReturnBooks = ({ maxData = 2 }: StatusBukuType) => {
 
                 {/* Content Grid */}
                 <div className="space-y-8">
-                    {isLoading ? (
-                        <div className="text-center text-lg text-gray-600">Loading...</div>
-                    ) : error ? (
+                    {error ? (
                         <div className="text-center text-lg text-red-500">{error}</div>
                     ) : paginatedData.length > 0 ? (
                         paginatedData.map((item: ReturnRecord, index: number) => (
@@ -141,12 +125,12 @@ export const D_ReturnBooks = ({ maxData = 2 }: StatusBukuType) => {
                                             <div className="text-lg text-gray-600 font-medium">Peminjam: {item.member.name}</div>
                                             <div className="text-lg text-gray-600 font-medium">Tanggal Peminjaman: {item.loan_date}</div>
                                             <div className="text-lg text-gray-600 font-medium">
-                                                Tanggal Pengembalian: {item.actual_return_date || 'Belum dikembalikan'}
+                                                Tanggal Pengembalian: {item.return.actual_return_date || 'Belum dikembalikan'}
                                             </div>
                                         </div>
                                         <div className="sm:col-span-3 flex flex-row justify-end space-y-4">
                                             <div className="bg-black text-center max-sm:w-full text-white px-6 py-3 text-sm font-bold tracking-wider inline-block">
-                                                {getStatusLabel(item.actual_return_date)}
+                                                DIKEMBALIKAN
                                             </div>
                                         </div>
                                     </div>
@@ -167,7 +151,7 @@ export const D_ReturnBooks = ({ maxData = 2 }: StatusBukuType) => {
                 </div>
 
                 {/* Pagination */}
-                {totalPages > 1 && !isLoading && (
+                {totalPages > 1 && (
                     <div className="mt-16 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">
                             HALAMAN {page} DARI {totalPages}
@@ -176,10 +160,11 @@ export const D_ReturnBooks = ({ maxData = 2 }: StatusBukuType) => {
                             <button
                                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                                 disabled={page === 1}
-                                className={`px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors ${page === 1
-                                    ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
-                                    : 'bg-white text-black border-black hover:bg-black hover:text-white'
-                                    }`}
+                                className={`px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors ${
+                                    page === 1
+                                        ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
+                                        : 'bg-white text-black border-black hover:bg-black hover:text-white'
+                                }`}
                             >
                                 SEBELUMNYA
                             </button>
@@ -189,10 +174,11 @@ export const D_ReturnBooks = ({ maxData = 2 }: StatusBukuType) => {
                                         key={i}
                                         onClick={() => typeof pageNum === 'number' && setPage(pageNum)}
                                         disabled={pageNum === '...'}
-                                        className={`w-10 h-10 border-2 text-sm font-bold transition-colors ${pageNum === page
-                                            ? 'bg-black text-white border-black'
-                                            : 'bg-white text-black border-black hover:bg-black hover:text-white'
-                                            } ${pageNum === '...' && 'cursor-default'}`}
+                                        className={`w-10 h-10 border-2 text-sm font-bold transition-colors ${
+                                            pageNum === page
+                                                ? 'bg-black text-white border-black'
+                                                : 'bg-white text-black border-black hover:bg-black hover:text-white'
+                                        } ${pageNum === '...' && 'cursor-default'}`}
                                     >
                                         {pageNum}
                                     </button>
@@ -201,10 +187,11 @@ export const D_ReturnBooks = ({ maxData = 2 }: StatusBukuType) => {
                             <button
                                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                 disabled={page === totalPages}
-                                className={`px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors ${page === totalPages
-                                    ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
-                                    : 'bg-white text-black border-black hover:bg-black hover:text-white'
-                                    }`}
+                                className={`px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors ${
+                                    page === totalPages
+                                        ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
+                                        : 'bg-white text-black border-black hover:bg-black hover:text-white'
+                                }`}
                             >
                                 SELANJUTNYA
                             </button>
