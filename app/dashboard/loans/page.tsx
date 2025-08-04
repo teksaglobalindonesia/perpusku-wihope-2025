@@ -2,7 +2,7 @@ import { L_LoanList } from "@/components/custom/admin/L_LoanList";
 import { BASE_URL, NAME, TOKEN } from "@/lib/api";
 import { Member, Loan } from "@/type/api-response";
 
-export type StatusBukuType = {
+export type LoanBukuType = {
     statusBukuItems?: Loan[]
     member: Member;
     maxData?: number;

@@ -5,7 +5,7 @@ import { Member, Book, ReturnRecord } from "@/type/api-response";
 import { BASE_URL, NAME, TOKEN } from "@/lib/api";
 
 export type StatusBukuType = {
-    statusBukuItems?: Book[];
+    statusBookItems?: Book[];
     member?: Member;
     return?:ReturnRecord ;
     maxData?: number;
@@ -83,9 +83,9 @@ export default async function Dashboard() {
     return (
         <>
             {/* <D_Header items={D_NavLinks} /> */}
-            <D_EmptyBook statusBukuItems={data} />
-            <D_LoanBooks statusBukuItems={dataPeminjaman} />
-            <D_ReturnBooks statusBukuItems={dataPengembalian}/>
+            <D_EmptyBook statusBookItems={data} />
+            <D_LoanBooks statusBookItems={dataPeminjaman} />
+            <D_ReturnBooks statusBookItems={dataPengembalian}/>
         </>
     );
 }

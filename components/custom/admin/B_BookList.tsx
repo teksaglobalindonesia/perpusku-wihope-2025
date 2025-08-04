@@ -1,9 +1,10 @@
 'use client';
-import { BookListType } from '@/app/dashboard/books/page';
-import { BASE_URL } from '@/lib/api';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { BookListType } from '@/app/dashboard/books/page';
+import { BASE_URL, NAME, TOKEN } from '@/lib/api';
+import { Book } from '@/type/api-response';
 
 export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) => {
     const [page, setPage] = useState<number>(1);
@@ -11,10 +12,48 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
     const [bookToDeleteTitle, setBookToDeleteTitle] = useState<string | null>(null);
     const [bookToDeleteId, setBookToDeleteId] = useState<number | null>(null);
 
-    const totalPages = Math.ceil(bookListItems.length / maxData);
-    const paginatedData = bookListItems.slice((page - 1) * maxData, page * maxData);
+    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [filteredBooks, setFilteredBooks] = useState<Book[]>(bookListItems);
 
-    // Range pagination dengan ellipsis
+    useEffect(() => {
+        const debounceTimer = setTimeout(() => {
+            const fetchBooks = async () => {
+                try {
+                    const response = await fetch(
+                        `${BASE_URL}/api/book/list${searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : ''}`,
+                        {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: TOKEN,
+                                'x-wihope-name': NAME,
+                            },
+                            cache: 'no-store',
+                        }
+                    );
+                    const { data } = await response.json();
+                    setFilteredBooks(data || []);
+                } catch (error) {
+                    console.error('Error fetching books:', error);
+                    setFilteredBooks([]);
+                }
+            };
+
+            fetchBooks();
+        }, 500);
+
+        return () => clearTimeout(debounceTimer);
+    }, [searchQuery]);+9
+
+    const totalPages = Math.ceil(filteredBooks.length / maxData);
+    const paginatedData = filteredBooks.slice((page - 1) * maxData, page * maxData);
+
+    useEffect(() => {
+        if (page > totalPages && totalPages > 0) {
+            setPage(1);
+        }
+    }, [page, totalPages]);
+
     const paginationRange = () => {
         const delta = 2;
         const range: (number | string)[] = [];
@@ -39,7 +78,7 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
     };
 
     const handleDelete = (id: number) => {
-        const book = bookListItems.find((b) => b.id === id);
+        const book = filteredBooks.find((b) => b.id === id);
         if (book) {
             setBookToDeleteTitle(book.title || null);
             setBookToDeleteId(book.id || null);
@@ -47,13 +86,12 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
         }
     };
 
-    const confirmDelete = () => {
+    const confirmDelete = async () => {
         if (bookToDeleteId !== null) {
-            // console.log("MENGHAPUS buku ID:", bookToDeleteId);
+            setShowDeleteModal(false);
+            setBookToDeleteId(null);
+            setBookToDeleteTitle(null);
         }
-        setShowDeleteModal(false);
-        setBookToDeleteId(null);
-        setBookToDeleteTitle(null);
     };
 
     const cancelDelete = () => {
@@ -62,27 +100,30 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
         setBookToDeleteTitle(null);
     };
 
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value);
+    };
+
     return (
         <div className="max-h-[80%] bg-gray-50 px-5 md:px-10 pb-16">
             <div className="mx-auto">
                 {/* Search Section */}
                 <div className="mb-12 w-full flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                    {/* Kiri: Judul */}
                     <div className="flex-1">
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-black leading-tight tracking-tight mb-4">
                             DAFTAR BUKU
                         </h1>
                         <div className="inline-block bg-black text-white px-8 py-4 text-sm font-medium tracking-wider">
-                            {bookListItems.length === 0 ? 'EMPTY' : `${bookListItems.length} ITEMS`}
+                            {filteredBooks.length === 0 ? 'EMPTY' : `${filteredBooks.length} ITEMS`}
                         </div>
                     </div>
-
-                    {/* Kanan: Pencarian dan Tombol Tambah */}
                     <div className="w-full lg:max-w-md flex flex-col sm:flex-row gap-4">
                         <div className="relative flex-1">
                             <input
                                 type="text"
                                 placeholder="Cari buku..."
+                                value={searchQuery}
+                                onChange={handleSearch}
                                 className="w-full h-12 px-6 bg-white border-2 border-black text-base font-medium focus:outline-none placeholder-gray-400"
                             />
                             <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
@@ -107,7 +148,6 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
                             <div key={item.id} className="bg-white border-2 border-black hover:bg-gray-50 transition-colors duration-300">
                                 <div className="p-8">
                                     <div className="sm:grid sm:grid-cols-12 gap-8 items-center">
-                                        {/* Book Image */}
                                         <div className="col-span-1 sm:col-span-2 flex justify-center sm:justify-start">
                                             <div className="w-full max-w-[150px] aspect-[3/4] bg-gray-100 border-2 border-black overflow-hidden">
                                                 <Image
@@ -119,8 +159,6 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
                                                 />
                                             </div>
                                         </div>
-
-                                        {/* Book Information */}
                                         <div className="col-span-1 sm:col-span-7 space-y-3 text-center sm:text-left py-5">
                                             <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">
                                                 {item.categories[0]?.name}
@@ -132,16 +170,13 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
                                                 {item.writer}
                                             </div>
                                         </div>
-
-                                        {/* Status and Actions */}
                                         <div className="col-span-3 space-y-4">
                                             <div className="bg-black text-white border-2 px-6 py-3 text-sm font-bold tracking-wider hover:bg-black hover:text-white transition-colors duration-300 text-center">
                                                 {item.stock === 0 ? 'HABIS' : `${item.stock} TERSEDIA`}
                                             </div>
                                             <div className="flex flex-row sm:flex-col gap-2">
                                                 <Link
-                                                    href="/dashboard/books/edit"
-                                                    // href={`/dashboard/books/edit/${item.id}`}
+                                                    href={`/dashboard/books/edit/${item.id}`}
                                                     className="bg-white w-full text-black border-2 border-black px-6 py-3 text-sm font-bold tracking-wider hover:bg-black hover:text-white transition-colors duration-300 text-center"
                                                 >
                                                     <button onClick={() => handleEdit(item.id || 0)}>EDIT</button>
@@ -179,19 +214,17 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
                         <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">
                             HALAMAN {page} DARI {totalPages}
                         </div>
-
                         <div className="flex flex-wrap justify-center gap-2">
                             <button
                                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                                 disabled={page === 1}
                                 className={`px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors ${page === 1
-                                    ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
-                                    : 'bg-white text-black border-black hover:bg-black hover:text-white'
+                                        ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
+                                        : 'bg-white text-black border-black hover:bg-black hover:text-white'
                                     }`}
                             >
                                 SEBELUMNYA
                             </button>
-
                             <div className="flex flex-wrap items-center gap-1">
                                 {paginationRange().map((pageNum, i) => (
                                     <button
@@ -199,21 +232,20 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
                                         onClick={() => typeof pageNum === 'number' && setPage(pageNum)}
                                         disabled={pageNum === '...'}
                                         className={`w-10 h-10 border-2 text-sm font-bold transition-colors ${pageNum === page
-                                            ? 'bg-black text-white border-black'
-                                            : 'bg-white text-black border-black hover:bg-black hover:text-white'
+                                                ? 'bg-black text-white border-black'
+                                                : 'bg-white text-black border-black hover:bg-black hover:text-white'
                                             } ${pageNum === '...' && 'cursor-default'}`}
                                     >
                                         {pageNum}
                                     </button>
                                 ))}
                             </div>
-
                             <button
                                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                 disabled={page === totalPages}
                                 className={`px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors ${page === totalPages
-                                    ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
-                                    : 'bg-white text-black border-black hover:bg-black hover:text-white'
+                                        ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
+                                        : 'bg-white text-black border-black hover:bg-black hover:text-white'
                                     }`}
                             >
                                 SELANJUTNYA

@@ -1,20 +1,57 @@
 'use client';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useState, useMemo } from 'react';
 import { UserType } from '@/app/dashboard/members/page';
+import { BASE_URL, NAME, TOKEN } from '@/lib/api';
+import { Member } from '@/type/api-response';
 
 export const M_MemberList = ({ userItems = [], maxData = 5 }: UserType) => {
     const [page, setPage] = useState(1);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<{ nomor_anggota: string; name: string } | null>(null);
+    const [selectedUser, setSelectedUser] = useState<{ id_member: string; name: string } | null>(null);
+    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [filteredUsers, setFilteredUsers] = useState<Member[]>(userItems);
 
-    const totalPages = Math.ceil(userItems.length / maxData);
-    const paginatedData = useMemo(
-        () => userItems.slice((page - 1) * maxData, page * maxData),
-        [userItems, page, maxData]
-    );
+    useEffect(() => {
+        const debounceTimer = setTimeout(() => {
+            const fetchMembers = async () => {
+                try {
+                    const response = await fetch(
+                        `${BASE_URL}/api/member/list${searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : ''}`,
+                        {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: TOKEN,
+                                'x-wihope-name': NAME,
+                            },
+                            cache: 'no-store',
+                        }
+                    );
+                    const { data } = await response.json();
+                    setFilteredUsers(data || []);
+                } catch (error) {
+                    console.error('Error fetching members:', error);
+                    setFilteredUsers([]);
+                }
+            };
 
-    // Range pagination dengan ellipsis
+            fetchMembers();
+        }, 500);
+
+        return () => clearTimeout(debounceTimer);
+    }, [searchQuery]);
+
+    const totalPages = Math.ceil(filteredUsers.length / maxData);
+    const paginatedData = filteredUsers.slice((page - 1) * maxData, page * maxData);
+
+    useEffect(() => {
+        if (page > totalPages && totalPages > 0) {
+            setPage(1);
+        }
+    }, [page, totalPages]);
+
+
     const paginationRange = () => {
         const delta = 2;
         const range: (number | string)[] = [];
@@ -24,27 +61,57 @@ export const M_MemberList = ({ userItems = [], maxData = 5 }: UserType) => {
         for (let i = left; i <= right; i++) {
             range.push(i);
         }
-
         if (left > 2) range.unshift('...');
         if (right < totalPages - 1) range.push('...');
-
         range.unshift(1);
         if (totalPages > 1) range.push(totalPages);
-
         return range;
     };
 
-    // const handleEdit = (nomor_anggota: string) => console.log('EDIT item pada produk:', nomor_anggota);
-    // const handlePeminjaman = (nomor_anggota: string) =>
-    //     console.log('Melihat peminjaman item pada produk:', nomor_anggota);
+    const handleEdit = (id_member: string) => {
+        // console.log('EDIT item pada produk:', id_member);
+    };
 
-    // const handleDelete = (nomor_anggota: string, name: string) => {
-    //     setSelectedUser({ nomor_anggota, name });
-    //     setShowDeleteModal(true);
-    // };
+    const handlePeminjaman = (id_member: string) => {
+        // console.log('Melihat peminjaman item pada produk:', id_member);
+    };
 
-    const confirmDelete = () => {
-        // if (selectedUser) console.log('Menghapus user:', selectedUser.nomor_anggota);
+    const handleDelete = (id_member: string, name: string) => {
+        setSelectedUser({ id_member, name });
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (selectedUser) {
+            try {
+                // Example: DELETE request to remove member
+                // await fetch(`${BASE_URL}/api/member/${selectedUser.id_member}`, {
+                //     method: 'DELETE',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //         Authorization: TOKEN,
+                //         'x-wihope-name': NAME,
+                //     },
+                // });
+                // Refetch members after deletion
+                const response = await fetch(
+                    `${BASE_URL}/api/member/list${searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : ''}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: TOKEN,
+                            'x-wihope-name': NAME,
+                        },
+                        cache: 'no-store',
+                    }
+                );
+                const { data } = await response.json();
+                setFilteredUsers(data || []);
+            } catch (error) {
+                console.error('Error deleting member:', error);
+            }
+        }
         setShowDeleteModal(false);
         setSelectedUser(null);
     };
@@ -54,27 +121,30 @@ export const M_MemberList = ({ userItems = [], maxData = 5 }: UserType) => {
         setSelectedUser(null);
     };
 
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value);
+    };
+
     return (
-        <div className="max-h-[80%] bg-gray-50 px-5 md:px-10 pb-16 ">
+        <div className="max-h-[80%] bg-gray-50 px-5 md:px-10 pb-16">
             <div className="mx-auto">
                 {/* Search Section */}
                 <div className="mb-12 w-full flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                    {/* Kiri: Judul */}
                     <div className="flex-1">
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-black leading-tight tracking-tight mb-4">
                             DAFTAR ANGGOTA
                         </h1>
                         <div className="inline-block bg-black text-white px-8 py-4 text-sm font-medium tracking-wider">
-                            {userItems.length === 0 ? 'EMPTY' : `${userItems.length} ITEMS`}
+                            {filteredUsers.length === 0 ? 'EMPTY' : `${filteredUsers.length} ITEMS`}
                         </div>
                     </div>
-
-                    {/* Kanan: Pencarian dan Tombol Tambah */}
                     <div className="w-full lg:max-w-md flex flex-col sm:flex-row gap-4">
                         <div className="relative flex-1">
                             <input
                                 type="text"
                                 placeholder="Cari anggota..."
+                                value={searchQuery}
+                                onChange={handleSearch}
                                 className="w-full h-12 px-6 bg-white border-2 border-black text-base font-medium focus:outline-none placeholder-gray-400"
                             />
                             <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
@@ -99,42 +169,32 @@ export const M_MemberList = ({ userItems = [], maxData = 5 }: UserType) => {
                             <div key={item.id_member} className="bg-white border-2 border-black hover:bg-gray-50 transition-colors duration-300">
                                 <div className="p-8">
                                     <div className="sm:grid flex-col flex gap-8 sm:grid-cols-12 items-center">
-                                        {/* Informasi Anggota */}
                                         <div className="col-span-1 sm:col-span-9 space-y-3 text-center sm:text-left">
                                             <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">ANGGOTA</div>
                                             <h2 className="text-3xl font-bold text-black leading-tight">{item.name}</h2>
                                             <div className="text-lg text-gray-600 font-medium">Nomor Anggota: {item.id_member}</div>
                                             <div className="text-lg text-gray-600 font-medium">Email: {item.email}</div>
                                         </div>
-
-                                        {/* Actions */}
                                         <div className="col-span-3 space-y-4">
                                             <div className="flex flex-col gap-2">
                                                 <Link
-                                                    href="/dashboard/members/loan"
+                                                    href={`/dashboard/members/loan/${item.id_member}`}
                                                     className="bg-black text-center text-white border-2 border-black px-6 py-3 text-sm font-bold tracking-wider hover:bg-white hover:text-black transition-colors duration-300"
                                                 >
-                                                    <button>PEMINJAMAN</button>
-                                                    {/* <button onClick={() => handlePeminjaman(item.id_member)}>PEMINJAMAN</button> */}
+                                                    <button onClick={() => handlePeminjaman(item.id_member)}>PEMINJAMAN</button>
                                                 </Link>
                                                 <Link
-                                                    href="/dashboard/members/edit"
+                                                    href={`/dashboard/members/edit/${item.id_member}`}
                                                     className="bg-white text-center text-black border-2 border-black px-6 py-3 text-sm font-bold tracking-wider hover:bg-black hover:text-white transition-colors duration-300"
                                                 >
-                                                    <button>EDIT</button>
-                                                    {/* <button onClick={() => handleEdit(item.id_member)}>EDIT</button> */}
+                                                    <button onClick={() => handleEdit(item.id_member)}>EDIT</button>
                                                 </Link>
                                                 <button
-                                                    className="bg-white text-black border-2 border-black px-6 py-3 text-sm font-bold tracking-wider hover:bg-black hover:text-white transition-colors duration-300"
-                                                >
-                                                    HAPUS
-                                                </button>
-                                                {/* <button
                                                     onClick={() => handleDelete(item.id_member, item.name)}
                                                     className="bg-white text-black border-2 border-black px-6 py-3 text-sm font-bold tracking-wider hover:bg-black hover:text-white transition-colors duration-300"
                                                 >
                                                     HAPUS
-                                                </button> */}
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -144,7 +204,6 @@ export const M_MemberList = ({ userItems = [], maxData = 5 }: UserType) => {
                     ) : (
                         <div className="bg-white border-2 border-black">
                             <div className="p-16 text-center">
-                                <div className="bg-black text-white w-24 h-24 mx-auto mb-8 flex items-center justify-center text-2xl font-bold">✓</div>
                                 <h2 className="text-4xl font-bold text-black mb-4">
                                     TIDAK ADA<br />
                                     ANGGOTA
@@ -161,7 +220,6 @@ export const M_MemberList = ({ userItems = [], maxData = 5 }: UserType) => {
                         <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">
                             HALAMAN {page} DARI {totalPages}
                         </div>
-
                         <div className="flex flex-wrap justify-center gap-2">
                             <button
                                 onClick={() => setPage((p) => Math.max(1, p - 1))}
@@ -173,7 +231,6 @@ export const M_MemberList = ({ userItems = [], maxData = 5 }: UserType) => {
                             >
                                 SEBELUMNYA
                             </button>
-
                             <div className="flex flex-wrap items-center gap-1">
                                 {paginationRange().map((pageNum, i) => (
                                     <button
@@ -189,7 +246,6 @@ export const M_MemberList = ({ userItems = [], maxData = 5 }: UserType) => {
                                     </button>
                                 ))}
                             </div>
-
                             <button
                                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                 disabled={page === totalPages}
