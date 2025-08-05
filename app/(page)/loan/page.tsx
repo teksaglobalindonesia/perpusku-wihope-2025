@@ -1,12 +1,11 @@
 import { LoanList } from '@/components/customs/dev/loan/LoanList';
-import { ReturnList } from '@/components/customs/dev/return/ReturnList';
 import { Header } from '@/components/customs/layouts/header';
 import { fetcher } from '@/lib/dev/fetcher';
 
-export default async function Testing() {
+export default async function Return() {
   const pageSize = 10;
   const loanDatas = await fetcher({
-    path: '/return/list',
+    path: '/loan/list',
     pagination: {
       pageSize
     }
@@ -16,9 +15,9 @@ export default async function Testing() {
     <div>
       <Header title="" />
       <div>
-        <ReturnList
+        <LoanList
           data={loanDatas.data}
-          layout={{ title: 'Pengembalian' }}
+          layout={{ title: 'Peminjaman' }}
           pageSize={pageSize}
         />
       </div>

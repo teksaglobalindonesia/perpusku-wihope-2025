@@ -1,13 +1,9 @@
 import axios from 'axios';
-import { BASE_URL, AUTHORIZATION_TOKEN, WIHOPE_NAME } from './constant';
-
-type a = {
-  [key: string]: any;
-};
+import { BASE_URL, AUTHORIZATION_TOKEN, WIHOPE_NAME } from '@/lib/constant';
 
 type FetcherType = {
   path: string;
-  query?: string;
+  query?: string | null;
   body?: object;
   headers?: object;
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -25,14 +21,18 @@ export const fetcher = async ({
   method = 'GET',
   pagination = {
     page: 1,
-    pageSize: 10
+    pageSize: 5
   }
 }: FetcherType) => {
-  // const paginationQuery = `page=${pagination.page}&page_size=${pagination.pageSize}`;
-  const paginationQuery = '';
-  const url: string = `${BASE_URL}/api${
-    query ? `${path}?${query}` : `${path}`
+  const paginationQuery = `page=${pagination.page ?? 1}&page_size=${
+    pagination.pageSize ?? 5
   }`;
+  const url: string = `${BASE_URL}/api${
+    query ? `${path}?${query}&${paginationQuery}` : `${path}?${paginationQuery}`
+  }`;
+
+  // console.log(url);
+
   try {
     const response = await axios({
       method,
@@ -57,3 +57,6 @@ export const fetcher = async ({
     };
   }
 };
+
+// https://cms-perpusku.widhimp.my.id/api/loan/list?status=loanednull&page=2&page_size=1
+// https://cms-perpusku.widhimp.my.id/api/loan/list?page=1&page_size=1

@@ -1,25 +1,22 @@
 import { Dispatch, SetStateAction } from 'react';
 
-export type PaginationControllPropType = {
+export type ExternalPaginationControllPropType = {
   page: number;
   totalPages: number;
-  onPrevPage: () => void;
-  onNextPage: () => void;
-
-  //
-  data?: any[];
+  onChangePage: Dispatch<SetStateAction<number>>;
 };
 
-export const PaginationControll = ({
+export const ExternalPaginationControll = ({
   page = 1,
   totalPages = 1,
-  onPrevPage,
-  onNextPage
-}: PaginationControllPropType) => {
+  onChangePage
+}: ExternalPaginationControllPropType) => {
   return (
-    <div className="mt-4 flex justify-center gap-4 text-white">
+    <div className="mt-4 flex justify-center gap-4 py-2 text-white">
       <button
-        onClick={onPrevPage}
+        onClick={() =>
+          onChangePage((prev: number) => (prev > 1 ? prev - 1 : 1))
+        }
         disabled={page === 1}
         className="rounded bg-gray-600 px-3 py-1 disabled:opacity-50"
       >
@@ -29,7 +26,11 @@ export const PaginationControll = ({
         Page {page} of {totalPages}
       </span>
       <button
-        onClick={onNextPage}
+        onClick={() =>
+          onChangePage((prev: number) =>
+            prev >= totalPages ? totalPages : prev + 1
+          )
+        }
         disabled={page === totalPages}
         className="rounded bg-gray-600 px-3 py-1 disabled:opacity-50"
       >

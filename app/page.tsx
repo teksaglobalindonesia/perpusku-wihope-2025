@@ -1,67 +1,54 @@
-import {
-  Header,
-  NavLinkHeadeDataTypes
-} from '@/components/customs/layouts/header';
-import { BookBorrowedSection } from '@/components/customs/sections/home/bookBorrowedSection';
-import { BookReturningTodaySection } from '@/components/customs/sections/home/bookReturningTodaySection';
-import { BooksOutOfStock } from '@/components/customs/sections/home/booskOutOfStockSection';
-import { fetcher } from '@/lib/fetcher';
+import { BookList } from '@/components/customs/dev/book/BookList';
+import { InternalPaginationControll } from '@/components/customs/dev/common/InternalPaginationControll';
+import { LoanList } from '@/components/customs/dev/loan/LoanList';
+import { ReturnList } from '@/components/customs/dev/return/ReturnList';
+import { Header } from '@/components/customs/layouts/header';
+import { fetcher } from '@/lib/dev/fetcher';
+import { format } from 'date-fns';
 
 export default async function Page() {
-  const NavDatas: Array<NavLinkHeadeDataTypes> = [
-    {
-      label: 'Dashboard',
-      href: '/'
-    },
-    {
-      label: 'Buku',
-      href: '/books'
-    },
-    {
-      label: 'Anggota',
-      href: '/members'
-    },
-    {
-      label: 'Peminjaman',
-      href: '/borrows'
-    },
-    {
-      label: 'Pengembalian',
-      href: '/returning'
-    }
-  ];
-
-  const bookOutOfStockDatas = await fetcher({
+  const booksOutOfStock = await fetcher({
     path: '/book/list',
-    query: ''
+    query: 'filters[stock][$eq]=0'
   });
 
-  const loanList = await fetcher({
-    path: '/loan/list',
-    query: 'status=loaned'
+  const today = format(new Date(), 'yyyy-MM-dd');
+
+  const loanListData = await fetcher({
+    path: '/loan/list?status=loaned'
+    // query: `filters[loan_date][$eq]=${new Date()}`
+  });
+
+  const returnListData = await fetcher({
+    path: '/loan/list?status=loaned'
+    // query: `filters[return_date][$eq]=${new Date()}`
   });
 
   return (
-    <div className="w-full">
-      <Header title="Perpus Ku" navLinks={NavDatas} />
-      <div className="mx-auto mt-[30px] flex  flex-col items-center gap-[10px] px-[50px] py-[20px]">
-        <div className="w-full">
-          <h1 className="text-2xl">Dashboard</h1>
-        </div>
-        <div className="flex w-full flex-col gap-[30px] ">
-          <BooksOutOfStock
-            title="Buku Stock Habis"
-            data={bookOutOfStockDatas.data?.data}
-          />
-          <BookBorrowedSection
-            title="Peminjaman Hari Ini"
-            data={loanList.data?.data}
-          />
-          <BookReturningTodaySection
-            title="Pengembalian Hari Ini"
-            data={loanList.data?.data}
-          />
-        </div>
+    <div>
+      <Header title="" />
+      <div>
+        <BookList
+          type="out of stock"
+          data={booksOutOfStock?.data}
+          layout={{ title: 'Buku Stok Habis' }}
+        />
+        <LoanList
+          today={true}
+          data={loanListData?.data}
+          layout={{
+            title: 'Peminjaman Hari ini',
+            searchBar: true
+          }}
+        />
+        <ReturnList
+          today={true}
+          data={returnListData?.data}
+          layout={{
+            title: 'Pengembalian Hari ini',
+            searchBar: true
+          }}
+        />
       </div>
     </div>
   );
