@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SearchBook from "../search/search_buku";
+import Pagination from "../pagination/pagination";
 
 interface Book {
     id: number;
@@ -25,17 +26,9 @@ export default function Habis({ books }: { books: any[] }){
     const itemsPerPage = 2;
     const totalPages = Math.ceil(bukuHabis.length / itemsPerPage);
 
-    const mulaiIndex = (currentPage - 1) * itemsPerPage;
-    const akhirIndex = mulaiIndex + itemsPerPage;
-    const saatiniHabis = bukuHabis.slice(mulaiIndex, akhirIndex);
-
-    const handleprev = () => {
-        if (currentPage > 1) setCurrentPage(currentPage - 1);
-    }
-
-    const handlenext = () => {
-        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-    }
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filterBook]);
 
     return (
         <>
@@ -51,7 +44,6 @@ export default function Habis({ books }: { books: any[] }){
                             Out of Stock Book
                             </h1>
                         <SearchBook onSearch={(result) => {
-                            setCurrentPage(1);
                             setFilterBook(result.length ? result : books);
                         }}
                         className="px-4 sm:px-8 border-2 sm:border-4 rounded-md text-sm 
@@ -59,7 +51,7 @@ export default function Habis({ books }: { books: any[] }){
                         />
                     </div>
                     <div className="w-full flex flex-col gap-3 md:gap-4 mt-3 md:mt-5">
-                        {saatiniHabis.map((book) => {
+                        {filterBook.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((book) => {
                             return(
                                 <div key={book.id} className="flex flex-col sm:flex-row items-start 
                                 sm:items-center justify-between border-2 md:border-4 rounded-md p-2 md:p-4 gap-2">
@@ -87,28 +79,11 @@ export default function Habis({ books }: { books: any[] }){
                             )
                         })}
                     </div>
-                    
-                    <div className="flex items-center justify-center gap-1 md:gap-2 
-                    font-morrisroman text-base md:text-xl mt-2">
-                        <button className="px-2 md:px-3 py-1 border rounded text-xs md:text-base" 
-                        onClick={handleprev} disabled={currentPage === 1}>
-                            ←
-                        </button>
-                        {[...Array(totalPages)].map((_, index) => (
-                            <button className={`
-                                px-2 md:px-3 py-1 border rounded text-xs md:text-base 
-                                ${currentPage === index + 1 ? "bg-green-400" : ""}`
-                            }
-                            key={index + 1}
-                            onClick={() => setCurrentPage(index + 1)}>
-                                {index + 1}
-                            </button>
-                        ))}
-                        <button className="px-2 md:px-3 py-1 border rounded text-xs md:text-base" 
-                        onClick={handlenext} disabled={currentPage === totalPages}>
-                            →
-                        </button>
-                    </div>
+                    <Pagination 
+                        currentPage={currentPage} 
+                        totalPages={totalPages}
+                        onPageChange={(newPage) => setCurrentPage(newPage)}
+                    />
                 </div>
             </div>
         </div>

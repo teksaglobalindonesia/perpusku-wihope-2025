@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import SearchBook from "../search/search_buku";
+import Pagination from "../pagination/pagination";
 
 interface Book {
   id: number;
@@ -14,98 +15,6 @@ interface Book {
   stock: number;
 }
 
-// export const books = [
-//         {
-//             id: 1,
-//             title: "The Lusty Argonian Maid v.1",
-//             category: "Comedy",
-//             author: "Crassius Curio",
-//             image: "/image/Lusty Argonian.png",
-//             stock: 2
-//         },
-
-//         {
-//             id: 2,
-//             title: "The Last King of the Ayleids",
-//             category: "History",
-//             author: "Herminia Cinna",
-//             image: "/image/Last King Aylieds.png",
-//             stock: 1
-//         },
-
-//         {
-//             id: 3,
-//             title: "Mixed Unit Tactics",
-//             category: "History",
-//             author: "Codus Callonus",
-//             image: "/image/Mixed Unit.jpg",
-//             stock: 0
-//         },
-
-//         {
-//             id: 4,
-//             title: "The Rise and Fall of the Blades",
-//             category: "History",
-//             author: "Anonymous",
-//             image: "/image/Rise blades book.png",
-//             stock: 0
-//         },
-
-//         {
-//             id: 5,
-//             title: "Incident at Necrom",
-//             category: "Mystery",
-//             author: "Jonquilla Bothe",
-//             image: "/image/illusion_skil_book.png",
-//             stock: 5
-//         },
-
-//         {
-//             id: 6,
-//             title: "Oghma Infinium",
-//             category: "Arcane",
-//             author: "Xarxes",
-//             image: "/image/OghmaInfinium.png",
-//             stock: 1
-//         },
-
-//         {
-//             id: 7,
-//             title: "The Ransom of Zarek",
-//             category: "Drama",
-//             author: "Marobar Sul",
-//             image: "/image/RansomZarek.png",
-//             stock: 8
-//         },
-
-//         {
-//             id: 8,
-//             title: "The Red Kitchen Reader",
-//             category: "Cooking",
-//             author: "Simocles Quo",
-//             image: "/image/RansomZarek.png",
-//             stock: 6
-//         },
-
-//         {
-//             id: 9,
-//             title: "Thief",
-//             category: "Drama",
-//             author: "Reven",
-//             image: "/image/Last King Aylieds.png",
-//             stock: 2
-//         },
-
-//         {
-//             id: 10,
-//             title: "Withershins",
-//             category: "Comedy",
-//             author: "Yaqut Tawashi",
-//             image: "/image/Restoration.png",
-//             stock: 9
-//         },
-//     ]
-
 export default function ListBuku({ books }: { books: any[] }) {
   const API = "https://cms-perpusku.widhimp.my.id";
 
@@ -114,19 +23,12 @@ export default function ListBuku({ books }: { books: any[] }) {
   const [filterBooks, setFilterBooks] = useState<Book[]>(books);
 
   const itemsPerPage = 5;
+
   const totalPages = Math.ceil(filterBooks.length / itemsPerPage);
 
-  const mulaiIndex = (currentPage - 1) * itemsPerPage;
-  const akhirIndex = mulaiIndex + itemsPerPage;
-  const saatiniBooks = filterBooks.slice(mulaiIndex, akhirIndex);
-
-  const handleprev = () => {
-        if (currentPage > 1) setCurrentPage(currentPage - 1);
-    }
-        
-    const handlenext = () => {
-        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-    }
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterBooks]);
 
   return (
     <>
@@ -138,9 +40,9 @@ export default function ListBuku({ books }: { books: any[] }) {
             </h1>
             <div className="flex flex-col md:flex-row gap-3 md:gap-4 mt-3 md:mt-0">
               <SearchBook onSearch={(result) => {
-                setCurrentPage(1);
-                setFilterBooks(result.length ? result : books); // jika kosong, kembalikan ke data awal
-              }} />
+                  setFilterBooks(result.length ? result : books);
+                }} 
+              />
               <Link
                 href="/buku/tambah_buku"
                 className="px-4 md:px-8 py-4 clip-custom text-sm md:text-lg font-cyrodiil 
@@ -150,7 +52,7 @@ export default function ListBuku({ books }: { books: any[] }) {
               </Link>
             </div>
           </div>
-          {saatiniBooks.map((book) => {
+          {filterBooks.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((book) => {
             return (
               <div
                 key={book.id}
@@ -200,28 +102,11 @@ export default function ListBuku({ books }: { books: any[] }) {
               </div>
             );
           })}
-          <div className="flex items-center justify-center gap-1 md:gap-2 font-morrisroman 
-          text-sm md:text-xl mt-3 md:mt-4">
-            <button onClick={handleprev} disabled={currentPage === 1} className="px-2 md:px-3 py-1 border rounded 
-            text-xs md:text-base">
-              ←
-            </button>
-            {[...Array(totalPages)].map((_, index) => (
-              <button
-                key={index + 1}
-                onClick={() => setCurrentPage(index + 1)}
-                className={`
-                  px-2 md:px-3 py-1 border rounded text-xs md:text-base 
-                  ${currentPage === index + 1 ? "bg-green-400" : ""}`
-                }>
-                {index + 1}
-              </button>
-            ))}
-            <button onClick={handlenext} disabled={currentPage === totalPages} 
-            className="px-2 md:px-3 py-1 border rounded text-xs md:text-base">
-              →
-            </button>
-          </div>
+          <Pagination 
+            currentPage={currentPage} 
+            totalPages={totalPages}
+            onPageChange={(newPage) => setCurrentPage(newPage)}
+          />
         </div>
       </div>
       {munculPopup && (

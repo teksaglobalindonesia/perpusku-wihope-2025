@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SearchLoan from "../search/search_loan";
+import Pagination from "../pagination/pagination";
 
 interface Loan {
     id: number;
@@ -27,21 +28,13 @@ export default function Peminjaman({ peminjamans, books }: { peminjamans: any[],
     const API = "https://cms-perpusku.widhimp.my.id";
     const [currentPage, setCurrentPage] = useState(1);
     const [filterLoan, setFilterLoan] = useState<Loan[]>(peminjamans);
-    
+
     const itemsPerPage = 5;
     const totalPages = Math.ceil(filterLoan.length / itemsPerPage);
     
-    const mulaiIndex = (currentPage - 1) * itemsPerPage;
-    const akhirIndex = mulaiIndex + itemsPerPage;
-    const saatiniPeminjam = filterLoan.slice(mulaiIndex, akhirIndex);
-    
-    const handleprev = () => {
-        if (currentPage > 1) setCurrentPage(currentPage - 1);
-    }
-    
-    const handlenext = () => {
-        if (currentPage < totalPages) setCurrentPage(currentPage + 1);        
-    }
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filterLoan]);
 
     const getBookData = (bookId: number) => {
         return books.find(book => book.id === bookId);
@@ -57,7 +50,6 @@ export default function Peminjaman({ peminjamans, books }: { peminjamans: any[],
                     </h1>
                     <div className="flex flex-col md:flex-row gap-3 md:gap-4 mt-3 md:mt-0">
                         <SearchLoan onSearch={(result) => {
-                            setCurrentPage(1)
                             setFilterLoan(result.length ? result : peminjamans)
                         }}/>
                         <Link href="/peminjaman/tambah" className="px-4 md:px-8 py-4 clip-custom 
@@ -66,7 +58,7 @@ export default function Peminjaman({ peminjamans, books }: { peminjamans: any[],
                         </Link>
                     </div>
                 </div>
-                {saatiniPeminjam.map((peminjam) => {
+                {filterLoan.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((peminjam) => {
                     const bookData = peminjam.book ? getBookData(peminjam.book.id) : null;
                     
                     return (
@@ -108,26 +100,11 @@ export default function Peminjaman({ peminjamans, books }: { peminjamans: any[],
                         </div>
                     );
                 })}
-                <div className="flex items-center justify-center gap-1 md:gap-2 font-morrisroman 
-                text-sm md:text-xl mt-3 md:mt-4">
-                    <button onClick={handleprev} disabled={currentPage === 1} className="px-2 md:px-3 
-                    py-1 border rounded text-xs md:text-base">
-                        ←
-                    </button>
-                    {[...Array(totalPages)].map((_, index) => (
-                        <button
-                            key={index + 1}
-                            onClick={() => setCurrentPage(index + 1)}
-                            className={`px-2 md:px-3 py-1 border rounded text-xs md:text-base 
-                            ${currentPage === index + 1 ? "bg-green-400" : ""}`}>
-                            {index + 1}
-                        </button>
-                    ))}
-                    <button onClick={handlenext} disabled={currentPage === totalPages} 
-                    className="px-2 md:px-3 py-1 border rounded text-xs md:text-base">
-                        →
-                    </button>
-                </div>
+                <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(newPage) => setCurrentPage(newPage)}
+                />
             </div>
         </div>
         </>

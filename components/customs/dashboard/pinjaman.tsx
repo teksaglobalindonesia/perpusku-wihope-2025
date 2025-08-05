@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SearchLoan from "../search/search_loan";
 import Image from "next/image";
+import Pagination from "../pagination/pagination";
 
 interface Loan {
     id: number;
@@ -39,17 +40,9 @@ export default function Pinjaman({ loans = [], books }: { loans?: any[], books: 
     const itemsPerPage = 2;
     const totalPages = Math.ceil(todayLoans.length / itemsPerPage)
 
-    const mulaiIndex = (currentPage - 1) * itemsPerPage;
-    const akhirIndex = mulaiIndex + itemsPerPage;
-    const saatiniLoan = todayLoans.slice(mulaiIndex, akhirIndex);
-
-    const handleprev = () => {
-        if (currentPage > 1) setCurrentPage(currentPage - 1);
-    }
-
-    const handlenext = () => {
-        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-    }
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filterLoan]);
 
     const getBookData = (bookId: number) => {
         return books.find(book => book.id === bookId);
@@ -64,14 +57,13 @@ export default function Pinjaman({ loans = [], books }: { loans?: any[], books: 
                         Today&apos;s borrowings
                     </h1>
                     <SearchLoan onSearch={(result) => {
-                        setCurrentPage(1);
                         setFilterLoan(result.length ? result : loans);
                     }}
                     className="px-4 sm:px-8 border-2 sm:border-4 rounded-md text-sm 
                     sm:text-lg w-full sm:w-auto" 
                     />
                 </div>
-                {saatiniLoan.map((loan) => {
+                {filterLoan.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((loan) => {
                     const bookData = loan.book ? getBookData(loan.book.id) : null;
                     
                     return(
@@ -116,27 +108,11 @@ export default function Pinjaman({ loans = [], books }: { loans?: any[], books: 
                     )
                 }
                 )}
-                <div className="flex items-center justify-center gap-1 md:gap-2 
-                    font-morrisroman text-base md:text-xl mt-2">
-                    <button className="px-2 md:px-3 py-1 border rounded text-xs md:text-base" 
-                        onClick={handleprev} disabled={currentPage === 1}>
-                            ←
-                    </button>
-                    {[...Array(totalPages)].map((_, index) => (
-                        <button className={`
-                            px-2 md:px-3 py-1 border rounded text-xs md:text-base 
-                            ${currentPage === index + 1 ? "bg-green-400" : ""}`
-                            }
-                            key={index + 1}
-                            onClick={() => setCurrentPage(index + 1)}>
-                                {index + 1}
-                        </button>
-                    ))}
-                    <button className="px-2 md:px-3 py-1 border rounded text-xs md:text-base" 
-                    onClick={handlenext} disabled={currentPage === totalPages}>
-                        →
-                    </button>
-                </div>
+                <Pagination 
+                    currentPage={currentPage} 
+                    totalPages={totalPages}
+                    onPageChange={(newPage) => setCurrentPage(newPage)}
+                />
             </div>
         </div>
         </>

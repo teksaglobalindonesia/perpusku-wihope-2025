@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import SearchReturn from "../search/search_return";
+import Pagination from "../pagination/pagination";
 
 interface Return {
     id: number;
@@ -32,17 +33,9 @@ export default function Pengembalian({ returns, books }: { returns: any[], books
     const itemsPerPage = 5;
     const totalPages = Math.ceil(filterReturn.length / itemsPerPage);
         
-    const mulaiIndex = (currentPage - 1) * itemsPerPage;
-    const akhirIndex = mulaiIndex + itemsPerPage;
-    const saatiniReturns = filterReturn.slice(mulaiIndex, akhirIndex);
-        
-    const handleprev = () => {
-        if (currentPage > 1) setCurrentPage(currentPage - 1);
-    }
-        
-    const handlenext = () => {
-        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-    }
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filterReturn]);
 
     const getBookData = (bookId: number) => {
         return books.find(book => book.id === bookId);
@@ -67,14 +60,13 @@ export default function Pengembalian({ returns, books }: { returns: any[], books
                     </h1>
                     <div className="flex flex-col md:flex-row gap-3 md:gap-4 mt-3 md:mt-0">
                         <SearchReturn onSearch={(result) => {
-                            setCurrentPage(1)
                             setFilterReturn(result.length ? result : returns)
                         }}
                         
                         />
                     </div>
                 </div>
-                {saatiniReturns.map((returns) => {
+                {filterReturn.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((returns) => {
                     const bookData = returns.book ? getBookData(returns.book.id) : null;
 
                     return(
@@ -128,26 +120,11 @@ export default function Pengembalian({ returns, books }: { returns: any[], books
                 }
                     
                 )}
-                <div className="flex items-center justify-center gap-1 md:gap-2 font-morrisroman 
-                text-sm md:text-xl mt-3 md:mt-4">
-                    <button onClick={handleprev} disabled={currentPage === 1} className="px-2 md:px-3 
-                    py-1 border rounded text-xs md:text-base">
-                        ←
-                    </button>
-                    {[...Array(totalPages)].map((_, index) => (
-                        <button
-                            key={index + 1}
-                            onClick={() => setCurrentPage(index + 1)}
-                            className={`px-2 md:px-3 py-1 border rounded text-xs md:text-base 
-                            ${currentPage === index + 1 ? "bg-green-400" : ""}`}>
-                            {index + 1}
-                        </button>
-                    ))}
-                    <button onClick={handlenext} disabled={currentPage === totalPages} 
-                    className="px-2 md:px-3 py-1 border rounded text-xs md:text-base">
-                        →
-                    </button>
-                </div>
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={(newPage) => setCurrentPage(newPage)}
+                />
             </div>
         </div>
         </>
