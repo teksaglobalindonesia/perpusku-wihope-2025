@@ -89,13 +89,15 @@ export const BCard = ({ data }: { data: any[] }) => {
                   title: bookData?.title,
                   genre: bookData?.categories?.map((c: any) => c.name).join(', '),
                   author: bookData?.writer,
-                  stock: bookData?.stock
+                  stock: bookData?.stock,
+                  buttons:['delete', 'edit']
                 }))}
+                
               />
             </div>
           ) : (
             <div className="text-center py-12 rounded-2xl bg-white/80 backdrop-blur-sm border-2 border-navyBlue-200/50 shadow-lg hover:shadow-xl hover:border-navyBlue-300/70 transition-all duration-500">
-              <div className="mb-4 transform hover:scale-110 transition-transform duration-500">
+              <div className="mb-4 transform hover:scale-110 transition-transform duration-500 inline-block">
                 <Bookmark className="w-16 h-16 mx-auto text-navyBlue-400/80" strokeWidth={1.5} />
               </div>
               <h3 className="font-vintage text-2xl font-semibold text-navyBlue-700 mb-3">

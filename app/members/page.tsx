@@ -15,5 +15,5 @@ export default async function Page() {
   const result = await anggotas.json();
   const members = result?.data || [];
 
-  return <Members data={members} />;
+  return <Members/>;
 }

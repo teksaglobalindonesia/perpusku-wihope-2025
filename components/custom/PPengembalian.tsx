@@ -109,7 +109,7 @@ export const Return = ({ data }: { data: any[] }) => {
             </div>
           ) : (
             <div className="text-center py-12 rounded-2xl bg-white/80 backdrop-blur-sm border-2 border-terracotta-200/50 shadow-lg hover:shadow-xl hover:border-terracotta-300/70 transition-all duration-500">
-              <div className="mb-4 transform hover:scale-110 transition-transform duration-500">
+              <div className="mb-4 transform hover:scale-110 transition-transform duration-500 inline-block">
                 <RotateCcw className="w-16 h-16 mx-auto text-terracotta-400/80" strokeWidth={1.5} />
               </div>
               <h3 className="font-vintage text-2xl font-semibold text-terracotta-700 mb-3">

@@ -57,7 +57,7 @@ export const Loan = ({ data }: { data: any[] }) => {
             </div>
 
             <Link
-              href="/book/addBook"
+              href="/peminjaman/addPeminjaman"
               className="flex items-center justify-center gap-2 rounded-lg bg-botanical-600 px-5 py-2.5 font-vintage text-white shadow-lg transition-all duration-300 hover:bg-botanical-700 hover:shadow-md hover:scale-95 active:scale-95"
             >
               <Plus className="h-5 w-5 transition-transform group-hover:rotate-90 duration-300" />
@@ -94,7 +94,7 @@ export const Loan = ({ data }: { data: any[] }) => {
             </div>
           ) : (
             <div className="text-center py-12 rounded-2xl bg-white/80 backdrop-blur-sm border-2 border-botanical-200/50 shadow-lg hover:shadow-xl hover:border-botanical-300/70 transition-all duration-500">
-              <div className="mb-4 transform hover:scale-110 transition-transform duration-500">
+              <div className="mb-4 transform hover:scale-110 transition-transform duration-500 inline-block">
                 <BookOpen className="w-16 h-16 mx-auto text-botanical-400/80" strokeWidth={1.5} />
               </div>
               <h3 className="font-vintage text-2xl font-semibold text-botanical-700 mb-3">

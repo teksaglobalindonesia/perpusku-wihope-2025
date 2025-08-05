@@ -6,41 +6,52 @@ import { BASE_URL, TOKEN, WIHOPE_NAME } from '@/lib/constant';
 import { Search, Plus, Users } from 'lucide-react';
 import Link from 'next/link';
 
-export const Members = ({ data }: { data: any[] }) => {
-  const [members, setMembers] = useState<any[]>(data);
+export const Members = () => {
+  const [members, setMembers] = useState<any[]>([]);
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
   const perPage = 4;
+  const [totalItems, setTotalItems] = useState(0);
+  const [loading, setLoading] = useState(false);
 
+  // Fetch data dari API dengan pagination & search
   useEffect(() => {
     const fetchMembers = async () => {
-      if (query.trim() === '') {
-        setMembers(data);
-        return;
-      }
+      setLoading(true);
       try {
-        const res = await fetch(`${BASE_URL}/api/member/list?search=${query}`, {
+        const url = new URL(`${BASE_URL}/api/member/list`);
+        url.searchParams.append('page', page.toString());
+        url.searchParams.append('page_size', perPage.toString());
+        if (query.trim()) url.searchParams.append('search', query.trim());
+
+        const res = await fetch(url.toString(), {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             Authorization: TOKEN,
-            'x-wihope-name': WIHOPE_NAME
+            'x-wihope-name': WIHOPE_NAME,
           },
-          cache: 'no-store'
+          cache: 'no-store',
         });
+
         const json = await res.json();
+        
+        // ✅ Sesuaikan dengan struktur API: data & meta.pagination.total
         setMembers(json.data || []);
-        setPage(1);
+        setTotalItems(json.meta?.pagination?.total || 0);
       } catch (err) {
         console.error('Gagal fetch data anggota', err);
+        setMembers([]);
+        setTotalItems(0);
+      } finally {
+        setLoading(false);
       }
     };
-    fetchMembers();
-  }, [query, data]);
 
-  const totalItems = members.length;
+    fetchMembers();
+  }, [page, query]); // fetch ulang saat page atau query berubah
+
   const totalPage = Math.ceil(totalItems / perPage);
-  const sliced = members.slice((page - 1) * perPage, page * perPage);
 
   return (
     <div className="min-h-screen rounded-lg bg-gradient-to-br from-dusty-100 to-dusty-300 p-8">
@@ -82,16 +93,20 @@ export const Members = ({ data }: { data: any[] }) => {
 
         {/* Card Container */}
         <div className="space-y-6">
-          {sliced.length > 0 ? (
-            <div className="rounded-2xl bg-white/80 backdrop-blur-sm border-2 border-terracotta-200/50  hover:shadow-xl hover:border-terracotta-300/70 transition-all duration-500 p-6">
-            <MembersCard
-              cardItems={sliced.map((anggotaData) => ({
-                name: anggotaData?.name,
-                UID: anggotaData?.id_member,
-                email: anggotaData?.email,
-                buttons: ['peminjaman', 'edit', 'delete']
-              }))}
-            />
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="text-terracotta-600">Memuat data...</p>
+            </div>
+          ) : members.length > 0 ? (
+            <div className="rounded-2xl bg-white/80 backdrop-blur-sm border-2 border-terracotta-200/50 hover:shadow-xl hover:border-terracotta-300/70 transition-all duration-500 p-6">
+              <MembersCard
+                cardItems={members.map((anggotaData) => ({
+                  name: anggotaData?.name?.trim(),
+                  UID: anggotaData?.id_member,
+                  email: anggotaData?.email,
+                  buttons: ['peminjaman', 'edit', 'delete']
+                }))}
+              />
             </div>
           ) : (
             <div className="text-center py-12 rounded-2xl bg-white/80 backdrop-blur-sm border-2 border-terracotta-200/50 shadow-lg hover:shadow-xl hover:border-terracotta-300/70 transition-all duration-500">
@@ -109,7 +124,7 @@ export const Members = ({ data }: { data: any[] }) => {
         </div>
 
         {/* Pagination */}
-        {totalPage > 1 && (
+        {totalPage > 1 && !loading && (
           <div className="mt-8 transform hover:scale-[1.01] transition-transform duration-300">
             <Pagination
               currentPage={page}
@@ -120,9 +135,10 @@ export const Members = ({ data }: { data: any[] }) => {
         )}
 
         {/* Stats Footer */}
-        {sliced.length > 0 && (
+        {!loading && members.length > 0 && (
           <div className="mt-6 text-center text-sm text-terracotta-600/90 font-vintage hover:text-terracotta-700 transition-colors duration-300">
-            Menampilkan <span className="font-bold">{sliced.length}</span> anggota dari total <span className="font-bold">{totalItems || 0}</span> anggota
+            Menampilkan <span className="font-bold">{members.length}</span> anggota dari total{' '}
+            <span className="font-bold">{totalItems || 0}</span> anggota
           </div>
         )}
       </div>
