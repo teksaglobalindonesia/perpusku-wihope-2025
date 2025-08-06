@@ -51,33 +51,43 @@ export default function Habis({ books }: { books: any[] }){
                         />
                     </div>
                     <div className="w-full flex flex-col gap-3 md:gap-4 mt-3 md:mt-5">
-                        {filterBook.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((book) => {
+                        {filterBook.length === 0 ? (
+                        <div className="w-full text-center py-10">
+                            <p className="text-xl md:text-2xl font-cyrodiil">
+                                All books are available right now
+                            </p>
+                        </div>
+                        ) : (
+                            <>
+                            {filterBook.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((book) => {
                             return(
                                 <div key={book.id} className="flex flex-col sm:flex-row items-start 
                                 sm:items-center justify-between border-2 md:border-4 rounded-md p-2 md:p-4 gap-2">
-                                <div className="flex flex-col sm:flex-row gap-3 md:gap-7 items-start sm:items-center w-full">
-                                    <div className="relative w-12 h-12 md:w-16 md:h-16">
-                                        <Image src={book.cover ? API + book.cover.url : "/idk"} alt={book.title} fill quality={100} className="object-contain"/>
+                                    <div className="flex flex-col sm:flex-row gap-3 md:gap-7 items-start sm:items-center w-full">
+                                        <div className="relative w-12 h-12 md:w-16 md:h-16">
+                                            <Image src={book.cover ? API + book.cover.url : "/idk"} alt={book.title} fill quality={100} className="object-contain"/>
+                                        </div>
+                                        <div className="text-base md:text-lg font-cyrodiil">
+                                            <h1 className="font-semibold line-clamp-1">
+                                                {book.title}
+                                            </h1>
+                                            <h2 className="line-clamp-1">
+                                                {book.categories?.[0]?.name ?? null}
+                                            </h2>
+                                            <h3 className="line-clamp-1">
+                                                by {book.writer}
+                                            </h3>
+                                        </div>
                                     </div>
-                                    <div className="text-base md:text-lg font-cyrodiil">
-                                        <h1 className="font-semibold line-clamp-1">
-                                            {book.title}
-                                        </h1>
-                                        <h2 className="line-clamp-1">
-                                            {book.categories?.[0]?.name ?? null}
-                                        </h2>
-                                        <h3 className="line-clamp-1">
-                                            by {book.writer}
-                                        </h3>
+                                    <div className="sm:ml-auto bg-red-600 text-white px-3 py-1 md:px-4 md:py-2 
+                                    clip-custom text-sm md:text-lg font-cyrodiil w-full sm:w-auto text-center">
+                                        Unavailable
                                     </div>
                                 </div>
-                                <div className="sm:ml-auto bg-red-600 text-white px-3 py-1 md:px-4 md:py-2 
-                                clip-custom text-sm md:text-lg font-cyrodiil w-full sm:w-auto text-center">
-                                    Unavailable
-                                </div>
-                            </div>
-                            )
-                        })}
+                                )
+                            })}
+                            </>
+                        )}
                     </div>
                     <Pagination 
                         currentPage={currentPage} 

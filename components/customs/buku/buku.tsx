@@ -46,19 +46,23 @@ export default function ListBuku({ books }: { books: any[] }) {
               <Link
                 href="/buku/tambah_buku"
                 className="px-4 md:px-8 py-4 clip-custom text-sm md:text-lg font-cyrodiil 
-                text-white font-semibold bg-green-500 text-center"
+                text-white font-semibold bg-green-500 text-center hover:bg-green-800 duration-300"
               >
                 Add
               </Link>
             </div>
           </div>
-          {filterBooks.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((book) => {
-            return (
-              <div
-                key={book.id}
-                className="w-full md:flex md:items-center md:justify-between border-2 
-                md:border-4 rounded-md p-3 md:p-4 mt-3 md:mt-5"
-              >
+          {filterBooks.length === 0 ? (
+            <div className="w-full text-center py-10">
+              <p className="text-xl md:text-2xl font-cyrodiil">
+                There is no books available right now
+              </p>
+            </div>
+          ) : (
+            <>
+            {filterBooks.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((book) => {
+              return(
+                <div key={book.id} className="w-full md:flex md:items-center md:justify-between border-2 md:border-4 rounded-md p-3 md:p-4 mt-3 md:mt-5">
                 <div className="flex flex-col md:flex-row md:gap-7">
                   <div className="relative w-12 h-12 md:w-16 md:h-16 mb-2 md:mb-0">
                     <Image src={book.cover ? API + book.cover.url : "/idk"} alt={book.title} fill quality={100} className="object-contain"/>
@@ -77,13 +81,12 @@ export default function ListBuku({ books }: { books: any[] }) {
                       <Link
                         href={`/buku/edit_buku`}
                         className="bg-yellow-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base"
-                      >
+                        >
                         Edit
                       </Link>
                       <button
                         className="bg-red-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base"
-                        onClick={() => setMunculPopup(true)}
-                      >
+                        onClick={() => setMunculPopup(true)}>
                         Delete
                       </button>
                     </div>
@@ -94,39 +97,41 @@ export default function ListBuku({ books }: { books: any[] }) {
                   md:px-4 py-1 md:py-2 clip-custom text-sm md:text-lg font-cyrodiil w-full md:w-auto text-center">
                     Unavailable
                   </div>
-                ) : (
-                  <h1 className="mt-2 md:mt-0 md:ml-auto text-sm md:text-lg font-morrisroman">
-                    Stok: {book.stock}
-                  </h1>
-                )}
+                  ) : (
+                    <h1 className="mt-2 md:mt-0 md:ml-auto text-sm md:text-lg font-morrisroman">
+                      Stok: {book.stock}
+                    </h1>
+                  )}
               </div>
-            );
-          })}
-          <Pagination 
-            currentPage={currentPage} 
-            totalPages={totalPages}
-            onPageChange={(newPage) => setCurrentPage(newPage)}
-          />
-        </div>
+              )
+            })}
+          </>
+        )}
+        <Pagination 
+          currentPage={currentPage} 
+          totalPages={totalPages}
+          onPageChange={(newPage) => setCurrentPage(newPage)}
+        />
       </div>
-      {munculPopup && (
-        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center 
-        justify-center bg-[#F2C078] w-[90%] md:w-[500px] h-auto md:h-[142px] p-4 md:p-0 rounded-xl shadow-lg">
-          <div className="w-full md:w-64 font-cyrodiil">
-            <h1 className="text-lg md:text-xl text-center md:text-left">
-              Are you sure you want to delete this book?
-            </h1>
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-5 justify-center 
-            md:justify-start mt-4 text-base md:text-lg">
-              <button className="bg-red-500 px-4 md:px-8 py-2 clip-custom">
-                DELETE
-              </button>
-              <button className="border-2 rounded-md px-3 py-2" onClick={() => setMunculPopup(false)}>
-                CANCEL
-              </button>
-            </div>
+    </div>
+    {munculPopup && (
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center 
+      justify-center bg-[#F2C078] w-[90%] md:w-[500px] h-auto md:h-[142px] p-4 md:p-0 rounded-xl shadow-lg">
+        <div className="w-full md:w-64 font-cyrodiil">
+          <h1 className="text-lg md:text-xl text-center md:text-left">
+            Are you sure you want to delete this book?
+          </h1>
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-5 justify-center 
+          md:justify-start mt-4 text-base md:text-lg">
+            <button className="bg-red-500 px-4 md:px-8 py-2 clip-custom">
+              DELETE
+            </button>
+            <button className="border-2 rounded-md px-3 py-2" onClick={() => setMunculPopup(false)}>
+              CANCEL
+            </button>
           </div>
         </div>
+      </div>
       )}
     </>
   );

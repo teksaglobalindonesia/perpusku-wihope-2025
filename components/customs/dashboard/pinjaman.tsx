@@ -63,7 +63,15 @@ export default function Pinjaman({ loans = [], books }: { loans?: any[], books: 
                     sm:text-lg w-full sm:w-auto" 
                     />
                 </div>
-                {filterLoan.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((loan) => {
+                {todayLoans.length === 0 ? (
+                    <div className="w-full text-center py-10">
+                        <p className="text-xl md:text-2xl font-cyrodiil">
+                            There is no loans for today
+                        </p>
+                    </div>
+                ) : (
+                    <>
+                    {todayLoans.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((loan) => {
                     const bookData = loan.book ? getBookData(loan.book.id) : null;
                     
                     return(
@@ -107,6 +115,8 @@ export default function Pinjaman({ loans = [], books }: { loans?: any[], books: 
                         </div>
                     )
                 }
+                )}
+                    </>
                 )}
                 <Pagination 
                     currentPage={currentPage} 

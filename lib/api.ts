@@ -111,3 +111,20 @@ export async function fetchReturnSearch(keyword: string, page = 1, pageSize = 5)
         return[];
     }
 }
+
+export async function fetchLoanMember(documentId: string) {
+    try {
+        const query = new URLSearchParams({
+            id_member: documentId,
+        });
+
+        const res = await fetchAPI(`/api/loan/list?${query}`);
+
+        return {
+            data: Array.isArray(res?.data) ? res.data : [],
+        };
+    } catch (err) {
+        console.error("Gagal fetch loan member:", err);
+        return { data: [] };
+    }
+}

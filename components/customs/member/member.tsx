@@ -11,6 +11,7 @@ interface Member {
     email: string;
     address: string;
     id_member: string;
+    documentId: string
 }
 
 export default function ListAnggota({ members }: { members: any[]}){
@@ -38,43 +39,53 @@ export default function ListAnggota({ members }: { members: any[]}){
                             setFilterMember(result.length ? result : members)
                         }}/>
                         <Link href="/anggota/tambah_member" className="px-4 md:px-8 py-4 clip-custom text-sm 
-                        md:text-lg font-cyrodiil text-white font-semibold bg-green-500 text-center">
+                        md:text-lg font-cyrodiil text-white font-semibold bg-green-500 text-center hover:bg-green-800 duration-300">
                             Add
                         </Link>
                     </div>
                 </div>
-                {filterMember.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((member) => (
-                    <div key={member.id} className="w-full border-2 md:border-4 
-                    rounded-md p-3 md:p-4 mt-3 md:mt-5">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                            <div className="text-sm md:text-lg font-cyrodiil">
-                                <h1 className="font-semibold line-clamp-1 md:line-clamp-none">
-                                    {member.name}
-                                </h1>
-                                <h2 className="line-clamp-1 md:line-clamp-none">
-                                    {member.id_member}
-                                </h2>
-                                <h3 className="line-clamp-1 md:line-clamp-none">
-                                    {member.email}
-                                </h3>
-                                <div className="flex flex-wrap gap-2 md:gap-3 mt-2">
-                                    <Link href={`/anggota/pinjaman_member?id=${member.id}`} 
-                                    className="bg-blue-500 px-4 py-1 md:px-8 clip-custom text-xs md:text-base">
-                                        Borrowing
-                                    </Link>
-                                    <Link href="/anggota/edit_member" className="bg-yellow-400 px-4 py-1 
-                                    md:px-8 clip-custom text-xs md:text-base">
-                                        Edit
-                                    </Link>
-                                    <button className="bg-red-400 px-4 py-1 md:px-8 clip-custom text-xs 
-                                    md:text-base" onClick={() => setMunculPopup(true)}>
-                                        Delete
-                                    </button>
+                {filterMember.length === 0 ? (
+                    <div className="w-full text-center py-10">
+                        <p className="text-xl md:text-2xl font-cyrodiil">
+                            There is no members available right now
+                        </p>
+                    </div>
+                ) : (
+                    <>
+                    {filterMember.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((member) => (
+                        <div key={member.id} className="w-full border-2 md:border-4 
+                        rounded-md p-3 md:p-4 mt-3 md:mt-5">
+                            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                                <div className="text-sm md:text-lg font-cyrodiil">
+                                    <h1 className="font-semibold line-clamp-1 md:line-clamp-none">
+                                        {member.name}
+                                    </h1>
+                                    <h2 className="line-clamp-1 md:line-clamp-none">
+                                        {member.id_member}
+                                    </h2>
+                                    <h3 className="line-clamp-1 md:line-clamp-none">
+                                        {member.email}
+                                    </h3>
+                                    <div className="flex flex-wrap gap-2 md:gap-3 mt-2">
+                                        <Link href={`/anggota/pinjaman_anggota/${member.documentId}`} 
+                                        className="bg-blue-500 px-4 py-1 md:px-8 clip-custom text-xs md:text-base">
+                                            Borrowing
+                                        </Link>
+                                        <Link href="/anggota/edit_member" className="bg-yellow-400 px-4 py-1 
+                                        md:px-8 clip-custom text-xs md:text-base">
+                                            Edit
+                                        </Link>
+                                        <button className="bg-red-400 px-4 py-1 md:px-8 clip-custom text-xs 
+                                        md:text-base" onClick={() => setMunculPopup(true)}>
+                                            Delete
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                    </>
+                )}
                 <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}

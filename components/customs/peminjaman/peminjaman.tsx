@@ -23,8 +23,27 @@ interface Loan {
     return_date: Date;
 }
 
+interface Return {
+    id: number;
+    book?: {
+        id: number;
+        title: string;
+        cover?: {
+            url: string;
+        };
+    };
+    member?: {
+        id: number;
+        name: string;
+    };
+    loan_date: Date | string;
+    return_date: Date | string;
+    return?: {
+        actual_return_date: Date | string;
+    };
+}
 
-export default function Peminjaman({ peminjamans, books }: { peminjamans: any[], books: any[] }){
+export default function Peminjaman({ peminjamans, books, returns }: { peminjamans: any[], books: any[], returns: any[] }){
     const API = "https://cms-perpusku.widhimp.my.id";
     const [currentPage, setCurrentPage] = useState(1);
     const [filterLoan, setFilterLoan] = useState<Loan[]>(peminjamans);
@@ -40,6 +59,15 @@ export default function Peminjaman({ peminjamans, books }: { peminjamans: any[],
         return books.find(book => book.id === bookId);
     }
 
+    const isLateReturn = (returnItem: Return) => {
+        if (!returnItem.return || !returnItem.return.actual_return_date) return false;
+        
+        const returnDate = new Date(returnItem.return_date);
+        const actualReturnDate = new Date(returnItem.return.actual_return_date);
+        
+        return actualReturnDate > returnDate;
+    }
+
     return(
         <>
         <div className="w-full bg-[#FFEAC5] mt-16 md:mt-[84px] px-4 md:px-[64px] py-6 md:py-[40px]">
@@ -53,7 +81,7 @@ export default function Peminjaman({ peminjamans, books }: { peminjamans: any[],
                             setFilterLoan(result.length ? result : peminjamans)
                         }}/>
                         <Link href="/peminjaman/tambah" className="px-4 md:px-8 py-4 clip-custom 
-                        text-sm md:text-lg font-cyrodiil text-white font-semibold bg-green-500 text-center">
+                        text-sm md:text-lg font-cyrodiil text-white font-semibold bg-green-500 text-center hover:bg-green-800 duration-300">
                             Add
                         </Link>
                     </div>
@@ -94,8 +122,20 @@ export default function Peminjaman({ peminjamans, books }: { peminjamans: any[],
                                         <h4 className="line-clamp-1 md:line-clamp-none">
                                             Returning: {peminjam.return_date instanceof Date ? peminjam.return_date.toLocaleDateString() : peminjam.return_date}
                                         </h4>
+                                        <div className="flex flex-wrap gap-2 md:gap-3 mt-2">
+                                        <div className="bg-green-500 px-4 py-1 md:px-8 clip-custom text-xs md:text-base">
+                                            Return
+                                        </div>
+                                    </div>
                                     </div>
                                 </div>
+                                {isLateReturn(peminjam) && (
+                                    <div className="mt-2 md:mt-0 md:ml-auto bg-red-600 text-white 
+                                    px-3 md:px-4 py-1 md:py-2 clip-custom text-sm md:text-lg font-cyrodiil 
+                                    w-full md:w-auto text-center">
+                                        Late to Return
+                                    </div>
+                                )}
                             </div>
                         </div>
                     );
