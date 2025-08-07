@@ -15,11 +15,19 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 's3-alpha-sig.figma.com',
+        hostname: 's3-alpha-sig.figma.com'
       },
       {
         protocol: 'http',
-        hostname: 'localhost',
+        hostname: 'localhost'
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'cms-perpusku.widhimp.my.id'
       },
     ]
   },
