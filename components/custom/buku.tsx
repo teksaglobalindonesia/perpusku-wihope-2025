@@ -1,29 +1,67 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BASE_URL } from "@/lib/constant";
+import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
-export type cart1props = {
-    items?: Array<{
-        title?: string;
-        writer?: string;
-        stock?: number;
-        cover?: {
-            url?: string;
-        };
-        categories?: Array<{
-            id: number;
-            name: string;
-        }>;
+export type Book = {
+    title?: string;
+    writer?: string;
+    stock?: number;
+    cover?: {
+        url?: string;
+    };
+    categories?: Array<{
+        id: number;
+        name: string;
     }>;
-};
+}
 
-export const Buku = ({ items = [] }: cart1props) => {
+export const Buku = () => {
     const [showModal, setShowModal] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [items, setItems] = useState<Book[]>([]);
+    const [totalPages, setTotalPages] = useState(1);
     const itemsPerPage = 2;
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const searchQuery = encodeURIComponent(searchTerm);
+                const res = await fetch(
+                    `${BASE_URL}/api/book/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchQuery}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: TOKEN,
+                            'x-wihope-name': WIHOPE_NAME,
+                        },
+                        cache: 'no-store',
+                    }
+                );
+
+                const bookData = await res.json();
+
+                setItems(bookData?.data || []);
+
+                       const pagination = bookData?.meta?.pagination;
+
+                if (pagination?.page_count) {
+                    setTotalPages(pagination.page_count);
+                } else if (pagination?.total && pagination?.page_size) {
+                    setTotalPages(Math.ceil(pagination.total / pagination.page_size));
+                }
+
+            } catch (error) {
+                console.error("Gagal mengambil data:", error);
+            }
+        };
+
+        fetchData();
+    }, [searchTerm, currentPage]);
 
     const bukaModal = () => setShowModal(true);
     const tutupModal = () => setShowModal(false);
@@ -32,13 +70,6 @@ export const Buku = ({ items = [] }: cart1props) => {
         alert("Item dihapus!");
         setShowModal(false);
     };
-
-    const totalPages = Math.ceil(items.length / itemsPerPage);
-
-    const currentItems = useMemo(() => {
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        return items.slice(startIndex, startIndex + itemsPerPage);
-    }, [currentPage, items]);
 
     const handlePageChange = (page: number) => {
         if (page >= 1 && page <= totalPages) {
@@ -80,8 +111,15 @@ export const Buku = ({ items = [] }: cart1props) => {
                             <input
                                 type="text"
                                 placeholder="Pencarian..."
+                                value={searchTerm}
+                                onChange={(e) => {
+                                    setSearchTerm(e.target.value);
+                                    setCurrentPage(1);
+                                }}
                                 className="ml-2 bg-transparent outline-none placeholder-black w-full"
                             />
+
+
                         </div>
                         <Link
                             href="/tambah_buku"
@@ -92,13 +130,13 @@ export const Buku = ({ items = [] }: cart1props) => {
                     </div>
                 </div>
 
-                {currentItems.map((item, index) => (
+                {items.map((item, index) => (
                     <div
                         key={index}
                         className="bg-white mx-4 sm:mx-6 my-4 rounded-xl shadow hover:shadow-lg transition duration-300"
                     >
                         <div className="flex flex-col md:flex-row justify-between gap-4 p-4 md:p-6">
-       
+
                             <div className="flex flex-col sm:flex-row gap-4">
                                 <Image
                                     src={BASE_URL + item.cover?.url || "/coverbook.jpg"}
@@ -156,7 +194,8 @@ export const Buku = ({ items = [] }: cart1props) => {
                     >
                         &lt;
                     </button>
-                    {[...Array(2)].map((_, index) => {
+
+                    {[...Array(3)].map((_, index) => {
                         const page = currentPage + index;
                         if (page > totalPages) return null;
                         return (
@@ -172,6 +211,7 @@ export const Buku = ({ items = [] }: cart1props) => {
                             </button>
                         );
                     })}
+
                     <button
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}

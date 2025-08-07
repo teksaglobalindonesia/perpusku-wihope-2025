@@ -1,36 +1,69 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
-export type cart1props = {
-    items?: Array<{
-        name?: string;
-        id_member?: string;
-        email?: string;
-        documentId?: string;
-    }>;
-};
-
-export const Anggota = ({ items = [] }: cart1props) => {
+export type Member = {
+    name?: string;
+    id_member?: string;
+    email?: string;
+    documentId?: string;
+}
+    ;
+export const Anggota = () => {
     const [showModal, setShowModal] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [items, setItems] = useState<Member[]>([]);
+    const [totalPages, setTotalPages] = useState(1);
     const itemsPerPage = 2;
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const searchQuery = encodeURIComponent(searchTerm);
+                const res = await fetch(
+                    `${BASE_URL}/api/member/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchQuery}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: TOKEN,
+                            'x-wihope-name': WIHOPE_NAME,
+                        },
+                        cache: 'no-store',
+                    }
+                );
+
+                const memberData = await res.json();
+
+                setItems(memberData?.data || []);
+
+                const pagination = memberData?.meta?.pagination;
+
+                if (pagination?.page_count) {
+                    setTotalPages(pagination.page_count);
+                } else if (pagination?.total && pagination?.page_size) {
+                    setTotalPages(Math.ceil(pagination.total / pagination.page_size));
+                }
+
+            } catch (error) {
+                console.error("Gagal mengambil data:", error);
+            }
+        };
+
+        fetchData();
+    }, [searchTerm, currentPage]);
+
 
     const bukaModal = () => setShowModal(true);
     const tutupModal = () => setShowModal(false);
 
     const konfirmasiHapus = () => {
-        alert("Item dihapus!");
+        alert('Item dihapus!');
         setShowModal(false);
     };
-
-    const totalPages = Math.ceil(items.length / itemsPerPage);
-
-    const currentItems = useMemo(() => {
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        return items.slice(startIndex, startIndex + itemsPerPage);
-    }, [currentPage, items]);
 
     const handlePageChange = (page: number) => {
         if (page >= 1 && page <= totalPages) {
@@ -71,7 +104,12 @@ export const Anggota = ({ items = [] }: cart1props) => {
                             <input
                                 type="text"
                                 placeholder="Pencarian..."
-                                className="ml-2 bg-transparent outline-none placeholder-black w-full sm:w-[150px]"
+                                value={searchTerm}
+                                onChange={(e) => {
+                                    setSearchTerm(e.target.value);
+                                    setCurrentPage(1);
+                                }}
+                                className="ml-2 bg-transparent outline-none placeholder-black w-full"
                             />
                         </div>
                         <Link
@@ -83,7 +121,7 @@ export const Anggota = ({ items = [] }: cart1props) => {
                     </div>
                 </div>
 
-                {currentItems.map((item, index) => (
+                {items.map((item, index) => (
                     <div
                         key={index}
                         className="bg-white mx-4 sm:mx-6 my-4 rounded-xl shadow hover:shadow-lg transition duration-300"
@@ -120,7 +158,7 @@ export const Anggota = ({ items = [] }: cart1props) => {
                     </div>
                 ))}
 
-                <div className="flex justify-center flex-wrap gap-2 mt-6 px-4">
+                <div className="flex justify-center gap-2 mt-6 flex-wrap px-4">
                     <button
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
@@ -128,7 +166,8 @@ export const Anggota = ({ items = [] }: cart1props) => {
                     >
                         &lt;
                     </button>
-                    {[...Array(2)].map((_, index) => {
+
+                    {[...Array(3)].map((_, index) => {
                         const page = currentPage + index;
                         if (page > totalPages) return null;
                         return (
@@ -144,6 +183,7 @@ export const Anggota = ({ items = [] }: cart1props) => {
                             </button>
                         );
                     })}
+
                     <button
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}

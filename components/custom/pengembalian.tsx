@@ -1,28 +1,76 @@
 'use client'
 
-import { useMemo, useState } from 'react';
+import { BASE_URL, TOKEN, WIHOPE_NAME } from '@/lib/constant';
+import { useEffect, useState } from 'react';
 
-export type cart1props = {
-    items?: Array<{
-        title?: string;
-        name?: string;
-        createdAt?: string;
-        returnDate?: string;
-        status?: boolean;
-        actualReturnDate?: string;
-    }>
+export type pengembali = {
+    title?: string;
+    name?: string;
+    createdAt?: string;
+    returnDate?: string;
+    status?: boolean;
+    actualReturnDate?: string;
+
 }
 
-export const Kembaliya = ({ items = [] }: cart1props) => {
+export const Kembaliya = () => {
     const [currentPage, setCurrentPage] = useState(1);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [items, setItems] = useState<pengembali[]>([]);
+    const [totalPages, setTotalPages] = useState(1);
     const itemsPerPage = 6;
 
-    const totalPages = Math.ceil(items.length / itemsPerPage);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const searchQuery = encodeURIComponent(searchTerm);
+                const res = await fetch(`${BASE_URL}/api/return/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchQuery}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: TOKEN,
+                        'x-wihope-name': WIHOPE_NAME,
+                    },
+                    cache: 'no-store',
+                });
 
-    const currentItems = useMemo(() => {
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        return items.slice(startIndex, startIndex + itemsPerPage);
-    }, [currentPage, items]);
+                const resultJson = await res.json();
+                const mapped = resultJson?.data?.map((item: any): pengembali => {
+                    const actualReturnDate = item?.return?.actual_return_date;
+                    const expectedReturnDate = item?.return_date;
+
+                    const isLate =
+                        actualReturnDate &&
+                        expectedReturnDate &&
+                        new Date(actualReturnDate) > new Date(expectedReturnDate);
+
+                    return {
+                        title: item?.book?.title,
+                        name: item?.member?.name,
+                        createdAt: item?.loan_date,
+                        returnDate: expectedReturnDate,
+                        actualReturnDate: actualReturnDate || "-",
+                        status: isLate || false,
+                    };
+                });
+
+                setItems(mapped || []);
+
+                const pagination = resultJson?.meta?.pagination;
+
+                if (pagination?.page_count) {
+                    setTotalPages(pagination.page_count);
+                } else if (pagination?.total && pagination?.page_size) {
+                    setTotalPages(Math.ceil(pagination.total / pagination.page_size));
+                }
+
+            } catch (error) {
+                console.error('Gagal mengambil data:', error);
+            }
+        };
+
+        fetchData();
+    }, [searchTerm, currentPage]);
 
     const handlePageChange = (page: number) => {
         if (page >= 1 && page <= totalPages) {
@@ -40,21 +88,37 @@ export const Kembaliya = ({ items = [] }: cart1props) => {
                         <input
                             type="text"
                             placeholder="Pencarian..."
+                            value={searchTerm}
+                            onChange={(e) => {
+                                setSearchTerm(e.target.value);
+                                setCurrentPage(1);
+                            }}
                             className="ml-2 bg-transparent outline-none placeholder-black w-full sm:w-[150px]"
                         />
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 gap-y-6 px-5">
-                    {currentItems.map((item, index) => (
+                    {items.map((item, index) => (
                         <div key={index} className="bg-white rounded-lg drop-shadow-md hover:drop-shadow-xl transition duration-300">
                             <div className="p-5 flex flex-col justify-between h-full">
                                 <div className="flex flex-col gap-2">
                                     <h2 className="text-lg font-semibold">{item.title}</h2>
-                                    <p className="text-sm text-gray-700">Peminjam: {item.name}</p>
-                                    <p className="text-sm">Tanggal Pinjam: {item.createdAt}</p>
-                                    <p className="text-sm">Batas Kembali: {item.returnDate}</p>
-                                    <p className="text-sm">Tanggal Kembali: {item.actualReturnDate}</p>
+                                    <p className="text-sm">
+                                        <strong>Peminjam:</strong>{" "}
+                                        <span className="text-[#757575]">{item.name}</span></p>
+
+                                    <p className="text-sm">
+                                        <strong>Tanggal Pinjam:</strong>{" "}
+                                        <span className="text-[#757575]">{item.createdAt}</span></p>
+
+                                    <p className="text-sm">
+                                        <strong>Batas Kembali:</strong>{" "}
+                                        <span className="text-[#757575]">{item.returnDate}</span> </p>
+
+                                    <p className="text-sm">
+                                        <strong>Tanggal Kembali:</strong>{" "}
+                                        <span className="text-[#757575]">{item.actualReturnDate}</span></p>
                                 </div>
 
                                 {item.status && (
@@ -70,7 +134,7 @@ export const Kembaliya = ({ items = [] }: cart1props) => {
                     ))}
                 </div>
 
-                <div className="flex justify-center items-center mt-6 gap-2 text-black">
+                <div className="flex justify-center gap-2 mt-6 flex-wrap px-4">
                     <button
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
@@ -78,7 +142,8 @@ export const Kembaliya = ({ items = [] }: cart1props) => {
                     >
                         &lt;
                     </button>
-                    {[...Array(2)].map((_, index) => {
+
+                    {[...Array(3)].map((_, index) => {
                         const page = currentPage + index;
                         if (page > totalPages) return null;
                         return (
@@ -94,6 +159,7 @@ export const Kembaliya = ({ items = [] }: cart1props) => {
                             </button>
                         );
                     })}
+
                     <button
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
