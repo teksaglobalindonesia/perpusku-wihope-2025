@@ -88,62 +88,65 @@ export default function PinjamanMemb({ loans, books }: PinjamanMembProps){
                         ← Back
                     </Link>
                 </div>
-                {filterLoan.length === 0 ? (
-                    <div className="w-full text-center py-10">
-                        <p className="text-xl md:text-2xl font-cyrodiil">
-                            This member hasn&apos;t borrowed any books
-                        </p>
-                    </div>
-                ) : (
-                    <>
-                    {filterLoan.map((pinjam) => {
-                    const bookData = pinjam.book ? getBookData(pinjam.book.id) : null;
-                    
-                    return(
-                        <div key={pinjam.id} className="w-full flex flex-col md:flex-row items-start 
-                    md:items-center justify-between border-2 md:border-4 rounded-md p-3 md:p-4 mt-3 md:mt-5 transition-all duration-300 hover:scale-105 hover:border-[#224B0C]">
-                            <div className="flex flex-col md:flex-row md:gap-7 w-full">
-                                <div className="relative w-12 h-12 md:w-16 md:h-16 mb-2 md:mb-0 transition-transform duration-300 hover:scale-110">
-                                    <Image 
-                                        src={`${API}${bookData?.cover?.url}`}  
-                                        alt={bookData?.title || "Book cover"} 
-                                        fill 
-                                        quality={100} 
-                                        className="object-contain" 
-                                    />
-                                </div>
-                                <div className="text-sm md:text-lg font-cyrodiil">
-                                    <h1 className="font-semibold line-clamp-1 md:line-clamp-none">
-                                        {pinjam.book?.title}
-                                    </h1>
-                                    <h3 className="line-clamp-1 md:line-clamp-none">
-                                        Borrowing: {pinjam.loan_date instanceof Date ? pinjam.loan_date.toLocaleDateString() : pinjam.loan_date}
-                                    </h3>
-                                    <h4 className="line-clamp-1 md:line-clamp-none">
-                                        Returning: {pinjam.return_date instanceof Date ? pinjam.return_date.toLocaleDateString() : pinjam.return_date}
-                                    </h4>
-                                    {/* {(pinjam.status === "Dipinjam" || pinjam.status === "Terlambat") && (
-                                        <div className="flex mt-2">
-                                            <button className="bg-green-400 px-4 md:px-8 clip-custom 
-                                            text-xs md:text-base">
-                                                Return
-                                            </button>
-                                        </div>
-                                    )} */}
-                                </div>
-                            </div>
-                            {isLateReturn(pinjam) && (
-                                <div className="mt-2 md:mt-0 md:ml-auto bg-red-600 text-white 
-                                px-3 md:px-4 py-1 md:py-2 clip-custom text-sm md:text-lg font-cyrodiil 
-                                w-full md:w-[160px] text-center">
-                                    Late to Return
-                                </div>
-                            )}
+                <div className="w-full border-2 md:border-4 
+                rounded-md p-3 md:p-6 mt-3 md:mt-5">
+                    {filterLoan.length === 0 ? (
+                        <div className="w-full text-center py-10">
+                            <p className="text-xl md:text-2xl font-cyrodiil">
+                                This member hasn&apos;t borrowed any books
+                            </p>
                         </div>
-                    )
-                })}
-                    </>
-                )}
+                    ) : (
+                        <>
+                        {filterLoan.map((pinjam) => {
+                        const bookData = pinjam.book ? getBookData(pinjam.book.id) : null;
+                        
+                        return(
+                            <div key={pinjam.id} className="w-full flex flex-col md:flex-row items-start 
+                        md:items-center justify-between border-2 md:border-4 rounded-md p-3 md:p-4 mt-3 md:mt-5 transition-all duration-300 hover:scale-[1.02] hover:border-[#224B0C]">
+                                <div className="flex flex-col md:flex-row md:gap-7 w-full">
+                                    <div className="relative w-12 h-12 md:w-16 md:h-16 mb-2 md:mb-0 transition-transform duration-300 hover:scale-110">
+                                        <Image 
+                                            src={`${API}${bookData?.cover?.url}`}  
+                                            alt={bookData?.title || "Book cover"} 
+                                            fill 
+                                            quality={100} 
+                                            className="object-contain" 
+                                        />
+                                    </div>
+                                    <div className="text-sm md:text-lg font-cyrodiil">
+                                        <h1 className="font-semibold line-clamp-1 md:line-clamp-none">
+                                            {pinjam.book?.title}
+                                        </h1>
+                                        <h3 className="line-clamp-1 md:line-clamp-none">
+                                            Borrowing: {pinjam.loan_date instanceof Date ? pinjam.loan_date.toLocaleDateString() : pinjam.loan_date}
+                                        </h3>
+                                        <h4 className="line-clamp-1 md:line-clamp-none">
+                                            Returning: {pinjam.return_date instanceof Date ? pinjam.return_date.toLocaleDateString() : pinjam.return_date}
+                                        </h4>
+                                        {/* {(pinjam.status === "Dipinjam" || pinjam.status === "Terlambat") && (
+                                            <div className="flex mt-2">
+                                                <button className="bg-green-400 px-4 md:px-8 clip-custom 
+                                                text-xs md:text-base">
+                                                    Return
+                                                </button>
+                                            </div>
+                                        )} */}
+                                    </div>
+                                </div>
+                                {isLateReturn(pinjam) && (
+                                    <div className="mt-2 md:mt-0 md:ml-auto bg-red-600 text-white 
+                                    px-3 md:px-4 py-1 md:py-2 clip-custom text-sm md:text-lg font-cyrodiil 
+                                    w-full md:w-[160px] text-center">
+                                        Late to Return
+                                    </div>
+                                )}
+                            </div>
+                        )
+                        })}
+                        </>
+                    )}
+                </div>
                 <Pagination 
                     currentPage={currentPage} 
                     totalPages={totalPages}

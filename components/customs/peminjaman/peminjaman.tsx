@@ -86,60 +86,73 @@ export default function Peminjaman({ peminjamans, books, returns }: { peminjaman
                         </Link>
                     </div>
                 </div>
-                {filterLoan.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((peminjam) => {
-                    const bookData = peminjam.book ? getBookData(peminjam.book.id) : null;
-                    
-                    return (
-                        <div key={peminjam.id} className="w-full border-2 md:border-4 rounded-md p-3 
-                        md:p-4 mt-3 md:mt-5 transition-all duration-300 hover:scale-105 hover:border-[#FFB22C]">
-                            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                                <div className="flex flex-col md:flex-row md:gap-7">
-                                    <div className="relative w-12 h-12 md:w-16 md:h-16 mb-2 md:mb-0 transition-transform duration-300 hover:scale-110">
-                                        {bookData?.cover ? (
-                                            <Image 
-                                                src={`${API}${bookData.cover.url}`} 
-                                                alt={bookData.title || "Book cover"} 
-                                                fill 
-                                                quality={100} 
-                                                className="object-contain"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                                                <span className="text-xs">No Image</span>
+                <div className="w-full border-2 md:border-4 
+                rounded-md p-3 md:p-6 mt-3 md:mt-5">
+                    {filterLoan.length === 0 ? (
+                        <div className="w-full text-center py-10">
+                            <p className="text-xl md:text-2xl font-cyrodiil">
+                                There is no loans available right now
+                            </p>
+                        </div>
+                    ): (
+                        <>
+                        {filterLoan.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((peminjam) => {
+                        const bookData = peminjam.book ? getBookData(peminjam.book.id) : null;
+                        
+                        return (
+                            <div key={peminjam.id} className="w-full border-2 md:border-4 rounded-md p-3 
+                            md:p-4 mt-3 md:mt-5 transition-all duration-300 hover:scale-[1.02] hover:border-[#FFB22C]">
+                                <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                                    <div className="flex flex-col md:flex-row md:gap-7">
+                                        <div className="relative w-12 h-12 md:w-16 md:h-16 mb-2 md:mb-0 transition-transform duration-300 hover:scale-110">
+                                            {bookData?.cover ? (
+                                                <Image 
+                                                    src={`${API}${bookData.cover.url}`} 
+                                                    alt={bookData.title || "Book cover"} 
+                                                    fill 
+                                                    quality={100} 
+                                                    className="object-contain"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                                                    <span className="text-xs">No Image</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="text-sm md:text-lg font-cyrodiil">
+                                            <h1 className="font-semibold line-clamp-1 md:line-clamp-none">
+                                                {peminjam.book?.title}
+                                            </h1>
+                                            <h2 className="line-clamp-1 md:line-clamp-none">
+                                                Borrower: {peminjam.member?.name}
+                                            </h2>
+                                            <h3 className="line-clamp-1 md:line-clamp-none">
+                                                Borrowing: {peminjam.loan_date instanceof Date ? peminjam.loan_date.toLocaleDateString() : peminjam.loan_date}
+                                            </h3>
+                                            <h4 className="line-clamp-1 md:line-clamp-none">
+                                                Returning: {peminjam.return_date instanceof Date ? peminjam.return_date.toLocaleDateString() : peminjam.return_date}
+                                            </h4>
+                                            <div className="flex flex-wrap gap-2 md:gap-3 mt-2">
+                                                <div className="bg-green-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base transition-colors duration-300 hover:bg-green-600 hover:text-white">
+                                                    Return
+                                                </div>
                                             </div>
-                                        )}
-                                    </div>
-                                    <div className="text-sm md:text-lg font-cyrodiil">
-                                        <h1 className="font-semibold line-clamp-1 md:line-clamp-none">
-                                            {peminjam.book?.title}
-                                        </h1>
-                                        <h2 className="line-clamp-1 md:line-clamp-none">
-                                            Borrower: {peminjam.member?.name}
-                                        </h2>
-                                        <h3 className="line-clamp-1 md:line-clamp-none">
-                                            Borrowing: {peminjam.loan_date instanceof Date ? peminjam.loan_date.toLocaleDateString() : peminjam.loan_date}
-                                        </h3>
-                                        <h4 className="line-clamp-1 md:line-clamp-none">
-                                            Returning: {peminjam.return_date instanceof Date ? peminjam.return_date.toLocaleDateString() : peminjam.return_date}
-                                        </h4>
-                                        <div className="flex flex-wrap gap-2 md:gap-3 mt-2">
-                                        <div className="bg-green-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base transition-colors duration-300 hover:bg-green-600 hover:text-white">
-                                            Return
                                         </div>
                                     </div>
-                                    </div>
+                                    {isLateReturn(peminjam) && (
+                                        <div className="mt-2 md:mt-0 md:ml-auto bg-red-600 text-white 
+                                        px-3 md:px-4 py-1 md:py-2 clip-custom text-sm md:text-lg font-cyrodiil 
+                                        w-full md:w-auto text-center">
+                                            Late to Return
+                                        </div>
+                                    )}
                                 </div>
-                                {isLateReturn(peminjam) && (
-                                    <div className="mt-2 md:mt-0 md:ml-auto bg-red-600 text-white 
-                                    px-3 md:px-4 py-1 md:py-2 clip-custom text-sm md:text-lg font-cyrodiil 
-                                    w-full md:w-auto text-center">
-                                        Late to Return
-                                    </div>
-                                )}
                             </div>
-                        </div>
-                    );
-                })}
+                        );
+                        })}
+                        </>
+                    )}
+                </div>
                 <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}

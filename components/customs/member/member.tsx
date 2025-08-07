@@ -44,7 +44,9 @@ export default function ListAnggota({ members }: { members: any[]}){
                         </Link>
                     </div>
                 </div>
-                {filterMember.length === 0 ? (
+                <div className="w-full border-2 md:border-4 
+                rounded-md p-3 md:p-6 mt-3 md:mt-5">
+                    {filterMember.length === 0 ? (
                     <div className="w-full text-center py-10">
                         <p className="text-xl md:text-2xl font-cyrodiil">
                             There is no members available right now
@@ -54,7 +56,7 @@ export default function ListAnggota({ members }: { members: any[]}){
                     <>
                     {filterMember.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((member) => (
                         <div key={member.id} className="w-full border-2 md:border-4 
-                        rounded-md p-3 md:p-4 mt-3 md:mt-5 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-[#FF8400]">
+                        rounded-md p-3 md:p-4 mt-3 md:mt-5 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-[#FF8400]">
                             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                                 <div className="text-sm md:text-lg font-cyrodiil">
                                     <h1 className="font-semibold line-clamp-1 md:line-clamp-none">
@@ -86,6 +88,7 @@ export default function ListAnggota({ members }: { members: any[]}){
                     ))}
                     </>
                 )}
+                </div>
                 <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}

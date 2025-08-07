@@ -37,7 +37,7 @@ export default function Habis({ books }: { books: any[] }){
                 <h1 className="text-2xl md:text-3xl font-semibold font-planewalker text-gray-900 mb-4">
                     Dashboard
                 </h1>
-                <div className="w-full border-2 md:border-4 rounded-md px-2 md:px-3 py-3 md:py-5 transition-all duration-300 hover:scale-105 hover:border-[#43766C]">
+                <div className="w-full border-2 md:border-4 rounded-md px-2 md:px-6 py-3 md:py-5">
                     <div className="flex flex-col md:flex-row md:items-center justify-between 
                     font-morrisroman gap-2 md:gap-0">
                         <h1 className="text-lg md:text-xl font-semibold">
@@ -62,7 +62,7 @@ export default function Habis({ books }: { books: any[] }){
                             {filterBook.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((book) => {
                             return(
                                 <div key={book.id} className="flex flex-col sm:flex-row items-start 
-                                sm:items-center justify-between border-2 md:border-4 rounded-md p-2 md:p-4 gap-2">
+                                sm:items-center justify-between border-2 md:border-4 rounded-md p-2 md:p-4 gap-2 transition-all duration-300 hover:scale-[1.02] hover:border-[#43766C]">
                                     <div className="flex flex-col sm:flex-row gap-3 md:gap-7 items-start sm:items-center w-full">
                                         <div className="relative w-12 h-12 md:w-16 md:h-16 transition-transform duration-300 hover:scale-110">
                                             <Image src={book.cover ? API + book.cover.url : "/idk"} alt={book.title} fill quality={100} className="object-contain"/>

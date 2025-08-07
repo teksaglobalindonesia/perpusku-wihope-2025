@@ -52,61 +52,63 @@ export default function ListBuku({ books }: { books: any[] }) {
               </Link>
             </div>
           </div>
-          {filterBooks.length === 0 ? (
-            <div className="w-full text-center py-10">
-              <p className="text-xl md:text-2xl font-cyrodiil">
-                There is no books available right now
-              </p>
-            </div>
-          ) : (
-            <>
-            {filterBooks.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((book) => {
-              return(
-                <div key={book.id} className="w-full md:flex md:items-center md:justify-between border-2 md:border-4 rounded-md p-3 md:p-4 mt-3 md:mt-5 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-[#6CBEC7]">
-                  <div className="flex flex-col md:flex-row md:gap-7">
-                    <div className="relative w-12 h-12 md:w-16 md:h-16 mb-2 md:mb-0 transition-transform duration-300 hover:scale-110">
-                      <Image src={book.cover ? API + book.cover.url : "/idk"} alt={book.title} fill quality={100} className="object-contain"/>
-                    </div>
-                    <div className="text-sm md:text-lg font-cyrodiil">
-                      <h1 className="font-semibold md:line-clamp-none line-clamp-1">
-                        {book.title}
-                      </h1>
-                      <h2 className="md:line-clamp-none line-clamp-1">
-                        {book.categories?.[0]?.name ?? null}
-                      </h2>
-                      <h3 className="md:line-clamp-none line-clamp-1">
-                        by {book.writer}
-                      </h3>
-                      <div className="flex gap-2 md:gap-3 mt-2">
-                        <Link
-                          href={`/buku/edit_buku`}
-                          className="bg-yellow-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base transition-colors duration-300 hover:bg-yellow-500"
-                          >
-                          Edit
-                        </Link>
-                        <button
-                          className="bg-red-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base transition-colors duration-300 hover:bg-red-500"
-                          onClick={() => setMunculPopup(true)}>
-                          Delete
-                        </button>
+          <div className="w-full border-2 md:border-4 rounded-md p-3 md:p-6 mt-3 md:mt-5">
+            {filterBooks.length === 0 ? (
+              <div className="w-full text-center py-10">
+                <p className="text-xl md:text-2xl font-cyrodiil">
+                  There is no books available right now
+                </p>
+              </div>
+            ) : (
+              <>
+              {filterBooks.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((book) => {
+                return(
+                    <div key={book.id} className="w-full md:flex md:items-center md:justify-between border-2 md:border-4 rounded-md p-3 md:p-4 mt-3 md:mt-5 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-[#6CBEC7]">
+                      <div className="flex flex-col md:flex-row md:gap-7">
+                        <div className="relative w-12 h-12 md:w-16 md:h-16 mb-2 md:mb-0 transition-transform duration-300 hover:scale-110">
+                          <Image src={book.cover ? API + book.cover.url : "/idk"} alt={book.title} fill quality={100} className="object-contain"/>
+                        </div>
+                        <div className="text-sm md:text-lg font-cyrodiil">
+                          <h1 className="font-semibold md:line-clamp-none line-clamp-1">
+                            {book.title}
+                          </h1>
+                          <h2 className="md:line-clamp-none line-clamp-1">
+                            {book.categories?.[0]?.name ?? null}
+                          </h2>
+                          <h3 className="md:line-clamp-none line-clamp-1">
+                            by {book.writer}
+                          </h3>
+                          <div className="flex gap-2 md:gap-3 mt-2">
+                            <Link
+                              href={`/buku/edit_buku`}
+                              className="bg-yellow-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base transition-colors duration-300 hover:bg-yellow-500"
+                              >
+                              Edit
+                            </Link>
+                            <button
+                              className="bg-red-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base transition-colors duration-300 hover:bg-red-500"
+                              onClick={() => setMunculPopup(true)}>
+                              Delete
+                            </button>
+                          </div>
+                        </div>
                       </div>
+                      {book.stock === 0 ? (
+                        <div className="mt-2 md:mt-0 md:ml-auto bg-red-600 text-white px-3 
+                        md:px-4 py-1 md:py-2 clip-custom text-sm md:text-lg font-cyrodiil w-full md:w-auto text-center">
+                          Unavailable
+                        </div>
+                      ) : (
+                        <h1 className="mt-2 md:mt-0 md:ml-auto text-sm md:text-lg font-morrisroman">
+                          Stok: {book.stock}
+                        </h1>
+                      )}
                     </div>
-                  </div>
-                  {book.stock === 0 ? (
-                    <div className="mt-2 md:mt-0 md:ml-auto bg-red-600 text-white px-3 
-                    md:px-4 py-1 md:py-2 clip-custom text-sm md:text-lg font-cyrodiil w-full md:w-auto text-center">
-                      Unavailable
-                    </div>
-                  ) : (
-                    <h1 className="mt-2 md:mt-0 md:ml-auto text-sm md:text-lg font-morrisroman">
-                      Stok: {book.stock}
-                    </h1>
-                  )}
-                </div>
-              )
-            })}
-          </>
-        )}
+                  )
+                })}
+              </>
+            )}
+          </div>
         <Pagination 
           currentPage={currentPage} 
           totalPages={totalPages}
