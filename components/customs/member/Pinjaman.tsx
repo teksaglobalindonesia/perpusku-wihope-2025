@@ -58,6 +58,15 @@ export default function PinjamanMemb({ loans, books }: PinjamanMembProps){
 
     const firstMember = loans[0]?.member;
 
+    const isLateReturn = (loan: Loan) => {
+        if (!loan.return || !loan.return.actual_return_date) return false;
+        
+        const returnDate = new Date(loan.return_date);
+        const actualReturnDate = new Date(loan.return.actual_return_date);
+        
+        return actualReturnDate > returnDate;
+    }
+
     return(
         <>
         <div className="w-full bg-[#FFEAC5] mt-16 md:mt-[84px] px-4 md:px-[64px] py-6 md:py-[40px]">
@@ -92,9 +101,9 @@ export default function PinjamanMemb({ loans, books }: PinjamanMembProps){
                     
                     return(
                         <div key={pinjam.id} className="w-full flex flex-col md:flex-row items-start 
-                    md:items-center justify-between border-2 md:border-4 rounded-md p-3 md:p-4 mt-3 md:mt-5">
+                    md:items-center justify-between border-2 md:border-4 rounded-md p-3 md:p-4 mt-3 md:mt-5 transition-all duration-300 hover:scale-105 hover:border-[#224B0C]">
                             <div className="flex flex-col md:flex-row md:gap-7 w-full">
-                                <div className="relative w-12 h-12 md:w-16 md:h-16 mb-2 md:mb-0">
+                                <div className="relative w-12 h-12 md:w-16 md:h-16 mb-2 md:mb-0 transition-transform duration-300 hover:scale-110">
                                     <Image 
                                         src={`${API}${bookData?.cover?.url}`}  
                                         alt={bookData?.title || "Book cover"} 
@@ -123,25 +132,13 @@ export default function PinjamanMemb({ loans, books }: PinjamanMembProps){
                                     )} */}
                                 </div>
                             </div>
-                            {/* {pinjam.status === "Terlambat" ? (
-                                <div className="mt-2 md:mt-0 md:ml-auto bg-red-600 text-white \
+                            {isLateReturn(pinjam) && (
+                                <div className="mt-2 md:mt-0 md:ml-auto bg-red-600 text-white 
                                 px-3 md:px-4 py-1 md:py-2 clip-custom text-sm md:text-lg font-cyrodiil 
-                                w-full md:w-auto text-center">
+                                w-full md:w-[160px] text-center">
                                     Late to Return
                                 </div>
-                            ) : pinjam.status === "Dikembalikan" ? (
-                                <div className="mt-2 md:mt-0 md:ml-auto bg-green-600 text-white 
-                                px-3 md:px-4 py-1 md:py-2 clip-custom text-sm md:text-lg font-cyrodiil 
-                                w-full md:w-auto text-center">
-                                    Returned
-                                </div>
-                            ) : pinjam.status === "Dipinjam" ? (
-                                <div className="mt-2 md:mt-0 md:ml-auto bg-blue-600 text-white 
-                                px-3 md:px-4 py-1 md:py-2 clip-custom text-sm md:text-lg font-cyrodiil 
-                                w-full md:w-auto text-center">
-                                    Borrowed
-                                </div>
-                            ) : null} */}
+                            )}
                         </div>
                     )
                 })}

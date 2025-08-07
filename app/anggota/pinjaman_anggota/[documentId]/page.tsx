@@ -13,6 +13,7 @@ interface Props {
 export default async function Page({ params }: Props){
     const { data: loans } = await fetchLoanMember(params.documentId);
     const { data: books } = await fetchBooks();
+
     return(
         <>
         <Header/>

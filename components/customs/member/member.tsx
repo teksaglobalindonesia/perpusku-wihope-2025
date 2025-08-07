@@ -54,7 +54,7 @@ export default function ListAnggota({ members }: { members: any[]}){
                     <>
                     {filterMember.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((member) => (
                         <div key={member.id} className="w-full border-2 md:border-4 
-                        rounded-md p-3 md:p-4 mt-3 md:mt-5">
+                        rounded-md p-3 md:p-4 mt-3 md:mt-5 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-[#FF8400]">
                             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                                 <div className="text-sm md:text-lg font-cyrodiil">
                                     <h1 className="font-semibold line-clamp-1 md:line-clamp-none">
@@ -68,15 +68,15 @@ export default function ListAnggota({ members }: { members: any[]}){
                                     </h3>
                                     <div className="flex flex-wrap gap-2 md:gap-3 mt-2">
                                         <Link href={`/anggota/pinjaman_anggota/${member.documentId}`} 
-                                        className="bg-blue-500 px-4 py-1 md:px-8 clip-custom text-xs md:text-base">
+                                        className="bg-blue-500 px-4 py-1 md:px-8 clip-custom text-xs md:text-base transition-colors duration-300 hover:bg-blue-700">
                                             Borrowing
                                         </Link>
                                         <Link href="/anggota/edit_member" className="bg-yellow-400 px-4 py-1 
-                                        md:px-8 clip-custom text-xs md:text-base">
+                                        md:px-8 clip-custom text-xs md:text-base transition-colors duration-300 hover:bg-yellow-500">
                                             Edit
                                         </Link>
                                         <button className="bg-red-400 px-4 py-1 md:px-8 clip-custom text-xs 
-                                        md:text-base" onClick={() => setMunculPopup(true)}>
+                                        md:text-base transition-colors duration-300 hover:bg-red-500" onClick={() => setMunculPopup(true)}>
                                             Delete
                                         </button>
                                     </div>

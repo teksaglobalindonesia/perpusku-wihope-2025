@@ -51,7 +51,7 @@ export default function Pinjaman({ loans = [], books }: { loans?: any[], books: 
     return(
         <>
         <div className="w-full bg-[#FFEAC5] px-4 sm:px-8 md:px-[64px] py-6 md:py-[40px]">
-            <div className="w-full border-2 md:border-4 rounded-md px-3 py-4 md:py-5">
+            <div className="w-full border-2 md:border-4 rounded-md px-3 py-4 md:py-5 transition-all duration-300 hover:scale-105 hover:border-[#0D5EA6]">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between font-morrisroman gap-3 sm:gap-0">
                     <h1 className="text-lg sm:text-xl font-semibold">
                         Today&apos;s borrowings
@@ -80,7 +80,7 @@ export default function Pinjaman({ loans = [], books }: { loans?: any[], books: 
                                 sm:items-center justify-between border-2 md:border-4 rounded-md p-2 md:p-4 gap-2">
                                 <div className="flex flex-col sm:gap-7 w-full">
                                     <div className="flex flex-col sm:flex-row gap-3 md:gap-7 items-start sm:items-center w-full">
-                                        <div className="relative w-12 h-12 md:w-16 md:h-16 mb-2 md:mb-0">
+                                        <div className="relative w-12 h-12 md:w-16 md:h-16 mb-2 md:mb-0 transition-transform duration-300 hover:scale-110">
                                             {bookData?.cover ? (
                                                 <Image 
                                                     src={`${API}${bookData.cover.url}`} 

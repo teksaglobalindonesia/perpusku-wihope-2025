@@ -71,10 +71,10 @@ export default function Pengembalian({ returns, books }: { returns: any[], books
 
                     return(
                         <div key={returns.id} className="w-full border-2 md:border-4 rounded-md p-3 
-                    md:p-4 mt-3 md:mt-5">
+                    md:p-4 mt-3 md:mt-5 transition-all duration-300 hover:scale-105 hover:border-[#430A5D]">
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                             <div className="flex flex-col md:flex-row md:gap-7">
-                                <div className="relative w-12 h-12 md:w-16 md:h-16 mb-2 md:mb-0">
+                                <div className="relative w-12 h-12 md:w-16 md:h-16 mb-2 md:mb-0 transition-transform duration-300 hover:scale-110">
                                     {bookData?.cover ? (
                                         <Image 
                                             src={`${API}${bookData.cover.url}`} 
