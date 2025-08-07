@@ -19,6 +19,54 @@ module.exports = {
     },
     extend: {
       colors: {
+        // Base colors
+        "primary-light": '#FAFAFA',
+        "primary-dark": '#222222',
+
+        // Neutral Red
+        'neutral-red': {
+          50: '#FDF2F2',
+          100: '#FCE8E8',
+          200: '#F8D1D1',
+          300: '#F2A8A8',
+          400: '#EA7A7A',
+          500: '#DD5555',  // Main neutral red
+          600: '#C53030',
+          700: '#9B2C2C',
+          800: '#742A2A',
+          900: '#4A1818',
+          950: '#2D0F0F',
+        },
+
+        // Neutral Green
+        'neutral-green': {
+          50: '#F0F9F0',
+          100: '#E2F2E2',
+          200: '#C6E6C6',
+          300: '#9DD49D',
+          400: '#6BBF6B',
+          500: '#48A548',  // Main neutral green
+          600: '#2D7D2D',
+          700: '#276627',
+          800: '#1E4F1E',
+          900: '#163316',
+          950: '#0D1A0D',
+        },
+
+        // Neutral Blue
+        'neutral-blue': {
+          50: '#F0F6FF',
+          100: '#E0EDFF',
+          200: '#B8DCFF',
+          300: '#7CC3FF',
+          400: '#36A2FF',
+          500: '#0A84FF',  // Main neutral blue
+          600: '#0066CC',
+          700: '#004499',
+          800: '#003366',
+          900: '#002244',
+          950: '#001122',
+        },
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
