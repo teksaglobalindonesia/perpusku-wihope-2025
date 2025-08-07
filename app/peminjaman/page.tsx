@@ -1,8 +1,17 @@
 import { Loan } from '@/components/custom/Peminjaman';
 import { BASE_URL, TOKEN, WIHOPE_NAME } from '@/lib/constant';
-import Link from 'next/link';
-export default async function Page() {
-  const loan = await fetch(`${BASE_URL}/api/loan/list`, {
+export default async function Page({
+  searchParams
+}: {
+  searchParams: { page?: string; q?: string };
+}) {
+  const page = searchParams.page ? parseInt(searchParams.page) : 1;
+  const query = searchParams.q || '';
+
+  const url = `${BASE_URL}/api/loan/list?page=${page}&page_size=4&search=${encodeURIComponent(
+    query
+  )}`;
+  const res = await fetch(url, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -11,11 +20,6 @@ export default async function Page() {
     },
     cache: 'no-store'
   });
-  const result = await loan.json();
-
-  return (
-    <>
-      <Loan data={result.data} />
-    </>
-  );
+  const data = await res.json();
+  return <Loan initialData={data} initialQuery={query} initialPage={page} />
 }

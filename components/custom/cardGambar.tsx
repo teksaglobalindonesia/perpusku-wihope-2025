@@ -1,7 +1,6 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
 import {
   DialogClose,
   Dialog,
@@ -53,7 +52,7 @@ export const CardGambar = ({ ...props }: CardGambarProps) => {
                 <h2 className="text-lg font-semibold text-vintage-brown sm:text-xl">
                   {item.title}
                 </h2>
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm sm:text-base">
+                <div className="flex flex-wrap flex-col gap-x-4 gap-y-1 text-sm sm:text-base">
                   <p className="text-beige-700">
                     <span className="font-medium text-beige-800">Genre:</span>{' '}
                     {item.genre}

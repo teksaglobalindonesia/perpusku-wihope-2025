@@ -28,7 +28,7 @@ export const PJCreate = () => {
   const memberData = [
     {
       name: 'John Doe',
-      UID: 12345,
+      id_member: 'MEM010',
       email: 'john.doe@example.com',
       buttons: []
     }

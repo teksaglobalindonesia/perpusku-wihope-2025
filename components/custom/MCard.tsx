@@ -1,3 +1,4 @@
+'use client'
 import Link from 'next/link';
 import { useState } from 'react';
 import { DialogClose } from '../ui/dialog';
@@ -5,9 +6,10 @@ import { DialogClose } from '../ui/dialog';
 export type MCardProps = {
   cardItems?: Array<{
     name?: string;
-    UID?: number;
+    id_member: string;
     email?: string;
     buttons?: Array<'peminjaman' | 'edit' | 'delete'>;
+    documentId?: string;
   }>;
   onEdit?: (index: number) => void;
   onDelete?: (index: number) => void;
@@ -104,7 +106,7 @@ export const MembersCard = ({ ...props }: MCardProps) => {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span className="text-sm">UID: {items.UID}</span>
+                <span className="text-sm">UID: {items.id_member}</span>
               </div>
 
               <div className="flex items-center gap-2">
@@ -135,7 +137,7 @@ export const MembersCard = ({ ...props }: MCardProps) => {
               <div className="mt-3 flex flex-wrap gap-2 border-t border-beige-300 pt-3">
                 {items.buttons.includes('peminjaman') && (
                   <Link
-                    href="/members/PJMember"
+                    href={`/peminjaman/${items.documentId}`}
                     className="min-w-[100px] flex-1 lg:flex-none"
                   >
                     <button

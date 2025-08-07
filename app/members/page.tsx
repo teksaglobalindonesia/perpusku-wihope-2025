@@ -1,9 +1,16 @@
-import Link from 'next/link';
 import { BASE_URL, TOKEN, WIHOPE_NAME } from '@/lib/constant';
 import { Members } from '@/components/custom/Members';
 
-export default async function Page() {
-  const anggotas = await fetch(`${BASE_URL}/api/member/list`, {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: {page?: string; q?: string;}
+}) {
+  const page = searchParams.page? parseInt(searchParams.page) : 1 ;
+  const query = searchParams.q || '';
+
+  const url = `${BASE_URL}/api/member/list?page=${page}&page_size=4&search=${encodeURIComponent(query)}`
+  const res = await fetch (url, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -11,9 +18,13 @@ export default async function Page() {
       'x-wihope-name': WIHOPE_NAME
     },
     cache: 'no-store'
-  });
-  const result = await anggotas.json();
-  const members = result?.data || [];
+  })
+  const data = await res.json();
 
-  return <Members/>;
+  return <Members initialData={data} initialQuery={query} initialPage={page} />
 }
+
+
+
+
+

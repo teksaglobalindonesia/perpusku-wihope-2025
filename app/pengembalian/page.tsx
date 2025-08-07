@@ -1,20 +1,36 @@
-import { Return } from '@/components/custom/PPengembalian'
-import Link from 'next/link'
+import { Return } from '@/components/custom/PPengembalian';
 import { BASE_URL, TOKEN, WIHOPE_NAME } from '@/lib/constant';
-export default async function Page() {
-  const loan = await fetch(`${BASE_URL}/api/loan/list?status=returned`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: TOKEN,
-        'x-wihope-name': WIHOPE_NAME
-      },
-      cache:'no-store'
-    });
-    const result = await loan.json()
+
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: { page?: string; q?: string };
+}) {
+  const page = searchParams.page ? parseInt(searchParams.page, 10) : 1;
+  const query = searchParams.q || '';
+
+  const url = new URL(`${BASE_URL}/api/return/list`);
+  url.searchParams.append('page', page.toString());
+  url.searchParams.append('page_size', '4');
+  if (query) url.searchParams.append('search', query);
+
+  const res = await fetch(url.toString(), {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: TOKEN,
+      'x-wihope-name': WIHOPE_NAME,
+    },
+    cache: 'no-store',
+  });
+
+  const data = await res.json();
+
   return (
-
-      <Return data={result.data}/>
-
-  )
+    <Return
+      initialData={data}
+      initialPage={page}
+      initialQuery={query}
+    />
+  );
 }
