@@ -1,12 +1,12 @@
 
-import { L_ReturnList } from "@/components/custom/admin/R_ReturnList";
+import { R_ReturnList } from "@/components/custom/admin/R_ReturnList";
 import { BASE_URL, NAME, TOKEN } from "@/lib/api";
-import { Member, ReturnRecord } from "@/type/api-response";
+import { Member, Pagination, ReturnRecord } from "@/type/api-response";
 
 export type StatusBukuType = {
     statusBukuItems?: ReturnRecord[];
     member: Member[];
-    maxData?: number;
+    pagination?: Pagination
 };
 
 export default async function R_Return() {
@@ -27,7 +27,7 @@ export default async function R_Return() {
     return (
         <>
             {/* <D_Header items={D_NavLinks} /> */}
-            <L_ReturnList statusBukuItems={data} member={data}/>
+            <R_ReturnList statusBukuItems={data} member={data}/>
         </>
     );
 }

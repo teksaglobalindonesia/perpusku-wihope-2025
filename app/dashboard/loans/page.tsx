@@ -1,11 +1,11 @@
 import { L_LoanList } from "@/components/custom/admin/L_LoanList";
 import { BASE_URL, NAME, TOKEN } from "@/lib/api";
-import { Member, Loan } from "@/type/api-response";
+import { Member, Loan, Pagination } from "@/type/api-response";
 
-export type LoanBukuType = {
+export type LoanListType = {
     statusBukuItems?: Loan[]
     member: Member;
-    maxData?: number;
+    pagination?: Pagination
 };
 
 export default async function L_Loan() {

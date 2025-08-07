@@ -3,70 +3,87 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { StatusBukuType } from '@/app/dashboard/returns/page';
 import { BASE_URL, NAME, TOKEN } from '@/lib/api';
+import { ReturnRecord, Pagination } from '@/type/api-response';
 
-export const L_ReturnList = ({ statusBukuItems = [], maxData = 5 }: StatusBukuType) => {
-    const [page, setPage] = useState(1);
+export const R_ReturnList = ({ statusBukuItems = [], pagination }: StatusBukuType) => {
+    const [page, setPage] = useState<number>(pagination?.pagination.page || 1);
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [filteredReturn, setFilteredReturn] = useState<any[]>(statusBukuItems);
+    const [filteredReturn, setFilteredReturn] = useState<ReturnRecord[]>(statusBukuItems as ReturnRecord[]);
+    const [paginationMeta, setPaginationMeta] = useState<Pagination['pagination']>(
+        pagination?.pagination || { page: 1, page_size: 10, total: 0, page_count: 1 }
+    );
 
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
-            const fetchReturns = async () => {
-                try {
-                    const response = await fetch(
-                        `${BASE_URL}/api/return/list${searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : ''}`,
-                        {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                Authorization: TOKEN,
-                                'x-wihope-name': NAME,
-                            },
-                            cache: 'no-store',
-                        }
-                    );
-                    const { data } = await response.json();
-                    setFilteredReturn(data || []);
-                } catch (error) {
-                    console.error('Error fetching returns:', error);
-                    setFilteredReturn([]);
-                }
+            const fetchBooks = async () => {
+                const response = await fetch(
+                    `${BASE_URL}/api/return/list?page=${page}&page_size=${paginationMeta.page_size}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''
+                    }`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: TOKEN,
+                            'x-wihope-name': NAME,
+                        },
+                        cache: 'no-store',
+                    }
+                );
+                const { data, meta } = await response.json();
+                setFilteredReturn(data || []);
+                setPaginationMeta(meta?.pagination || {
+                    page: 1,
+                    page_size: paginationMeta.page_size,
+                    total: 0,
+                    page_count: 1,
+                });
             };
-
-            fetchReturns();
-        }, 500);
+            fetchBooks();
+        }, 100);
 
         return () => clearTimeout(debounceTimer);
-    }, [searchQuery]);
-
-    const totalPages = Math.ceil(filteredReturn.length / maxData);
-    const paginatedData = filteredReturn.slice((page - 1) * maxData, page * maxData);
+    }, [searchQuery, page, paginationMeta.page_size]);
 
     useEffect(() => {
-        if (page > totalPages && totalPages > 0) {
+        if (page > paginationMeta.page_count && paginationMeta.page_count > 0) {
             setPage(1);
         }
-    }, [page, totalPages]);
-
+    }, [page, paginationMeta.page_count]);
 
     const paginationRange = () => {
         const delta = 2;
-        const range: (number | string)[] = [];
+        const range: (number | string)[] = [1];
         const left = Math.max(2, page - delta);
-        const right = Math.min(totalPages - 1, page + delta);
+        const right = Math.min(paginationMeta.page_count - 1, page + delta);
 
-        for (let i = left; i <= right; i++) {
-            range.push(i);
-        }
-        if (left > 2) range.unshift('...');
-        if (right < totalPages - 1) range.push('...');
-        range.unshift(1);
-        if (totalPages > 1) range.push(totalPages);
+        if (paginationMeta.page_count <= 1) return range;
+
+        if (left > 2) range.push('...');
+        for (let i = left; i <= right; i++) range.push(i);
+        if (right < paginationMeta.page_count - 1) range.push('...');
+        if (paginationMeta.page_count > 1) range.push(paginationMeta.page_count);
+
         return range;
     };
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
+        setPage(1);
+    };
+
+    const getButtonStyles = (isDisabled: boolean, isActive: boolean = false) => `
+        px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors
+        ${isDisabled
+            ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
+            : isActive
+                ? 'bg-black text-white border-black'
+                : 'bg-white text-black border-black hover:bg-black hover:text-white'
+        }
+    `;
+
+    const getStatusLabel = (returnDate: string, actualReturnDate: string | null) => {
+        if (!actualReturnDate) return 'BELUM DIKEMBALIKAN';
+        return new Date(actualReturnDate) <= new Date(returnDate) ? 'TEPAT WAKTU' : 'TERLAMBAT';
     };
 
     return (
@@ -79,7 +96,7 @@ export const L_ReturnList = ({ statusBukuItems = [], maxData = 5 }: StatusBukuTy
                             DAFTAR PENGEMBALIAN
                         </h1>
                         <div className="inline-block bg-black text-white px-8 py-4 text-sm font-medium tracking-wider">
-                            {filteredReturn.length === 0 ? 'EMPTY' : `${filteredReturn.length} ITEMS`}
+                            {paginationMeta.total === 0 ? 'EMPTY' : `${paginationMeta.total} ITEMS`}
                         </div>
                     </div>
                     <div className="w-full lg:max-w-md flex flex-col sm:flex-row gap-4">
@@ -108,9 +125,12 @@ export const L_ReturnList = ({ statusBukuItems = [], maxData = 5 }: StatusBukuTy
 
                 {/* Content Grid */}
                 <div className="space-y-8">
-                    {paginatedData.length > 0 ? (
-                        paginatedData.map((item, index) => (
-                            <div key={`${item.id}-${index}`} className="bg-white border-2 border-black hover:bg-gray-50 transition-colors duration-300">
+                    {filteredReturn.length > 0 ? (
+                        filteredReturn.map((item) => (
+                            <div
+                                key={item.id}
+                                className="bg-white border-2 border-black hover:bg-gray-50 transition-colors duration-300"
+                            >
                                 <div className="p-8">
                                     <div className="sm:grid flex-col flex gap-8 sm:grid-cols-12 items-center">
                                         <div className="col-span-1 sm:col-span-9 space-y-3 text-center sm:text-left">
@@ -119,12 +139,12 @@ export const L_ReturnList = ({ statusBukuItems = [], maxData = 5 }: StatusBukuTy
                                             <div className="text-lg text-gray-600 font-medium">Peminjam: {item.member.name}</div>
                                             <div className="text-lg text-gray-600 font-medium">Tanggal Peminjaman: {item.loan_date}</div>
                                             <div className="text-lg text-gray-600 font-medium">
-                                                Tanggal Pengembalian: {item.return_date || 'Belum dikembalikan'}
+                                                Tanggal Pengembalian: {item.return.actual_return_date || 'Belum dikembalikan'}
                                             </div>
                                         </div>
                                         <div className="col-span-3 space-y-4">
                                             <div className="bg-black text-center w-full text-white px-6 py-3 text-sm font-bold tracking-wider inline-block">
-                                                {/* {item.return_date <= item.ractual_return_date ? "TEPAT WAKTU" : "TERLAMBAT"} */} N/A
+                                                {getStatusLabel(item.return_date, item.return.actual_return_date)}
                                             </div>
                                             <div className="bg-white w-full text-black border-2 border-black px-6 py-3 text-sm font-bold tracking-wider text-center">
                                                 {item.return.actual_return_date || 'N/A'}
@@ -138,8 +158,7 @@ export const L_ReturnList = ({ statusBukuItems = [], maxData = 5 }: StatusBukuTy
                         <div className="bg-white border-2 border-black">
                             <div className="p-16 text-center">
                                 <h2 className="text-4xl font-bold text-black mb-4">
-                                    TIDAK ADA<br />
-                                    PENGEMBALIAN
+                                    TIDAK ADA<br />PENGEMBALIAN
                                 </h2>
                                 <p className="text-lg text-gray-600 font-medium">Tidak ada data pengembalian untuk ditampilkan</p>
                             </div>
@@ -148,19 +167,16 @@ export const L_ReturnList = ({ statusBukuItems = [], maxData = 5 }: StatusBukuTy
                 </div>
 
                 {/* Pagination */}
-                {totalPages > 1 && (
+                {paginationMeta.page_count > 1 && (
                     <div className="mt-16 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-                            HALAMAN {page} DARI {totalPages}
+                            HALAMAN {paginationMeta.page} DARI {paginationMeta.page_count}
                         </div>
                         <div className="flex flex-wrap justify-center gap-2">
                             <button
                                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                                 disabled={page === 1}
-                                className={`px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors ${page === 1
-                                    ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
-                                    : 'bg-white text-black border-black hover:bg-black hover:text-white'
-                                    }`}
+                                className={getButtonStyles(page === 1)}
                             >
                                 SEBELUMNYA
                             </button>
@@ -170,22 +186,16 @@ export const L_ReturnList = ({ statusBukuItems = [], maxData = 5 }: StatusBukuTy
                                         key={i}
                                         onClick={() => typeof pageNum === 'number' && setPage(pageNum)}
                                         disabled={pageNum === '...'}
-                                        className={`w-10 h-10 border-2 text-sm font-bold transition-colors ${pageNum === page
-                                            ? 'bg-black text-white border-black'
-                                            : 'bg-white text-black border-black hover:bg-black hover:text-white'
-                                            } ${pageNum === '...' && 'cursor-default'}`}
+                                        className={`w-10 h-10 ${getButtonStyles(pageNum === '...', pageNum === page)} ${pageNum === '...' && 'cursor-default'}`}
                                     >
                                         {pageNum}
                                     </button>
                                 ))}
                             </div>
                             <button
-                                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                                disabled={page === totalPages}
-                                className={`px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors ${page === totalPages
-                                    ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
-                                    : 'bg-white text-black border-black hover:bg-black hover:text-white'
-                                    }`}
+                                onClick={() => setPage((p) => Math.min(paginationMeta.page_count, p + 1))}
+                                disabled={page === paginationMeta.page_count}
+                                className={getButtonStyles(page === paginationMeta.page_count)}
                             >
                                 SELANJUTNYA
                             </button>

@@ -1,74 +1,89 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { StatusBukuType } from '@/app/dashboard/page';
 import { BASE_URL, NAME, TOKEN } from '@/lib/api';
+import { Book, Pagination } from '@/type/api-response';
+import { StatusBukuType } from '@/app/dashboard/page';
 
-export const D_EmptyBook = ({ statusBookItems = [], maxData = 2 }: StatusBukuType) => {
-    const [page, setPage] = useState<number>(1);
+export const D_EmptyBook = ({ statusBookItems = [], pagination }: StatusBukuType) => {
+    const [page, setPage] = useState<number>(pagination?.pagination.page || 1);
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [filteredEmpty, setFilteredEmpty] = useState<any[]>(statusBookItems.filter((item: any) => item.stock === 0));
+    const [filteredEmpty, setFilteredEmpty] = useState<Book[]>(statusBookItems as Book[]);
+    const [paginationMeta, setPaginationMeta] = useState<Pagination['pagination']>(
+        pagination?.pagination || { page: 1, page_size: 2, total: 0, page_count: 1 }
+    );
 
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
             const fetchBooks = async () => {
-                try {
-                    const response = await fetch(
-                        `${BASE_URL}/api/book/list${searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : ''}`,
-                        {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                Authorization: TOKEN,
-                                'x-wihope-name': NAME,
-                            },
-                            cache: 'no-store',
-                        }
-                    );
-                    const { data } = await response.json();
-                    // Apply client-side filter for stock === 0
-                    const emptyBooks = (data || []).filter((item: any) => item.stock === 0);
-                    setFilteredEmpty(emptyBooks);
-                } catch (error) {
-                    console.error('Error fetching books:', error);
-                    setFilteredEmpty([]);
-                }
+                const response = await fetch(
+                    `${BASE_URL}/api/book/list?page=${page}&page_size=2${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''
+                    }`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: TOKEN,
+                            'x-wihope-name': NAME,
+                        },
+                        cache: 'no-store',
+                    }
+                );
+                const { data, meta } = await response.json();
+                // Filter for stock === 0
+                const emptyBooks = (data || []).filter((item: Book) => item.stock === 0);
+                setFilteredEmpty(emptyBooks);
+                setPaginationMeta(
+                    meta?.pagination || {
+                        page: 1,
+                        page_size: 2,
+                        total: emptyBooks.length,
+                        page_count: Math.ceil(emptyBooks.length / 2),
+                    }
+                )
             };
-
             fetchBooks();
-        }, 500); // 500ms debounce delay
+        }, 100);
 
         return () => clearTimeout(debounceTimer);
-    }, [searchQuery]);
-
-    const totalPages = Math.ceil(filteredEmpty.length / maxData);
-    const paginatedData = filteredEmpty.slice((page - 1) * maxData, page * maxData);
+    }, [searchQuery, page]);
 
     useEffect(() => {
-        if (page > totalPages && totalPages > 0) {
+        if (page > paginationMeta.page_count && paginationMeta.page_count > 0) {
             setPage(1);
         }
-    }, [page, totalPages]);
+    }, [page, paginationMeta.page_count]);
 
     const paginationRange = () => {
         const delta = 2;
-        const range: (number | string)[] = [];
+        const range: (number | string)[] = [1];
         const left = Math.max(2, page - delta);
-        const right = Math.min(totalPages - 1, page + delta);
+        const right = Math.min(paginationMeta.page_count - 1, page + delta);
 
-        for (let i = left; i <= right; i++) {
-            range.push(i);
-        }
-        if (left > 2) range.unshift('...');
-        if (right < totalPages - 1) range.push('...');
-        range.unshift(1);
-        if (totalPages > 1) range.push(totalPages);
+        if (paginationMeta.page_count <= 1) return range;
+
+        if (left > 2) range.push('...');
+        for (let i = left; i <= right; i++) range.push(i);
+        if (right < paginationMeta.page_count - 1) range.push('...');
+        if (paginationMeta.page_count > 1) range.push(paginationMeta.page_count);
+
         return range;
     };
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
+        setPage(1);
     };
+
+    const getButtonStyles = (isDisabled: boolean, isActive: boolean = false) => `
+    px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors
+    ${isDisabled
+            ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
+            : isActive
+                ? 'bg-black text-white border-black'
+                : 'bg-white text-black border-black hover:bg-black hover:text-white'
+        }
+  `;
 
     return (
         <div className="max-h-[80%] bg-gray-50 px-5 md:px-10 pb-16">
@@ -80,7 +95,7 @@ export const D_EmptyBook = ({ statusBookItems = [], maxData = 2 }: StatusBukuTyp
                             BUKU STOK HABIS
                         </h1>
                         <div className="inline-block bg-black text-white px-8 py-4 text-sm font-medium tracking-wider">
-                            {filteredEmpty.length === 0 ? 'EMPTY' : `${filteredEmpty.length} ITEMS`}
+                            {paginationMeta.total === 0 ? 'EMPTY' : `${paginationMeta.total} ITEMS`}
                         </div>
                     </div>
                     <div className="w-full sm:max-w-md relative">
@@ -101,10 +116,10 @@ export const D_EmptyBook = ({ statusBookItems = [], maxData = 2 }: StatusBukuTyp
 
                 {/* Content Grid */}
                 <div className="space-y-8">
-                    {paginatedData.length > 0 ? (
-                        paginatedData.map((item, index) => (
+                    {filteredEmpty.length > 0 ? (
+                        filteredEmpty.map((item) => (
                             <div
-                                key={index}
+                                key={item.id}
                                 className="bg-white border-2 border-black hover:bg-gray-50 transition-colors duration-300"
                             >
                                 <div className="p-8">
@@ -150,19 +165,16 @@ export const D_EmptyBook = ({ statusBookItems = [], maxData = 2 }: StatusBukuTyp
                 </div>
 
                 {/* Pagination */}
-                {totalPages > 1 && (
+                {paginationMeta.page_count > 1 && (
                     <div className="mt-16 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-                            HALAMAN {page} DARI {totalPages}
+                            HALAMAN {paginationMeta.page} DARI {paginationMeta.page_count}
                         </div>
                         <div className="flex flex-wrap justify-center gap-2">
                             <button
                                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                                 disabled={page === 1}
-                                className={`px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors ${page === 1
-                                        ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
-                                        : 'bg-white text-black border-black hover:bg-black hover:text-white'
-                                    }`}
+                                className={getButtonStyles(page === 1)}
                             >
                                 SEBELUMNYA
                             </button>
@@ -172,22 +184,17 @@ export const D_EmptyBook = ({ statusBookItems = [], maxData = 2 }: StatusBukuTyp
                                         key={i}
                                         onClick={() => typeof pageNum === 'number' && setPage(pageNum)}
                                         disabled={pageNum === '...'}
-                                        className={`w-10 h-10 border-2 text-sm font-bold transition-colors ${pageNum === page
-                                                ? 'bg-black text-white border-black'
-                                                : 'bg-white text-black border-black hover:bg-black hover:text-white'
-                                            } ${pageNum === '...' && 'cursor-default'}`}
+                                        className={`w-10 h-10 ${getButtonStyles(pageNum === '...', pageNum === page)} ${pageNum === '...' && 'cursor-default'
+                                            }`}
                                     >
                                         {pageNum}
                                     </button>
                                 ))}
                             </div>
                             <button
-                                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                                disabled={page === totalPages}
-                                className={`px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors ${page === totalPages
-                                        ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
-                                        : 'bg-white text-black border-black hover:bg-black hover:text-white'
-                                    }`}
+                                onClick={() => setPage((p) => Math.min(paginationMeta.page_count, p + 1))}
+                                disabled={page === paginationMeta.page_count}
+                                className={getButtonStyles(page === paginationMeta.page_count)}
                             >
                                 SELANJUTNYA
                             </button>

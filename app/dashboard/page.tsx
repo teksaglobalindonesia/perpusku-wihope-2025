@@ -1,7 +1,7 @@
 import { D_EmptyBook } from "@/components/custom/admin/D_EmptyBook";
 import { D_LoanBooks } from "@/components/custom/admin/D_LoanBook";
 import { D_ReturnBooks } from "@/components/custom/admin/D_ReturnBook";
-import { Member, Book, ReturnRecord } from "@/type/api-response";
+import { Member, Book, ReturnRecord, Pagination } from "@/type/api-response";
 import { BASE_URL, NAME, TOKEN } from "@/lib/api";
 
 export type StatusBukuType = {
@@ -9,6 +9,7 @@ export type StatusBukuType = {
     member?: Member;
     return?:ReturnRecord ;
     maxData?: number;
+    pagination?: Pagination
 };
 
 

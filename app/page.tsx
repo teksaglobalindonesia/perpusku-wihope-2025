@@ -29,6 +29,7 @@
       <div className="overflow-hidden">
         <LoadingScreen isVisible={isLoading} onComplete={stopLoading} />
           <div className="h-screen w-screen flex justify-center items-center">
+            <p className="text-black font-semibold text-4xl">LOADING...</p>
           </div>
       </div>
     );

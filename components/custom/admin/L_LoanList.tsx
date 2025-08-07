@@ -1,74 +1,85 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { LoanBukuType } from '@/app/dashboard/loans/page';
+import { LoanListType } from '@/app/dashboard/loans/page';
 import { BASE_URL, NAME, TOKEN } from '@/lib/api';
-import { Loan } from '@/type/api-response';
+import { Loan, Pagination } from '@/type/api-response';
 
-export const L_LoanList = ({ statusBukuItems = [], maxData = 5 }: LoanBukuType) => {
+export const L_LoanList = ({ statusBukuItems = [], pagination }: LoanListType) => {
     const [page, setPage] = useState(1);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [filteredLoans, setFilteredLoans] = useState<Loan[]>(statusBukuItems);
 
+    const [paginationMeta, setPaginationMeta] = useState<Pagination['pagination']>(
+        pagination?.pagination || { page: 1, page_size: 5, total: 0, page_count: 1 }
+    );
+
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
-            const fetchLoans = async () => {
-                try {
-                    const response = await fetch(
-                        `${BASE_URL}/api/loan/list${searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : ''}`,
-                        {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                Authorization: TOKEN,
-                                'x-wihope-name': NAME,
-                            },
-                            cache: 'no-store',
-                        }
-                    );
-                    const { data } = await response.json();
-                    setFilteredLoans(data || []);
-                } catch (error) {
-                    console.error('Error fetching loans:', error);
-                    setFilteredLoans([]);
-                }
+            const fetchBooks = async () => {
+                const response = await fetch(
+                    `${BASE_URL}/api/loan/list?page=${page}&page_size=${paginationMeta.page_size}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''
+                    }`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: TOKEN,
+                            'x-wihope-name': NAME,
+                        },
+                        cache: 'no-store',
+                    }
+                );
+                const { data, meta } = await response.json();
+                setFilteredLoans(data || []);
+                setPaginationMeta(meta?.pagination || {
+                    page: 1,
+                    page_size: paginationMeta.page_size,
+                    total: 0,
+                    page_count: 1,
+                });
             };
-
-            fetchLoans();
-        }, 500);
+            fetchBooks();
+        }, 100);
 
         return () => clearTimeout(debounceTimer);
-    }, [searchQuery]);
-
-    const totalPages = Math.ceil(filteredLoans.length / maxData);
-    const paginatedData = filteredLoans.slice((page - 1) * maxData, page * maxData);
+    }, [searchQuery, page, paginationMeta.page_size]);
 
     useEffect(() => {
-        if (page > totalPages && totalPages > 0) {
+        if (page > paginationMeta.page_count && paginationMeta.page_count > 0) {
             setPage(1);
         }
-    }, [page, totalPages]);
-
+    }, [page, paginationMeta.page_count]);
 
     const paginationRange = () => {
         const delta = 2;
-        const range: (number | string)[] = [];
+        const range: (number | string)[] = [1];
         const left = Math.max(2, page - delta);
-        const right = Math.min(totalPages - 1, page + delta);
+        const right = Math.min(paginationMeta.page_count - 1, page + delta);
 
-        for (let i = left; i <= right; i++) {
-            range.push(i);
-        }
-        if (left > 2) range.unshift('...');
-        if (right < totalPages - 1) range.push('...');
-        range.unshift(1);
-        if (totalPages > 1) range.push(totalPages);
+        if (paginationMeta.page_count <= 1) return range;
+
+        if (left > 2) range.push('...');
+        for (let i = left; i <= right; i++) range.push(i);
+        if (right < paginationMeta.page_count - 1) range.push('...');
+        if (paginationMeta.page_count > 1) range.push(paginationMeta.page_count);
+
         return range;
     };
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
+        setPage(1);
     };
+
+    const getButtonStyles = (isDisabled: boolean, isActive: boolean = false) => `
+    px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors
+    ${isDisabled
+            ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
+            : isActive
+                ? 'bg-black text-white border-black'
+                : 'bg-white text-black border-black hover:bg-black hover:text-white'
+        }`;
 
     return (
         <div className="max-h-[80%] bg-gray-50 px-5 md:px-10 pb-16">
@@ -109,8 +120,8 @@ export const L_LoanList = ({ statusBukuItems = [], maxData = 5 }: LoanBukuType) 
 
                 {/* Content Grid */}
                 <div className="space-y-8">
-                    {paginatedData.length > 0 ? (
-                        paginatedData.map((item, index) => (
+                    {filteredLoans.length > 0 ? (
+                        filteredLoans.map((item, index) => (
                             <div key={`${item.id}-${index}`} className="bg-white border-2 border-black hover:bg-gray-50 transition-colors duration-300">
                                 <div className="p-8">
                                     <div className="sm:grid flex-col flex gap-8 sm:grid-cols-12 items-center">
@@ -154,19 +165,16 @@ export const L_LoanList = ({ statusBukuItems = [], maxData = 5 }: LoanBukuType) 
                 </div>
 
                 {/* Pagination */}
-                {totalPages > 1 && (
+                {paginationMeta.page_count > 1 && (
                     <div className="mt-16 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-                            HALAMAN {page} DARI {totalPages}
+                            HALAMAN {paginationMeta.page} DARI {paginationMeta.page_count}
                         </div>
                         <div className="flex flex-wrap justify-center gap-2">
                             <button
                                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                                 disabled={page === 1}
-                                className={`px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors ${page === 1
-                                    ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
-                                    : 'bg-white text-black border-black hover:bg-black hover:text-white'
-                                    }`}
+                                className={getButtonStyles(page === 1)}
                             >
                                 SEBELUMNYA
                             </button>
@@ -176,22 +184,17 @@ export const L_LoanList = ({ statusBukuItems = [], maxData = 5 }: LoanBukuType) 
                                         key={i}
                                         onClick={() => typeof pageNum === 'number' && setPage(pageNum)}
                                         disabled={pageNum === '...'}
-                                        className={`w-10 h-10 border-2 text-sm font-bold transition-colors ${pageNum === page
-                                            ? 'bg-black text-white border-black'
-                                            : 'bg-white text-black border-black hover:bg-black hover:text-white'
-                                            } ${pageNum === '...' && 'cursor-default'}`}
+                                        className={`w-10 h-10 ${getButtonStyles(pageNum === '...', pageNum === page)} ${pageNum === '...' && 'cursor-default'
+                                            }`}
                                     >
                                         {pageNum}
                                     </button>
                                 ))}
                             </div>
                             <button
-                                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                                disabled={page === totalPages}
-                                className={`px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors ${page === totalPages
-                                    ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
-                                    : 'bg-white text-black border-black hover:bg-black hover:text-white'
-                                    }`}
+                                onClick={() => setPage((p) => Math.min(paginationMeta.page_count, p + 1))}
+                                disabled={page === paginationMeta.page_count}
+                                className={getButtonStyles(page === paginationMeta.page_count)}
                             >
                                 SELANJUTNYA
                             </button>

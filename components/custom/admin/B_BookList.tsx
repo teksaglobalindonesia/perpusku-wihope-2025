@@ -2,25 +2,27 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { BookListType } from '@/app/dashboard/books/page';
 import { BASE_URL, NAME, TOKEN } from '@/lib/api';
-import { Book } from '@/type/api-response';
+import { Book, Pagination } from '@/type/api-response';
+import { BookListType } from '@/app/dashboard/books/page';
 
-export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) => {
-    const [page, setPage] = useState<number>(1);
+export const B_BookList = ({ bookListItems = [], pagination }: BookListType) => {
+    const [page, setPage] = useState<number>(pagination?.page || 1);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [bookToDeleteTitle, setBookToDeleteTitle] = useState<string | null>(null);
     const [bookToDeleteId, setBookToDeleteId] = useState<number | null>(null);
-
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [filteredBooks, setFilteredBooks] = useState<Book[]>(bookListItems);
+    const [paginationMeta, setPaginationMeta] = useState<Pagination['pagination']>(
+        pagination ?? { page: 1, page_size: 10, total: 0, page_count: 1 }
+    );
 
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
             const fetchBooks = async () => {
-                try {
                     const response = await fetch(
-                        `${BASE_URL}/api/book/list${searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : ''}`,
+                        `${BASE_URL}/api/book/list?page=${page}&page_size=${paginationMeta.page_size}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''
+                        }`,
                         {
                             method: 'GET',
                             headers: {
@@ -31,46 +33,46 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
                             cache: 'no-store',
                         }
                     );
-                    const { data } = await response.json();
+                    const { data, meta } = await response.json();
                     setFilteredBooks(data || []);
-                } catch (error) {
-                    console.error('Error fetching books:', error);
-                    setFilteredBooks([]);
-                }
+                    setPaginationMeta(meta?.pagination || {
+                        page: 1,
+                        page_size: paginationMeta.page_size,
+                        total: 0,
+                        page_count: 1,
+                    });
             };
-
             fetchBooks();
-        }, 500);
+        }, 100);
 
         return () => clearTimeout(debounceTimer);
-    }, [searchQuery]);+9
-
-    const totalPages = Math.ceil(filteredBooks.length / maxData);
-    const paginatedData = filteredBooks.slice((page - 1) * maxData, page * maxData);
+    }, [searchQuery, page, paginationMeta.page_size]);
 
     useEffect(() => {
-        if (page > totalPages && totalPages > 0) {
+        if (page > paginationMeta.page_count && paginationMeta.page_count > 0) {
             setPage(1);
         }
-    }, [page, totalPages]);
+    }, [page, paginationMeta.page_count]);
 
     const paginationRange = () => {
         const delta = 2;
-        const range: (number | string)[] = [];
+        const range: (number | string)[] = [1];
         const left = Math.max(2, page - delta);
-        const right = Math.min(totalPages - 1, page + delta);
+        const right = Math.min(paginationMeta.page_count - 1, page + delta);
 
-        for (let i = left; i <= right; i++) {
-            range.push(i);
-        }
+        if (paginationMeta.page_count <= 1) return range;
 
-        if (left > 2) range.unshift('...');
-        if (right < totalPages - 1) range.push('...');
-
-        range.unshift(1);
-        if (totalPages > 1) range.push(totalPages);
+        if (left > 2) range.push('...');
+        for (let i = left; i <= right; i++) range.push(i);
+        if (right < paginationMeta.page_count - 1) range.push('...');
+        if (paginationMeta.page_count > 1) range.push(paginationMeta.page_count);
 
         return range;
+    };
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value);
+        setPage(1);
     };
 
     const handleEdit = (id: number) => {
@@ -91,6 +93,7 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
             setShowDeleteModal(false);
             setBookToDeleteId(null);
             setBookToDeleteTitle(null);
+            // Add actual delete API call here if needed
         }
     };
 
@@ -100,9 +103,12 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
         setBookToDeleteTitle(null);
     };
 
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchQuery(e.target.value);
-    };
+    const getButtonStyles = (isDisabled: boolean, isActive: boolean = false) => `
+    px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors
+    ${isDisabled ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed' :
+            isActive ? 'bg-black text-white border-black' :
+                'bg-white text-black border-black hover:bg-black hover:text-white'}
+  `;
 
     return (
         <div className="max-h-[80%] bg-gray-50 px-5 md:px-10 pb-16">
@@ -114,7 +120,7 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
                             DAFTAR BUKU
                         </h1>
                         <div className="inline-block bg-black text-white px-8 py-4 text-sm font-medium tracking-wider">
-                            {filteredBooks.length === 0 ? 'EMPTY' : `${filteredBooks.length} ITEMS`}
+                            {paginationMeta.total === 0 ? 'EMPTY' : `${paginationMeta.total} ITEMS`}
                         </div>
                     </div>
                     <div className="w-full lg:max-w-md flex flex-col sm:flex-row gap-4">
@@ -143,8 +149,8 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
 
                 {/* Content Grid */}
                 <div className="space-y-8">
-                    {paginatedData.length > 0 ? (
-                        paginatedData.map((item) => (
+                    {filteredBooks.length > 0 ? (
+                        filteredBooks.map((item) => (
                             <div key={item.id} className="bg-white border-2 border-black hover:bg-gray-50 transition-colors duration-300">
                                 <div className="p-8">
                                     <div className="sm:grid sm:grid-cols-12 gap-8 items-center">
@@ -163,12 +169,8 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
                                             <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">
                                                 {item.categories[0]?.name}
                                             </div>
-                                            <h2 className="text-3xl font-bold text-black leading-tight">
-                                                {item.title}
-                                            </h2>
-                                            <div className="text-lg text-gray-600 font-medium">
-                                                {item.writer}
-                                            </div>
+                                            <h2 className="text-3xl font-bold text-black leading-tight">{item.title}</h2>
+                                            <div className="text-lg text-gray-600 font-medium">{item.writer}</div>
                                         </div>
                                         <div className="col-span-3 space-y-4">
                                             <div className="bg-black text-white border-2 px-6 py-3 text-sm font-bold tracking-wider hover:bg-black hover:text-white transition-colors duration-300 text-center">
@@ -200,28 +202,23 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
                                     TIDAK ADA<br />
                                     BUKU
                                 </h2>
-                                <p className="text-lg text-gray-600 font-medium">
-                                    Tidak ada buku untuk ditampilkan
-                                </p>
+                                <p className="text-lg text-gray-600 font-medium">Tidak ada buku untuk ditampilkan</p>
                             </div>
                         </div>
                     )}
                 </div>
 
                 {/* Pagination */}
-                {totalPages > 1 && (
+                {paginationMeta.page_count > 1 && (
                     <div className="mt-16 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-                            HALAMAN {page} DARI {totalPages}
+                            HALAMAN {paginationMeta.page} DARI {paginationMeta.page_count}
                         </div>
                         <div className="flex flex-wrap justify-center gap-2">
                             <button
                                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                                 disabled={page === 1}
-                                className={`px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors ${page === 1
-                                        ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
-                                        : 'bg-white text-black border-black hover:bg-black hover:text-white'
-                                    }`}
+                                className={getButtonStyles(page === 1)}
                             >
                                 SEBELUMNYA
                             </button>
@@ -231,22 +228,16 @@ export const B_BookList = ({ bookListItems = [], maxData = 5 }: BookListType) =>
                                         key={i}
                                         onClick={() => typeof pageNum === 'number' && setPage(pageNum)}
                                         disabled={pageNum === '...'}
-                                        className={`w-10 h-10 border-2 text-sm font-bold transition-colors ${pageNum === page
-                                                ? 'bg-black text-white border-black'
-                                                : 'bg-white text-black border-black hover:bg-black hover:text-white'
-                                            } ${pageNum === '...' && 'cursor-default'}`}
+                                        className={`w-10 h-10 ${getButtonStyles(pageNum === '...', pageNum === page)} ${pageNum === '...' && 'cursor-default'}`}
                                     >
                                         {pageNum}
                                     </button>
                                 ))}
                             </div>
                             <button
-                                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                                disabled={page === totalPages}
-                                className={`px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors ${page === totalPages
-                                        ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
-                                        : 'bg-white text-black border-black hover:bg-black hover:text-white'
-                                    }`}
+                                onClick={() => setPage((p) => Math.min(paginationMeta.page_count, p + 1))}
+                                disabled={page === paginationMeta.page_count}
+                                className={getButtonStyles(page === paginationMeta.page_count)}
                             >
                                 SELANJUTNYA
                             </button>
