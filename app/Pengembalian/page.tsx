@@ -1,74 +1,75 @@
 "use client";
 
 import { CardSimple } from "@/components/custom/card/cardsimple";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/custom/navbar";
 import { PengembalianHero } from "@/components/custom/pengembalianHero";
 import { Footer } from "@/components/custom/footer";
 import Link from "next/link";
+import Pagination from "@/components/custom/pagination";
+import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
 interface Pengembalian {
+  id: number;
   title: string;
   borrower: string;
   borrowedAt: string;
   returnAt: string;
   returned?: string;
-  status: "TERLAMBAT" | "DIPINJAM";
+  status?: "TERLAMBAT";
 }
 
-const dummyData: Pengembalian[] = [
-  {
-    title: "Judul Buku 1",
-    borrower: "Abi",
-    borrowedAt: "17 Juli 2025, 08.00",
-    returnAt: "24 Juli 2025",
-    returned: "24 Juli 2025",
-    status: "DIPINJAM",
-  },
-  {
-    title: "Judul Buku 2",
-    borrower: "Abu",
-    borrowedAt: "10 Juli 2025, 08.00",
-    returnAt: "17 Juli 2025",
-    returned: "20 Juli 2025",
-    status: "TERLAMBAT",
-  },
-  {
-    title: "Judul Buku 3",
-    borrower: "Abe",
-    borrowedAt: "17 Juli 2025, 08.00",
-    returnAt: "24 Juli 2025",
-    returned: "24 Juli 2025",
-    status: "DIPINJAM",
-  },
-  {
-    title: "Judul Buku 4",
-    borrower: "Abo",
-    borrowedAt: "10 Juli 2025, 08.00",
-    returnAt: "17 Juli 2025",
-    returned: "20 Juli 2025",
-    status: "TERLAMBAT",
-  },
-  {
-    title: "Judul Buku 5",
-    borrower: "Widhi",
-    borrowedAt: "17 Juli 2025, 08.00",
-    returnAt: "24 Juli 2025",
-    returned: "24 Juli 2025",
-    status: "DIPINJAM",
-  },
-  {
-    title: "Judul Buku 6",
-    borrower: "Widhi",
-    borrowedAt: "10 Juli 2025, 08.00",
-    returnAt: "17 Juli 2025",
-    returned: "20 Juli 2025",
-    status: "TERLAMBAT",
-  },
-];
-
 export default function PengembalianPage() {
+  const [pengembalian, setPengembalian] = useState<Pengembalian[]>([]);
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPengembalian, setTotalPengembalian] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const itemsPerPage = 3;
+  
+  useEffect(() => {
+    const fetchPengembalian = async () => {
+      setIsLoading(true);
+      try {
+        const url = `${BASE_URL}/api/return/list?page=${currentPage}&page_size=${itemsPerPage}&search=${encodeURIComponent(search)}`;
+        const peminjaman = await fetch(url, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: TOKEN,
+            "x-wihope-name": WIHOPE_NAME,
+          },
+          cache: "no-store",
+        });
+
+        const data = await peminjaman.json();
+        
+        const formatted = data.data.map((item: any) => ({
+          id: item.id,
+          title: item.book?.title || "Judul tidak tersedia",
+          borrower: item.member?.name || "Nama tidak tersedia",
+          borrowedAt: item.loan_date,
+          returnAt: item.return_date,
+          returned: item.return?.actual_return_date,
+          status: item.return?.actual_return_date &&
+            new Date(item.return.actual_return_date) > new Date(item.return_date)
+              ? "TERLAMBAT"
+              : undefined,
+        }));
+
+        setPengembalian(formatted);
+        setTotalPengembalian(data.total || data.meta?.pagination?.total || 0);
+      } catch (error) {
+        console.error("Gagal mengambil data pengembalian:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPengembalian();
+  }, [search, currentPage]);
+
+  const totalPages = Math.ceil(totalPengembalian / itemsPerPage);
 
   return (
     <>
@@ -82,50 +83,59 @@ export default function PengembalianPage() {
               placeholder="Search..."
               className="border px-3 py-1 rounded text-sm"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1); 
+              }}
             />
 
             <Link href="/Peminjaman/tambah">
-              <button className="bg-action-success text-neutral-white px-4 py-1 rounded text-sm">TAMBAH</button>
+              <button className="bg-action-success text-neutral-white px-4 py-1 rounded text-sm">
+                TAMBAH
+              </button>
             </Link>
           </div>
         </div>
-        <div className="space-y-4">
-          {dummyData
-            .filter((item) =>
-              item.borrower.toLowerCase().includes(search.toLowerCase())
-            )
-            .map((item, index) => (
-              <div
-                key={index}
-                className="border rounded-md px-6 py-4 shadow bg-neutral-white flex justify-between items-center"
-              >
-                <div>
-                  <CardSimple
-                    title={item.title}
-                    borrower={item.borrower}
-                    borrowedAt={item.borrowedAt}
-                    returnAt={item.returnAt}
-                    returned={item.returned}
-                  />
-                </div>
 
-                {item.status === "TERLAMBAT" && (
-                  <span className="text-neutral-white text-sm font-bold px-4 py-1 rounded bg-action-error">
-                    TERLAMBAT
-                  </span>
-                )}
-              </div>
-            ))}
-        </div>
-        <div className="flex items items-center justify-center space-x-2 my-8">
-            <a href="#" className="px-4 py-2 border rounded-md">&laquo;</a>
-            <a href="#" className="px-2 py-2 border rounded-md bg-neutral-mbrown text-neutral-white">1</a>
-            <a href="#" className="px-2 py-2 text-neutral-dbrown">2</a>
-            <a href="#" className="px-2 py-2 text-neutral-dbrown">3</a>
-            <a href="#" className="px-2 py-2 text-neutral-dbrown">...</a>
-            <a href="#" className="px-4 py-2 border rounded-md">&raquo;</a>
-        </div>
+        {isLoading ? (
+          <div className="text-center py-8 font-semibold text-neutral-mbrown">Sabar ya...</div>
+        ) : pengembalian.length === 0 ? (
+          <div className="text-center py-8 font-semibold text-neutral-mbrown">Tidak ada data pengembalian</div>
+        ) : (
+          <>
+            <div className="space-y-4">
+              {pengembalian.map((item) => (
+                <div
+                  key={item.id}
+                  className="border rounded-md px-6 py-4 shadow bg-neutral-white flex justify-between items-center"
+                >
+                  <div>
+                    <CardSimple
+                      title={item.title}
+                      borrower={item.borrower}
+                      borrowedAt={item.borrowedAt}
+                      returnAt={item.returnAt}
+                      returned={item.returned}
+                    />
+                  </div>
+                  {item.status === "TERLAMBAT" && (
+                    <span className="text-neutral-white text-sm font-bold px-4 py-1 rounded bg-action-error">
+                      TERLAMBAT
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => setCurrentPage(page)}
+              />
+            )}
+          </>
+        )}
       </div>
       <Footer />
     </>

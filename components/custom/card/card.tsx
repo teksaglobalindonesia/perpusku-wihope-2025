@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { CardPict } from "./cardpict";
 import { CardSimple } from "./cardsimple";
+import Pagination from "@/components/custom/pagination";
 
 export type BookData = {
   img?: string;
@@ -23,9 +24,18 @@ type Props = {
 
 export const Card = ({ title, variant = "default", searchable = false, books }: Props) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
 
   const filteredBooks = books.filter((book) =>
     book.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredBooks.length / itemsPerPage);
+
+  const paginatedBooks = filteredBooks.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
 
   return (
@@ -38,7 +48,9 @@ export const Card = ({ title, variant = "default", searchable = false, books }: 
               type="text"
               placeholder="Search..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1);
+
+              }}
               className="border px-3 py-2 rounded text-sm"
             />
             
@@ -57,19 +69,16 @@ export const Card = ({ title, variant = "default", searchable = false, books }: 
             <span className="bg-action-error text-white font-bold text-[16px] p-20 px-6 h-fit">HABIS</span>
           )}
           {book.status === "KEMBALIKAN" && (
-            <span className="bg-action-success text-white font-bold text-[16px] px-3 p-20 h-fit">KEMBALIKAN</span>
+            <button className="bg-action-success text-white font-bold text-[16px] px-3 p-2 rounded-lg">KEMBALIKAN</button>
           )}
         </div>
       ))}
 
-      <div className="flex items items-center justify-center space-x-2 my-8">
-        <a href="#" className="px-4 py-2 border rounded-md">&laquo;</a>
-        <a href="#" className="px-2 py-2 border rounded-md bg-neutral-mbrown text-neutral-white">1</a>
-        <a href="#" className="px-2 py-2 text-neutral-dbrown">2</a>
-        <a href="#" className="px-2 py-2 text-neutral-dbrown">3</a>
-        <a href="#" className="px-2 py-2 text-neutral-dbrown">...</a>
-        <a href="#" className="px-4 py-2 border rounded-md">&raquo;</a>
-      </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
     </section>
   );
 };

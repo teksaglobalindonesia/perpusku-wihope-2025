@@ -1,67 +1,76 @@
 "use client";
 
-import { CardSimple } from "@/components/custom/card/cardsimple";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/custom/navbar";
 import { PeminjamanHero } from "@/components/custom/peminjamanHero";
 import { Footer } from "@/components/custom/footer";
+import { CardSimple } from "@/components/custom/card/cardsimple";
 import Link from "next/link";
+import Pagination from "@/components/custom/pagination";
+import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
 interface Peminjaman {
+  id: number;
   title: string;
   borrower: string;
   borrowedAt: string;
   returnAt: string;
+  returned?: string;
   status: "TERLAMBAT" | "DIPINJAM";
 }
 
-const dummyData: Peminjaman[] = [
-  {
-    title: "Judul Buku 1",
-    borrower: "Abi",
-    borrowedAt: "17 Juli 2025, 08.00",
-    returnAt: "24 Juli 2025",
-    status: "DIPINJAM",
-  },
-  {
-    title: "Judul Buku 2",
-    borrower: "Abu",
-    borrowedAt: "10 Juli 2025, 08.00",
-    returnAt: "17 Juli 2025",
-    status: "TERLAMBAT",
-  },
-  {
-    title: "Judul Buku 3",
-    borrower: "Abe",
-    borrowedAt: "17 Juli 2025, 08.00",
-    returnAt: "24 Juli 2025",
-    status: "DIPINJAM",
-  },
-  {
-    title: "Judul Buku 4",
-    borrower: "Abo",
-    borrowedAt: "10 Juli 2025, 08.00",
-    returnAt: "17 Juli 2025",
-    status: "TERLAMBAT",
-  },
-  {
-    title: "Judul Buku 5",
-    borrower: "Widhi",
-    borrowedAt: "17 Juli 2025, 08.00",
-    returnAt: "24 Juli 2025",
-    status: "DIPINJAM",
-  },
-  {
-    title: "Judul Buku 6",
-    borrower: "Widhi",
-    borrowedAt: "10 Juli 2025, 08.00",
-    returnAt: "17 Juli 2025",
-    status: "TERLAMBAT",
-  },
-];
-
 export default function PeminjamanPage() {
+  const [peminjaman, setPeminjaman] = useState<Peminjaman[]>([]);
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPeminjaman, setTotalPeminjaman] = useState(0);
+
+  const itemsPerPage = 3;
+
+  useEffect(() => {
+    const fetchPeminjaman = async () => {
+      try {
+        const url = `${BASE_URL}/api/loan/list?page=${currentPage}&page_size=${itemsPerPage}&search=${encodeURIComponent(search)}`;
+        const peminjaman = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: TOKEN,
+            "x-wihope-name": WIHOPE_NAME,
+          },
+          cache: "no-store",
+        });
+
+        const dataPeminjaman = await peminjaman.json();
+
+        const formatted = dataPeminjaman.data.map((item: any) => ({
+          id: item.id,
+          title: item.book?.title,
+          borrower: item.member?.name,
+          borrowedAt: item.loan_date,
+          returnAt: item.return_date,
+          returned: item.return ? "Sudah Dikembalikan" : "Belum Dikembalikan",
+          status:
+            !item.return && new Date(item.return_date) < new Date()
+              ? "TERLAMBAT"
+              : "DIPINJAM",
+        }));
+
+        setPeminjaman(formatted);
+        setTotalPeminjaman(dataPeminjaman.total);
+      } catch (error) {
+        console.error("Gagal mengambil data peminjaman:", error);
+      }
+    };
+
+    fetchPeminjaman();
+  }, [search, currentPage]);
+
+  const totalPages = Math.ceil(totalPeminjaman / itemsPerPage);
+
+  // const filtered = peminjaman.filter((item) =>
+  //   item.borrower.toLowerCase().includes(search.toLowerCase())
+  // );
 
   return (
     <>
@@ -77,52 +86,50 @@ export default function PeminjamanPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-
             <Link href="/Peminjaman/tambah">
-              <button className="bg-action-success text-neutral-white px-4 py-1 rounded text-sm">TAMBAH</button>
+              <button className="bg-action-success text-neutral-white px-4 py-1 rounded text-sm">
+                TAMBAH
+              </button>
             </Link>
           </div>
         </div>
+
         <div className="space-y-4">
-          {dummyData
-            .filter((item) =>
-              item.borrower.toLowerCase().includes(search.toLowerCase())
-            )
-            .map((item, index) => (
-              <div
-                key={index}
-                className="border rounded-md px-6 py-4 shadow bg-neutral-white flex justify-between items-center"
-              >
-                <div>
-                  <CardSimple
+          {peminjaman.map((item) => (
+            <div
+              key={item.id}
+              className="border rounded-md px-6 py-4 shadow bg-neutral-white flex justify-between items-center"
+            >
+              <div>
+                <CardSimple
                     title={item.title}
                     borrower={item.borrower}
                     borrowedAt={item.borrowedAt}
                     returnAt={item.returnAt}
-                  />
-                  <button className="mt-3 bg-action-success font-medium text-neutral-white px-4 py-1 rounded text-sm">
-                    KEMBALIKAN
-                  </button>
-                </div>
-
-                {item.status === "TERLAMBAT" && (
-                  <span className="text-neutral-white text-sm font-bold px-4 py-1 rounded bg-action-error">
-                    TERLAMBAT
-                  </span>
-                )}
+                />
+                <button className="mt-3 bg-action-success font-medium text-neutral-white px-4 py-1 rounded text-sm">
+                  KEMBALIKAN
+                </button>
               </div>
-            ))}
+
+              {item.status === "TERLAMBAT" && (
+                <span className="text-neutral-white text-sm font-bold px-4 py-1 rounded bg-action-error">
+                  TERLAMBAT
+                </span>
+              )}
+            </div>
+          ))}
         </div>
-        <div className="flex items items-center justify-center space-x-2 my-8">
-            <a href="#" className="px-4 py-2 border rounded-md">&laquo;</a>
-            <a href="#" className="px-2 py-2 border rounded-md bg-neutral-mbrown text-neutral-white">1</a>
-            <a href="#" className="px-2 py-2 text-neutral-dbrown">2</a>
-            <a href="#" className="px-2 py-2 text-neutral-dbrown">3</a>
-            <a href="#" className="px-2 py-2 text-neutral-dbrown">...</a>
-            <a href="#" className="px-4 py-2 border rounded-md">&raquo;</a>
-        </div>
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
       </div>
       <Footer />
     </>
   );
 }
+
+

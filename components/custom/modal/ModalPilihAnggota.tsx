@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Pagination from "@/components/custom/pagination";
 
 const dummyAnggota = [
   {

@@ -1,6 +1,3 @@
-
-"use client";
-
 type Props = {
   title: string;
   borrower?: string;
@@ -17,8 +14,13 @@ export const CardSimple = ({ title, borrower, borrowedAt, returnAt, returned }: 
         <p className="text-[14px] font-medium text-neutral-mbrown mt-1 leading-relaxed">
           Peminjam: {borrower} <br />
           Peminjaman: {borrowedAt} <br />
-          Pengembalian: {returnAt} <br />
-          Dikembalikan: {returned}
+          Pengembalian: {returnAt}
+          {returned && (
+            <>
+              <br />
+              Dikembalikan: {returned}
+            </>
+          )}
         </p>
       </div>
     </div>
