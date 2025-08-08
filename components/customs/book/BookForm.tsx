@@ -33,7 +33,7 @@ export const BookForm = ({ title, type, data }: BookFormTypeProps) => {
   return (
     <div className="mx-auto px-6 py-5 md:my-[50px] md:max-w-[80%]">
       <BackButton />
-      <div className="mt-15 mx-auto w-full space-y-3 rounded-[20px] bg-neutral-silver p-[30px] md:w-[75%] ">
+      <div className="mt-15 mx-auto w-full space-y-3 rounded-[20px] bg-neutral-silver p-[30px] sm:mt-auto md:w-[75%] ">
         <h1 className="py-2 text-2xl font-bold">{title}</h1>
         <div>
           <label className="mb-1 block font-medium">Judul</label>
