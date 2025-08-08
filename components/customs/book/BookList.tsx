@@ -73,18 +73,18 @@ export const BookList = ({ type, data, layout }: BookListPropTypes) => {
       {/* headerList */}
       <div className="mb-2 flex flex-col justify-between gap-[15px] px-5 py-5 sm:flex-row">
         <h1 className="text-2xl font-semibold">{layout.title ?? 'Buku'}</h1>
-        <div className="flex gap-[10px]">
+        <div className="flex flex-col gap-[10px] sm:flex-row">
           <input
             type="text"
             placeholder="Search"
-            className="rounded-sm border-2 border-neutral-dgray px-3 py-1 outline-none ring-0"
+            className="w-full rounded-sm border-2 border-neutral-dgray px-3 py-1 outline-none ring-0 "
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
           {type == 'all' && (
             <Link
               href={`/book/new`}
-              className="rounded-sm bg-brand-primary px-4 py-1 text-white"
+              className="w-full rounded-sm bg-brand-primary px-4 py-1 text-center text-white"
             >
               Tambah
             </Link>
@@ -104,13 +104,15 @@ export const BookList = ({ type, data, layout }: BookListPropTypes) => {
               key={i}
             >
               <div className="w-full gap-[15px] sm:flex sm:w-auto">
-                <div className="relative h-[300px] w-[200px]">
-                  <Image
-                    src={`${BASE_URL}${data?.cover?.url}`}
-                    fill
-                    alt=""
-                    className="object-cover object-center"
-                  />
+                <div className="flex  justify-center sm:w-[200px] sm:justify-normal">
+                  <div className="relative h-[300px] w-[200px]">
+                    <Image
+                      src={`${BASE_URL}${data?.cover?.url}`}
+                      fill
+                      alt=""
+                      className="object-cover object-center"
+                    />
+                  </div>
                 </div>
                 <div className="mt-5 flex flex-col justify-center gap-[5px]">
                   <p className="text-bold text-2xl font-semibold">

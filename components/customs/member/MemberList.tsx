@@ -66,7 +66,7 @@ export const MemberList = ({ data, pageSize }: MemberListPropsType) => {
 
           <Link
             href={'/member/new'}
-            className="rounded-sm bg-brand-primary px-4 py-1 text-white"
+            className="w-full rounded-sm bg-brand-primary px-4 py-1 text-center text-white"
           >
             Tambah
           </Link>

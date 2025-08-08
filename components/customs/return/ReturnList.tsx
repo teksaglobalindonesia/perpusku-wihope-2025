@@ -72,7 +72,7 @@ export const ReturnList = ({
           <input
             type="text"
             placeholder="Search"
-            className="rounded-sm border-2 border-neutral-dgray px-3 py-1 outline-none ring-0"
+            className="w-full rounded-sm border-2 border-neutral-dgray px-3 py-1 outline-none ring-0"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />

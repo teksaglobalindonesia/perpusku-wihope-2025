@@ -77,12 +77,12 @@ export const LoanList = ({
     <div className="my-[50px] px-[50px]">
       <div className="mb-[15px] flex flex-col justify-between gap-[15px] sm:flex-row">
         <h1 className="text-2xl font-semibold">{layout.title ?? 'Buku'}</h1>
-        <div className="flex gap-[10px]">
+        <div className="flex flex-col gap-[10px] sm:flex-row">
           {layout.searchBar !== false && (
             <input
               type="text"
               placeholder="Search"
-              className="rounded-sm border-2 border-neutral-dgray px-3 py-1 outline-none ring-0"
+              className="w-full rounded-sm border-2 border-neutral-dgray px-3 py-1 outline-none ring-0"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />
@@ -90,7 +90,7 @@ export const LoanList = ({
           {!today && (
             <Link
               href={`/loan/new`}
-              className="rounded-sm bg-brand-primary px-4 py-1 text-white"
+              className="w-full rounded-sm bg-brand-primary px-4 py-1 text-center text-white"
             >
               Tambah
             </Link>
