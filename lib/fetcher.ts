@@ -1,13 +1,9 @@
 import axios from 'axios';
-import { BASE_URL, AUTHORIZATION_TOKEN, WIHOPE_NAME } from './constant';
-
-type a = {
-  [key: string]: any;
-};
+import { BASE_URL, AUTHORIZATION_TOKEN, WIHOPE_NAME } from '@/lib/constant';
 
 type FetcherType = {
   path: string;
-  query?: string;
+  query?: string | null;
   body?: object;
   headers?: object;
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -25,14 +21,16 @@ export const fetcher = async ({
   method = 'GET',
   pagination = {
     page: 1,
-    pageSize: 10
+    pageSize: 5
   }
 }: FetcherType) => {
-  // const paginationQuery = `page=${pagination.page}&page_size=${pagination.pageSize}`;
-  const paginationQuery = '';
-  const url: string = `${BASE_URL}/api${
-    query ? `${path}?${query}` : `${path}`
+  const paginationQuery = `page=${pagination.page ?? 1}&page_size=${
+    pagination.pageSize ?? 5
   }`;
+  const url: string = `${BASE_URL}/api${
+    query ? `${path}?${query}&${paginationQuery}` : `${path}?${paginationQuery}`
+  }`;
+
   try {
     const response = await axios({
       method,
@@ -44,10 +42,10 @@ export const fetcher = async ({
       },
       data: body
     });
-
     return {
       status: response?.status,
-      data: response?.data || []
+      data: response?.data || [],
+      url
     };
   } catch (err: any) {
     return {

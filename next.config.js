@@ -23,7 +23,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'cms.perpusku.widhimp.my.id'
+        hostname: 'cms-perpusku.widhimp.my.id'
       }
     ]
   },

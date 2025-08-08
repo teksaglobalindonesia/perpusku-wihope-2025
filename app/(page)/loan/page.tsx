@@ -1,6 +1,6 @@
-import { LoanList } from '@/components/customs/dev/loan/LoanList';
+import { LoanList } from '@/components/customs/loan/LoanList';
 import { Header } from '@/components/customs/layouts/header';
-import { fetcher } from '@/lib/dev/fetcher';
+import { fetcher } from '@/lib/fetcher';
 
 export default async function Return() {
   const pageSize = 10;

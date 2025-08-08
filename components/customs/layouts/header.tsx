@@ -14,7 +14,7 @@ const NavDatas: Array<NavLinkHeadeDataTypes> = [
   },
   {
     label: 'Buku',
-    href: '/books'
+    href: '/book'
   },
   {
     label: 'Anggota',

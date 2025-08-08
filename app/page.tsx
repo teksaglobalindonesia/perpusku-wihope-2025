@@ -1,9 +1,8 @@
-import { BookList } from '@/components/customs/dev/book/BookList';
-import { InternalPaginationControll } from '@/components/customs/dev/common/InternalPaginationControll';
-import { LoanList } from '@/components/customs/dev/loan/LoanList';
-import { ReturnList } from '@/components/customs/dev/return/ReturnList';
+import { BookList } from '@/components/customs/book/BookList';
+import { LoanList } from '@/components/customs/loan/LoanList';
+import { ReturnList } from '@/components/customs/return/ReturnList';
 import { Header } from '@/components/customs/layouts/header';
-import { fetcher } from '@/lib/dev/fetcher';
+import { fetcher } from '@/lib/fetcher';
 import { format } from 'date-fns';
 
 export default async function Page() {

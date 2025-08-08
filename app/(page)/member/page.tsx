@@ -1,9 +1,9 @@
-import { MemberList } from '@/components/customs/dev/member/MemberList';
+import { MemberList } from '@/components/customs/member/MemberList';
 import { Header } from '@/components/customs/layouts/header';
-import { fetcher } from '@/lib/dev/fetcher';
+import { fetcher } from '@/lib/fetcher';
 
 export default async function Member() {
-  const pageSize = 1;
+  const pageSize = 10;
   const memberDatas = await fetcher({
     path: '/member/list',
     pagination: {
