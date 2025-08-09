@@ -1,10 +1,52 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { books } from '@/app/bukuDummy/data';
+import { BASE_URL, TOKEN, WIHOPE_NAME } from '@/lib/constant';
+
+type BookCategory = {
+  id: number;
+  name: string;
+};
+
+type Item = {
+  id: number;
+  title: string;
+  writer: string;
+  stock: number;
+  gambar: string;
+  publisher: string;
+  categories?: BookCategory[];
+  book_categories?: BookCategory;
+};
 
 const CthPilihBuku = () => {
+  const [books, setBooks] = useState<Item[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const res = await fetch(`${BASE_URL}/api/book/list`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: TOKEN,
+            'x-wihope-name': WIHOPE_NAME
+          },
+          cache: 'no-store'
+        });
+        const data = await res.json();
+        setBooks(data?.data || []);
+      } catch (error) {
+        console.error('Gagal fetch data buku:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooks();
+  }, []);
+
   return (
     <div className="min-h-[540px] w-full">
       <div className="mt-6 flex flex-row justify-between p-4 px-9 font-light">
@@ -13,64 +55,54 @@ const CthPilihBuku = () => {
             Pilih Buku
           </span>
         </h1>
-        <div>
-          <input
-            type="text"
-            placeholder="Search..."
-            className="rounded border px-3 py-1"
-          />
-          <Link href="/book/add">
-            <button className="text-md mx-2 rounded-md bg-green-400 px-2 py-1 font-bold text-gray-700 hover:bg-green-300">
-              Tambahkan Buku
-            </button>
-          </Link>
-        </div>
+        <input
+          type="text"
+          placeholder="Search by title, name, or date"
+          className="mb-3 w-64 rounded border px-3 py-1"
+        />
       </div>
 
-      {/* Tabel Buku */}
       <div className="mx-8 mb-8 rounded-md p-4">
-        <div className="space-y-4">
-          {books.map((item) => (
-            <div
-              key={item.id}
-              className="flex items-center justify-between rounded border p-4"
-            >
-              <div className="flex items-center gap-4">
-                <div className="flex h-24 w-24 items-center justify-center rounded border border-blue-950 bg-blue-100 p-2">
-                  <img src={item.gambar} alt={item.judul} />
+        {loading ? (
+          <p className="text-center">Memuat data buku...</p>
+        ) : books.length === 0 ? (
+          <p className="text-center text-gray-500">Tidak ada buku ditemukan.</p>
+        ) : (
+          <div className="space-y-4">
+            {books.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center justify-between rounded border p-4"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="flex h-24 w-24 items-center justify-center rounded border border-blue-950 bg-blue-100 p-2">
+                    <img
+                      src={item.gambar}
+                      alt={item.title}
+                      className="max-h-full max-w-full"
+                    />
+                  </div>
+                  <div>
+                    <p className="font-semibold">{item.title}</p>
+                    {/* <p className="text-sm">{item.categories}</p> */}
+                    <p className="text-sm">{item.writer}</p>
+                    <button className="my-1 rounded bg-purple-500 px-3 py-1 text-sm font-bold text-white">
+                      Pilih
+                    </button>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-semibold">{item.judul}</p>
-                  <p className="text-sm">{item.genre}</p>
-                  <p className="text-sm">{item.penulis}</p>
-                  <button className="my-1 rounded bg-purple-500 px-3 py-1 text-sm font-bold text-white">
-                    Pilih
-                  </button>
-                </div>
+
+                {item.stock > 0 ? (
+                  <p>Stok: {item.stock}</p>
+                ) : (
+                  <span className="rounded bg-red-500 px-2 py-1 text-sm text-white">
+                    HABIS
+                  </span>
+                )}
               </div>
-
-              {item.stok > 0 ? (
-                <p>Stok: {item.stok}</p>
-              ) : (
-                <span className="rounded bg-red-500 px-2 py-1 text-sm text-white">
-                  HABIS
-                </span>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Pagination */}
-        <div className="mt-6 flex justify-center space-x-2 text-sm text-gray-700">
-          {['<', 1, 2, '...', 20, '>'].map((item, index) => (
-            <div
-              key={index}
-              className="cursor-pointer rounded-md border px-3 py-1 hover:bg-gray-200"
-            >
-              {item}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

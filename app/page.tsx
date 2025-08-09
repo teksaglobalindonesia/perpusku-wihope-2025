@@ -1,20 +1,21 @@
-import React from 'react';
-import Hero from '@/components/custom/main/hero';
-import Dashboard from '@/components/arsip/dashboard'; //ga kepake
-import BukuHabis from '@/components/custom/main/bukuHabis';
-import PinjamanHariIni from '@/components/custom/main/pinjamanHariIni';
-import PengembalianHariIni from '@/components/custom/main/pengembalianHariIni';
+import Book from '@/components/custom/book/buku';
+import Hero from '@/components/custom/hero';
+import Pinjam from '@/components/custom/lending/pinjam';
+import Kembali from '@/components/custom/retur/pengembalian';
 
-import { books } from './bukuDummy/data';
-
-export default function Page() {
+export default async function Page() {
   return (
     <>
       <Hero />
-      {/* <Dashboard /> */}
-      <BukuHabis books={books} />
-      <PinjamanHariIni />
-      <PengembalianHariIni />
+      <h1 className="m-8 rounded-lg bg-red-200 px-8 py-5 text-3xl">
+        📚{' '}
+        <span className="font-normal text-red-700 underline">
+          ♦️List Buku Habis
+        </span>
+      </h1>
+      <Book filterOutOfStock />
+      <Pinjam />
+      <Kembali />
     </>
   );
 }

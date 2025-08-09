@@ -47,7 +47,7 @@ export const inputNumberSchema = ({
   z
     .object({
       value: z.number().nonnegative().nullable().optional(),
-      formatted: z.string().nullable().optional(),
+      formatted: z.string().nullable().optional()
     })
     .nullable()
     .refine(

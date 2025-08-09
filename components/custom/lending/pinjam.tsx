@@ -7,80 +7,6 @@ import Pagination from '../pagination';
 import { BASE_URL, TOKEN, WIHOPE_NAME } from '@/lib/constant';
 import { date } from 'zod';
 
-// const Peminjaman = [
-//   {
-//     judulBuku: 'Buku A',
-//     peminjam: 'Gw',
-//     tanggal: 1,
-//     waktu: '07-2025',
-//     targetKembali: 14,
-//     tanggalKembali: 12,
-//     waktuKembali: '07-2025'
-//   },
-//   {
-//     judulBuku: 'Bumi',
-//     peminjam: 'John Doe',
-//     tanggal: 20,
-//     waktu: '07-2025',
-//     targetKembali: 22,
-//     tanggalKembali: 25,
-//     waktuKembali: '07-2025'
-//   },
-//   {
-//     judulBuku: 'Laskar Pelangi',
-//     peminjam: 'Jane Smith',
-//     tanggal: 18,
-//     waktu: '07-2025',
-//     targetKembali: 20,
-//     tanggalKembali: 25,
-//     waktuKembali: '07-2025'
-//   },
-//   {
-//     judulBuku: 'Hujan',
-//     peminjam: 'Dimas Saputra',
-//     tanggal: 21,
-//     waktu: '07-2025',
-//     targetKembali: 28,
-//     tanggalKembali: 28,
-//     waktuKembali: '07-2025'
-//   },
-//   {
-//     judulBuku: 'Rindu',
-//     peminjam: 'Alya Rahma',
-//     tanggal: 22,
-//     waktu: '07-2025',
-//     targetKembali: 30,
-//     tanggalKembali: 29,
-//     waktuKembali: '07-2025'
-//   },
-//   {
-//     judulBuku: 'Negeri 5 Menara',
-//     peminjam: 'Andi Pratama',
-//     tanggal: 5,
-//     waktu: '07-2025',
-//     targetKembali: 12,
-//     tanggalKembali: 15,
-//     waktuKembali: '07-2025'
-//   },
-//   {
-//     judulBuku: 'Perahu Kertas',
-//     peminjam: 'Siti Aminah',
-//     tanggal: 10,
-//     waktu: '07-2025',
-//     targetKembali: 18,
-//     tanggalKembali: 17,
-//     waktuKembali: '07-2025'
-//   },
-//   {
-//     judulBuku: 'Ayah',
-//     peminjam: 'Raka Nugroho',
-//     tanggal: 8,
-//     waktu: '07-2025',
-//     targetKembali: 14,
-//     tanggalKembali: 14,
-//     waktuKembali: '07-2025'
-//   }
-// ];
 type Lending = {
   book: {
     title: string;
@@ -99,6 +25,8 @@ const Pinjam = () => {
   const [lending, setLending] = useState<Lending[]>([]);
   const [keyword, setKeyword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     (async () => {
@@ -140,6 +68,12 @@ const Pinjam = () => {
       pinjam.return_date.toString().includes(keyword)
   );
 
+  const totalPages = Math.ceil(hasilPencarian.length / itemsPerPage);
+  const paginatedItems = hasilPencarian.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <div className="min-h-[540px] w-full">
       <div className="mt-6 flex flex-row justify-between p-4 px-9 font-light">
@@ -167,7 +101,7 @@ const Pinjam = () => {
       {/* Tabel */}
       <div className="mx-8 mb-8 rounded-md p-4">
         <div className="space-y-4">
-          {hasilPencarian.map((Lending) => {
+          {paginatedItems.map((Lending) => {
             // const Terlambat =
             // > Lending.return_date
             //     ? ''
@@ -201,7 +135,11 @@ const Pinjam = () => {
             );
           })}
         </div>
-        <Pagination />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );

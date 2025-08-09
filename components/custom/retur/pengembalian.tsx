@@ -5,80 +5,6 @@ import Pagination from '../pagination';
 import { usePathname } from 'next/navigation';
 import { BASE_URL, TOKEN, WIHOPE_NAME } from '@/lib/constant';
 
-// const Pengembalian = [
-//   {
-//     judulBuku: 'Buku A',
-//     peminjam: 'Gw',
-//     tanggal: 1,
-//     waktu: '07-2025',
-//     targetKembali: 14,
-//     tanggalKembali: 12,
-//     waktuKembali: '07-2025'
-//   },
-//   {
-//     judulBuku: 'Bumi',
-//     peminjam: 'John Doe',
-//     tanggal: 20,
-//     waktu: '07-2025',
-//     targetKembali: 27,
-//     tanggalKembali: 25,
-//     waktuKembali: '07-2025'
-//   },
-//   {
-//     judulBuku: 'Laskar Pelangi',
-//     peminjam: 'Jane Smith',
-//     tanggal: 18,
-//     waktu: '07-2025',
-//     targetKembali: 20,
-//     tanggalKembali: 25,
-//     waktuKembali: '07-2025'
-//   },
-//   {
-//     judulBuku: 'Hujan',
-//     peminjam: 'Dimas Saputra',
-//     tanggal: 21,
-//     waktu: '07-2025',
-//     targetKembali: 28,
-//     tanggalKembali: 28,
-//     waktuKembali: '07-2025'
-//   },
-//   {
-//     judulBuku: 'Rindu',
-//     peminjam: 'Alya Rahma',
-//     tanggal: 22,
-//     waktu: '07-2025',
-//     targetKembali: 30,
-//     tanggalKembali: 29,
-//     waktuKembali: '07-2025'
-//   },
-//   {
-//     judulBuku: 'Negeri 5 Menara',
-//     peminjam: 'Andi Pratama',
-//     tanggal: 5,
-//     waktu: '07-2025',
-//     targetKembali: 12,
-//     tanggalKembali: 15,
-//     waktuKembali: '07-2025'
-//   },
-//   {
-//     judulBuku: 'Perahu Kertas',
-//     peminjam: 'Siti Aminah',
-//     tanggal: 10,
-//     waktu: '07-2025',
-//     targetKembali: 18,
-//     tanggalKembali: 17,
-//     waktuKembali: '07-2025'
-//   },
-//   {
-//     judulBuku: 'Ayah',
-//     peminjam: 'Raka Nugroho',
-//     tanggal: 8,
-//     waktu: '07-2025',
-//     targetKembali: 14,
-//     tanggalKembali: 14,
-//     waktuKembali: '07-2025'
-//   }
-// ];
 type Kembali = {
   book: {
     title: string;
@@ -94,11 +20,13 @@ type Kembali = {
   };
 };
 const Kembali = () => {
-  const pathname = usePathname();
+  // const pathname = usePathname();
   const [retur, setRetur] = useState<Kembali[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [keyword, setKeyword] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     (async () => {
@@ -121,7 +49,7 @@ const Kembali = () => {
         const json = await response.json();
         setRetur(json.data || []);
       } catch (err: any) {
-        console.error('❌ Error saat fetch:', err);
+        // console.error('❌ Error saat fetch:', err);
         setError(err.message || 'Terjadi kesalahan saat memuat data');
       } finally {
         setLoading(false);
@@ -135,6 +63,12 @@ const Kembali = () => {
       balik.member.name.toLowerCase().includes(keyword.toLowerCase()) ||
       balik.return_date.toString().includes(keyword) ||
       balik.return.actual_return_date.toString().includes(keyword)
+  );
+
+  const totalPages = Math.ceil(hasilPencarian.length / itemsPerPage);
+  const paginatedItems = hasilPencarian.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
 
   return (
@@ -153,18 +87,13 @@ const Kembali = () => {
             className="mb-3 w-64 rounded border px-3 py-1"
             onChange={(e) => setKeyword(e.target.value)}
           />
-          {/* <Link href="/peminjaman/add">
-            <button className="text-md mx-2 rounded-md bg-green-400 px-2 py-1 font-bold text-gray-700 hover:bg-green-300">
-              Tambah Peminjaman
-            </button>
-          </Link> */}
         </div>
       </div>
 
       {/* Tabel */}
       <div className="mx-8 mb-8 rounded-md p-4">
         <div className="space-y-4">
-          {hasilPencarian.map((Kembali) => {
+          {paginatedItems.map((Kembali) => {
             const Terlambat =
               Kembali.return_date > Kembali.return.actual_return_date
                 ? ''
@@ -202,7 +131,11 @@ const Kembali = () => {
             );
           })}
         </div>
-        <Pagination />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );

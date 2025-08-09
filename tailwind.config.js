@@ -72,7 +72,7 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)'
       },
       fontFamily: {
-        roboto: 'var(--font-roboto), sans-serif',
+        roboto: 'var(--font-roboto), sans-serif'
       },
       keyframes: {
         'accordion-down': {

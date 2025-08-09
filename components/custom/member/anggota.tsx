@@ -7,12 +7,6 @@ import { BASE_URL, TOKEN, WIHOPE_NAME } from '@/lib/constant';
 // import { useSearchParams } from 'next/navigation';
 import Pagination from '../pagination';
 
-// const initialMember = [
-//   { nama: 'Joh', noAnggota: '12345', email: 'john@yahodie.com' },
-//   { nama: 'Jane', noAnggota: '67890', email: 'jennie@gmail.com' },
-//   { nama: 'Doe', noAnggota: '54321', email: 'dodo@gmail.com' }
-// ];
-
 type Members = {
   name: string;
   email: string;
@@ -26,6 +20,8 @@ const Anggota = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [keyword, setKeyword] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
   useEffect(() => {
     (async () => {
       try {
@@ -73,6 +69,12 @@ const Anggota = () => {
   //   }
   // };
 
+  const totalPages = Math.ceil(hasilPencarian.length / itemsPerPage);
+  const paginatedItems = hasilPencarian.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <div className="min-h-[540px] w-full">
       <div className="mt-6 flex flex-row justify-between p-4 px-9 font-light">
@@ -100,7 +102,7 @@ const Anggota = () => {
       {/* Tabel */}
       <div className="mx-8 mb-8 rounded-md p-4">
         <div className="space-y-4">
-          {hasilPencarian.map((Members) => (
+          {paginatedItems.map((Members) => (
             <div
               key={Members.id_member}
               className="flex items-center justify-between rounded border p-4"
@@ -137,8 +139,11 @@ const Anggota = () => {
             </div>
           ))}
         </div>
-
-        <Pagination />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );

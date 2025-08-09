@@ -1,14 +1,50 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+import { BASE_URL, TOKEN, WIHOPE_NAME } from '@/lib/constant';
+import Pagination from '../pagination';
 
-const Member = [
-  { nama: 'Joh', noAnggota: '12345', email: 'john@yahodie.com' },
-  { nama: 'Jane', noAnggota: '67890', email: 'jennie@gmail.com' },
-  { nama: 'Doe', noAnggota: '54321', email: 'dodo@gmail.com' }
-];
+type Members = {
+  name: string;
+  email: string;
+  address: string;
+  id_member: string;
+};
+
 const CthPilihAnggota = () => {
+  const [members, setMembers] = useState<Members[]>([]);
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const res = await fetch(`${BASE_URL}/api/member/list`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: TOKEN,
+            'x-wihope-name': WIHOPE_NAME
+          },
+          cache: 'no-store'
+        });
+
+        const data = await res.json();
+        console.log('Data anggota:', data);
+        console.log('TOKEN yang dikirim:', TOKEN);
+
+        if (res.ok && Array.isArray(data.data)) {
+          setMembers(data.data);
+        } else {
+          console.warn('Data anggota tidak valid:', data);
+          setMembers([]);
+        }
+      } catch (err) {
+        console.error('Gagal mengambil data anggota:', err);
+        setMembers([]);
+      }
+    };
+
+    fetchMembers();
+  }, []);
+
   return (
     <div className="min-h-[540px] w-full">
       <div className="mt-6 flex flex-row justify-between p-4 px-9 font-light">
@@ -17,31 +53,29 @@ const CthPilihAnggota = () => {
             Pilih Anggota
           </span>
         </h1>
-        <div>
-          <input
-            type="text"
-            placeholder="Search..."
-            className="rounded border px-3 py-1"
-          />
-        </div>
+        <input
+          type="text"
+          placeholder="Search by name, email, or id"
+          className="mb-3 w-64 rounded border px-3 py-1"
+        />
       </div>
 
       {/* Tabel */}
       <div className="mx-8 mb-8 rounded-md p-4">
         <div className="space-y-4">
-          {Member.map((item) => (
+          {members.map((member) => (
             <div
-              key={item.noAnggota}
+              key={member.id_member}
               className="flex items-center justify-between rounded border p-4"
             >
               <div className="flex items-center gap-4">
                 <div className="flex h-24 w-24 items-center justify-center rounded border border-blue-950 bg-blue-100 p-2">
-                  <img src="/next.svg" alt="" />
+                  <img src="/next.svg" alt="Profile" />
                 </div>
                 <div>
-                  <p className="font-semibold">{item.nama}</p>
-                  <p className="text-sm">{item.noAnggota}</p>
-                  <p className="text-sm">{item.email}</p>
+                  <p className="font-semibold">{member.name}</p>
+                  <p className="text-sm">{member.id_member}</p>
+                  <p className="text-sm">{member.email}</p>
 
                   <button className="my-1 mr-1 rounded bg-purple-500 px-3 py-1 text-sm font-bold text-white">
                     Pilih
@@ -50,17 +84,13 @@ const CthPilihAnggota = () => {
               </div>
             </div>
           ))}
+
+          {members.length === 0 && (
+            <p className="text-center text-gray-500">
+              Tidak ada anggota ditemukan.
+            </p>
+          )}
         </div>
-      </div>
-      <div className="mb-6 mt-6 flex justify-center space-x-2 text-sm text-gray-700">
-        {['<', 1, 2, '...', 20, '>'].map((item, index) => (
-          <div
-            key={index}
-            className="cursor-pointer rounded-md border px-3 py-1 hover:bg-gray-200"
-          >
-            {item}
-          </div>
-        ))}
       </div>
     </div>
   );

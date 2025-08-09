@@ -2,6 +2,7 @@
 const nextConfig = {
   reactStrictMode: false,
   images: {
+    domains: ['cms-perpusku.widhimp.my.id','cdn.pixabay.com', 'img.chrono24.com'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -15,12 +16,12 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 's3-alpha-sig.figma.com',
+        hostname: 's3-alpha-sig.figma.com'
       },
       {
         protocol: 'http',
-        hostname: 'localhost',
-      },
+        hostname: 'localhost'
+      }
     ]
   },
   transpilePackages: ['geist']
