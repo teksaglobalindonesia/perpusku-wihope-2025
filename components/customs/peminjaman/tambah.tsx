@@ -1,13 +1,44 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
+import Pagination from "../pagination/pagination";
+
+interface Book {
+    id: number;
+    title: string;
+    cover?: { url: string };
+    categories?: { name: string }[];
+    writer: string;
+    stock: number;
+}
+
+interface Member {
+    id: number;
+    name: string;
+    email: string;
+    address: string;
+    id_member: string;
+    documentId: string
+}
 
 export default function TambahPemjmn({ books, members}: {books: any[], members: any[] }){
     const API = "https://cms-perpusku.widhimp.my.id";
     const [munculBuku, setMunculBuku] = useState(false);
     const [munculMember, setMunculMember] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [filterBook, setFilterBook] = useState<Book[]>(books);
+    const [filterMember, setFilterMember] = useState<Member[]>(members);
+
+    const itemsPerPage = 3;
+
+    const totalPages = Math.ceil(filterBook.length / itemsPerPage);
+    const totalPages2 = Math.ceil(filterMember.length / itemsPerPage);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filterBook, filterMember])
 
     return(
         <>
@@ -91,7 +122,7 @@ export default function TambahPemjmn({ books, members}: {books: any[], members: 
             <div className="fixed top-[55%] left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col 
             gap-4 bg-[#F2C078] w-[90%] md:w-[1000px] h-auto p-4 md:p-6 rounded-xl shadow-lg 
             overflow-y-auto max-h-[80vh] z-[999]">
-                {books.map((book) => (
+                {books.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((book) => (
                 <div key={book.id} className="w-full md:flex md:items-center md:justify-between 
                 border-2 md:border-4 rounded-md p-3 md:p-4">
                     <div className="flex flex-col md:flex-row md:gap-7">
@@ -134,6 +165,10 @@ export default function TambahPemjmn({ books, members}: {books: any[], members: 
                             ← Back
                     </button>
                 </div>
+                <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(newPage) => setCurrentPage(newPage)}/>
             </div>
         )}
 
@@ -141,7 +176,7 @@ export default function TambahPemjmn({ books, members}: {books: any[], members: 
             <div className="fixed top-[55%] left-1/2 -translate-x-1/2 -translate-y-1/2 flex 
             flex-col gap-4 bg-[#F2C078] w-[90%] md:w-[1000px] h-auto p-4 md:p-6 rounded-xl shadow-lg 
             overflow-y-auto max-h-[80vh] z-[999]">
-                {members.map((member) => (
+                {members.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((member) => (
                 <div key={member.id} className="w-full md:flex md:items-center md:justify-between 
                 border-2 md:border-4 rounded-md p-3 md:p-4">
                     <div className="flex flex-col md:flex-row md:gap-7">
@@ -171,6 +206,10 @@ export default function TambahPemjmn({ books, members}: {books: any[], members: 
                             ← Back
                     </button>
                 </div>
+                <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages2}
+                onPageChange={(newPage) => setCurrentPage(newPage)}/>
             </div>
         )}
         </>

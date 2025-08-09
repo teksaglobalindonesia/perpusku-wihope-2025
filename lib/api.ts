@@ -1,5 +1,6 @@
 const API_URL = "https://cms-perpusku.widhimp.my.id";
 const WIHOPE_NAME = "triadi";
+const TOKEN = "Bearer 38f1bd91fcbf616c7a0fdad4be4e6fe110487040c7822d3f923fd8a46b3e9b513a971a48209818c8daa47ed0b93768613fd520051f322c869386765cf2a72ed4e8e500642902c5ebe8497cc79b7fcab7654b983d11e357733f0c3d2c63fabfcada10ba2bcb6ccbb9f920b05b3bcf0e24086c455f0f662d6b603b3697dd078e52";
 
 interface FetchOptions {
     method?: string;
@@ -14,7 +15,7 @@ export async function fetchAPI(
     ) {
     const defaultHeaders = {
         "Content-Type": "application/json",
-        Authorization: "Bearer 38f1bd91fcbf616c7a0fdad4be4e6fe110487040c7822d3f923fd8a46b3e9b513a971a48209818c8daa47ed0b93768613fd520051f322c869386765cf2a72ed4e8e500642902c5ebe8497cc79b7fcab7654b983d11e357733f0c3d2c63fabfcada10ba2bcb6ccbb9f920b05b3bcf0e24086c455f0f662d6b603b3697dd078e52",
+        Authorization: TOKEN,
         "x-wihope-name": WIHOPE_NAME,
     };
 

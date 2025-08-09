@@ -1,12 +1,26 @@
+"use client";
+
 import Header from "@/components/customs/layouts/header";
 import Pengembalian from "@/components/customs/pengembalian/pengembalian";
 import Footer from "@/components/customs/layouts/footer";
-import { fetchReturn } from "@/lib/api";
-import { fetchBooks } from "@/lib/api";
+import { fetchReturn, fetchBooks } from "@/lib/api";
+import { useState, useEffect } from "react";
+import useLoading from "@/components/customs/loading/useLoading";
+import Loading from "@/components/customs/loading/Loading";
 
-export default async function Page(){
-    const { data: returns } = await fetchReturn();
-    const { data: books } = await fetchBooks();
+export default function Page(){
+    const loading = useLoading();
+    const [returns, setReturns] = useState([]);
+    const [books, setBooks] = useState([]);
+
+    useEffect(() => {
+        fetchReturn().then(({ data: returns }) => setReturns(returns));
+        fetchBooks().then(({ data: books }) => setBooks(books));
+    }, [])
+
+    if(loading){
+        return <Loading/>
+    }
 
     return(
         <>

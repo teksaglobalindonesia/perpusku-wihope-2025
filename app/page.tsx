@@ -5,9 +5,7 @@ import Pinjaman from "@/components/customs/dashboard/pinjaman";
 import Pengembali from "@/components/customs/dashboard/pengembalian";
 import Goodbye from "@/components/customs/layouts/goodbye";
 import Footer from "@/components/customs/layouts/footer";
-import { fetchBooks } from "@/lib/api";
-import { fetchLoans } from "@/lib/api";
-import { fetchReturn } from "@/lib/api";
+import { fetchBooks, fetchLoans, fetchReturn } from "@/lib/api";
 
   export default async function Page() {
     const { data: books } = await fetchBooks();

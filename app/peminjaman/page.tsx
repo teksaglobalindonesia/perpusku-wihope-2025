@@ -1,14 +1,28 @@
+"use client";
+
 import Header from "@/components/customs/layouts/header";
 import Peminjaman from "@/components/customs/peminjaman/peminjaman";
 import Footer from "@/components/customs/layouts/footer";
-import { fetchLoans } from "@/lib/api";
-import { fetchBooks } from "@/lib/api";
-import { fetchReturn } from "@/lib/api";
+import { fetchLoans, fetchBooks, fetchReturn } from "@/lib/api";
+import useLoading from "@/components/customs/loading/useLoading";
+import Loading from "@/components/customs/loading/Loading";
+import { useState, useEffect } from "react";
 
-export default async function Page(){
-    const { data: loans } = await fetchLoans();
-    const { data: books } = await fetchBooks();
-    const { data: returns } = await fetchReturn();
+export default function Page(){
+    const loading = useLoading();
+    const [loans, setLoans] = useState([]);
+    const [books, setBooks] = useState([]);
+    const [returns, setReturns] = useState([]);
+
+    useEffect(() => {
+        fetchBooks().then(({ data: books }) => setBooks(books));
+        fetchLoans().then(({ data: loans }) => setLoans(loans));
+        fetchReturn().then(({ data: returns }) => setReturns(returns));
+    }, [])
+
+    if(loading){
+        return <Loading/>
+    }
 
     return(
         <>

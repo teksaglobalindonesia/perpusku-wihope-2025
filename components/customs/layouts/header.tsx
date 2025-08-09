@@ -73,32 +73,33 @@ export default function Header() {
         <button className="md:hidden text-white focus:outline-none" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? (
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
             ) : (
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
             )}
         </button>
-        {isMenuOpen && (
-            <div className="md:hidden absolute top-[70px] left-0 w-full bg-[#4B352A] shadow-lg py-4 px-4">
-                {navItems.map((item) => {
-                    const isActive2 = pathname === item.href;
-                    return(
-                        <>
-                        <div key={item.href} className="flex flex-col pb-3">
-                            <Link href={item.href} className={`font-medium hover:bg-[#F2C078] duration-300 bg-[#F0F2BD] 
-                            px-4 py-3 clip-custom font-morrisroman cursor-pointer text-center ${isActive2 ? "bg-[#F2C078]" : "bg-[#F0F2BD] hover:bg-[#F2C078]"}`} 
-                            onClick={() => setIsMenuOpen(false)}>
-                                {item.name}
-                            </Link>
-                        </div>
-                        </>
-                    )
-                })}
-            </div>
-        )}
+        <div className={`md:hidden absolute top-[70px] left-0 w-full bg-[#4B352A] shadow-lg py-4 px-4 transition-all duration-300 ease-in-out transform
+            ${isMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-5 pointer-events-none"}`}>
+            {navItems.map((item) => {
+                const isActive2 = pathname === item.href;
+                return (
+                <div key={item.href} className="flex flex-col pb-3">
+                    <Link
+                    href={item.href}
+                    className={`font-medium hover:bg-[#F2C078] duration-300
+                    px-4 py-3 clip-custom font-morrisroman cursor-pointer text-center
+                    ${isActive2 ? "bg-[#F2C078]" : "bg-[#F0F2BD] hover:bg-[#F2C078]"}`}
+                    onClick={() => setIsMenuOpen(false)}
+                    >
+                    {item.name}
+                    </Link>
+                </div>
+                );
+            })}
+        </div>
     </div>
     </>
 );

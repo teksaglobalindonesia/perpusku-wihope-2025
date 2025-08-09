@@ -1,8 +1,7 @@
 import Header from "@/components/customs/layouts/header";
 import Footer from "@/components/customs/layouts/footer";
 import PinjamanMemb from "@/components/customs/member/Pinjaman";
-import { fetchLoanMember } from "@/lib/api";
-import { fetchBooks } from "@/lib/api";
+import { fetchLoanMember, fetchBooks } from "@/lib/api";
 
 interface Props {
     params: {
