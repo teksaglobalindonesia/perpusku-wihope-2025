@@ -12,7 +12,7 @@ import useLoading from "@/components/customs/loading/useLoading";
 import Loading from "@/components/customs/loading/Loading";
 import { useState, useEffect } from "react";
 
-  export default async function Page() {
+  export default function Page() {
     const loading = useLoading();
     const [books, setBooks] = useState([]);
     const [loans, setLoans] = useState([]);
