@@ -4,87 +4,32 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import HapusDialog from "@/components/custom/buku/hapuusbuku";
+import { API_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
-const dummyBooks = [
-  {
-    id: 1,
-    title: "Pesta Bunuh Diri",
-    genre: "Horor",
-    author: "Daniel Ahmad",
-    stock: 2,
-    image: "/images/pesta bunuh diri.jpg",
-  },
-  {
-    id: 2,
-    title: "Indigo Tapi Penakut",
-    genre: "Fiksi Remaja",
-    author: "Angeline Stevanie",
-    stock: 1,
-    image: "/images/indigo tapi penakut.png",
-  },
-  {
-    id: 3,
-    title: "Cantik itu Luka",
-    genre: "Historical",
-    author: "Eka Kurniawan",
-    stock: 0,
-    image: "/images/cantik itu luka.jpg",
-  },
-  {
-    id: 4,
-    title: "Magma",
-    genre: "Romantis",
-    author: "Geladis Afira",
-    stock: 2,
-    image: "/images/magma.jpg",
-  },
-  {
-    id: 5,
-    title: "7 Prajurit Bapak",
-    genre: "Fiksi Remaja",
-    author: "Wulan Nuramalia",
-    stock: 1,
-    image: "/images/7 prajurit bapak.jpg",
-  },
-  {
-    id: 6,
-    title: "Laut Bercerita",
-    genre: "Persahabatan",
-    author: "Leila Salikha Chudori",
-    stock: 0,
-    image: "/images/laut bercerita.jpg",
-  },
-  {
-    id: 7,
-    title: "Re: dan peRempuan",
-    genre: "Kisah Nyata",
-    author: "Maman suherman",
-    stock: 1,
-    image: "/images/re dan perempuan.jpg",
-  },
-];
+const itemsPerPage = 6;
 
-const ITEMS_PER_PAGE = 6;
-
-export default function BukuPage({ data }: { data?: any[] }) {
+export default function BukuPage() {
   const [books, setBooks] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const router = useRouter();
 
   useEffect(() => {
-    (async () => {
+    const fetchBooks = async () => {
       try {
-        const response = await fetch("https://cms-perpusku.widhimp.my.id/api/book/list", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:
-              "Bearer 41f0305043bf00843f3bc3c04d2201b51347f1bd98a0500248ec9b411fa0ad2dfb49563c46395439627e931db897841ca95f756f34ea8fe229f33641e45123732c362be24550a849bb67379afef4f1b0f9c5a30746cfbaa82825f3f9e9d4b62c14892afd3f520c614e6269404210184628530738a3037e0e246d0bc2cf655e75",
-            "x-wihope-name": "nanda", 
-          },
-          cache: "no-store",
-        });
+        const response = await fetch(
+          `https://cms-perpusku.widhimp.my.id/api/book/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchTerm}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: TOKEN,
+              "x-wihope-name": WIHOPE_NAME,
+            },
+            cache: "no-store",
+          }
+        );
 
         const json = await response.json();
         const fetchedData = json.data;
@@ -92,32 +37,29 @@ export default function BukuPage({ data }: { data?: any[] }) {
         const formatted = fetchedData.map((item: any) => ({
           id: item.id,
           title: item.title ?? "Tanpa Judul",
-          genre: item.categories?.length > 0
-                ? item.categories.map((cat: { name: any; }) => cat.name).join(", ")
-                : "Tanpa Kategori",
+          genre:
+            item.categories?.length > 0
+              ? item.categories.map((cat: { name: any }) => cat.name).join(", ")
+              : "Tanpa Kategori",
           author: item.writer ?? "Tanpa Penulis",
           stock: item.stock ?? 0,
           image: item.cover?.url
-    ? `https://cms-perpusku.widhimp.my.id${item.cover.url}`
-    : "/images/default.jpg",
+            ? `https://cms-perpusku.widhimp.my.id${item.cover.url}`
+            : "/images/default.jpg",
         }));
 
         setBooks(formatted);
+
+        if (json.meta?.pagination?.total) {
+          setTotalPages(Math.ceil(json.meta.pagination.total / itemsPerPage));
+        }
       } catch (error) {
         console.error("Gagal mengambil data buku:", error);
       }
-    })();
-  }, []);
+    };
 
-  const filteredBooks = books.filter((book) =>
-    book.title?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const totalPages = Math.ceil(filteredBooks.length / ITEMS_PER_PAGE);
-  const paginatedBooks = filteredBooks.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+    fetchBooks();
+  }, [searchTerm, currentPage]);
 
   return (
     <div className="p-6 space-y-6">
@@ -146,7 +88,7 @@ export default function BukuPage({ data }: { data?: any[] }) {
 
       {/* List Buku */}
       <div className="space-y-4">
-        {paginatedBooks.map((book) => (
+        {books.map((book) => (
           <div
             key={book.id}
             className="flex items-center justify-between border rounded p-4 bg-white shadow-sm"

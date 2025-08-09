@@ -2,28 +2,34 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { API_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
+
 
 export default function PengembalianList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pengembalian, setPengembalian] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [totalPages, setTotalPages] = useState(1);
 
   const itemsPerPage = 4;
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const response = await fetch("https://cms-perpusku.widhimp.my.id/api/return/list", {
-          method: "Get",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:
-              "Bearer 41f0305043bf00843f3bc3c04d2201b51347f1bd98a0500248ec9b411fa0ad2dfb49563c46395439627e931db897841ca95f756f34ea8fe229f33641e45123732c362be24550a849bb67379afef4f1b0f9c5a30746cfbaa82825f3f9e9d4b62c14892afd3f520c614e6269404210184628530738a3037e0e246d0bc2cf655e75",
-            "x-wihope-name": "nanda",
-          },
-          cache: "no-store"
-        });
+        const response = await fetch(
+          `https://cms-perpusku.widhimp.my.id/api/return/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchTerm}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: TOKEN,
+              "x-wihope-name": WIHOPE_NAME,
+            },
+            cache: "no-store",
+          }
+        );
 
         const data = await response.json();
 
@@ -48,6 +54,8 @@ export default function PengembalianList() {
         });
 
         setPengembalian(transformed);
+        const pageCount = data.pagination?.pageCount || 1;
+        setTotalPages(pageCount);
       } catch (error) {
         console.error("Gagal mengambil data pengembalian:", error);
       } finally {
@@ -56,7 +64,7 @@ export default function PengembalianList() {
     };
 
     fetchData();
-  }, []);
+  }, [searchTerm, currentPage]);
 
   const formatDate = (date: Date) =>
     date.toLocaleDateString("id-ID", {
@@ -74,16 +82,6 @@ export default function PengembalianList() {
       minute: "2-digit",
     });
 
-  const filtered = pengembalian.filter((item) =>
-    item.judul.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const totalPages = Math.ceil(filtered.length / itemsPerPage);
-  const paginated = filtered.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
   return (
     <div className="font-sans text-sm space-y-3">
       <div className="flex items-center justify-between">
@@ -93,15 +91,21 @@ export default function PengembalianList() {
           placeholder="Cari judul buku..."
           className="border border-navy px-3 py-2 rounded text-gray-500 w-64"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(1);
+          }}
         />
       </div>
 
       {loading ? (
         <p>Memuat data...</p>
       ) : (
-        paginated.map((item) => (
-          <div key={item.id} className="border rounded p-4 shadow-sm flex flex-col gap-1">
+        pengembalian.map((item) => (
+          <div
+            key={item.id}
+            className="border rounded p-4 shadow-sm flex flex-col gap-1"
+          >
             <div className="flex justify-between items-start">
               <div>
                 <p className="font-bold">{item.judul}</p>

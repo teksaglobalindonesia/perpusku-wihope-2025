@@ -5,27 +5,32 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { API_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
+
 
 export default function PeminjamanList() {
   const [peminjamanList, setPeminjamanList] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   const itemsPerPage = 4;
 
   useEffect(() => {
     const fetchPeminjaman = async () => {
       try {
-        const response = await fetch("https://cms-perpusku.widhimp.my.id/api/loan/list", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:
-              "Bearer 41f0305043bf00843f3bc3c04d2201b51347f1bd98a0500248ec9b411fa0ad2dfb49563c46395439627e931db897841ca95f756f34ea8fe229f33641e45123732c362be24550a849bb67379afef4f1b0f9c5a30746cfbaa82825f3f9e9d4b62c14892afd3f520c614e6269404210184628530738a3037e0e246d0bc2cf655e75",
-            "x-wihope-name": "nanda",
-          },
-          cache: "no-store",
-        });
+        const response = await fetch(
+          `https://cms-perpusku.widhimp.my.id/api/loan/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchTerm}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: TOKEN,
+              "x-wihope-name": WIHOPE_NAME,
+            },
+            cache: "no-store",
+          }
+        );
 
         const json = await response.json();
         const fetchedData = json.data;
@@ -45,23 +50,20 @@ export default function PeminjamanList() {
         }));
 
         setPeminjamanList(formatted);
+        if (json.meta?.pagination?.total) {
+          setTotalItems(json.meta.pagination.total);
+        } else if (typeof json.total === "number") {
+          setTotalItems(json.total);
+        }
       } catch (error) {
         console.error("Gagal mengambil data peminjaman:", error);
       }
     };
 
     fetchPeminjaman();
-  }, []);
+  }, [searchTerm, currentPage]);
 
-  const filtered = peminjamanList.filter((item) =>
-    item?.documentId?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const totalPages = Math.ceil(filtered.length / itemsPerPage);
-  const paginated = filtered.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   return (
     <div className="space-y-4 font-sans text-sm">
@@ -72,7 +74,10 @@ export default function PeminjamanList() {
           placeholder="cari id dokumen..."
           className="border px-3 py-2 rounded text-gray-700 w-64"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(1);
+          }}
         />
         <Link href="/peminjaman/tambah">
           <Button className="bg-navy text-white hover:bg-blue px-6 py-2 rounded">
@@ -82,7 +87,7 @@ export default function PeminjamanList() {
       </div>
 
       {/* Daftar Peminjaman */}
-      {paginated.map((item) => (
+      {peminjamanList.map((item) => (
         <div
           key={item.id}
           className="border rounded p-4 shadow-sm flex flex-col gap-1"
@@ -91,9 +96,15 @@ export default function PeminjamanList() {
             <div>
               <p className="font-bold">ID Dokumen: {item.documentId || "-"}</p>
               <p className="font-semibold text-sm">Judul: {item.judul}</p>
-              <p className="font-semibold text-sm">Peminjam: {item.peminjam} ({item.id_member})</p>
-              <p className="font-semibold text-sm">Tanggal Pinjam: {formatTanggal(item.tanggal_pinjam)}</p>
-              <p className="font-semibold text-sm">Tanggal Kembali: {formatTanggal(item.tanggal_kembali)}</p>
+              <p className="font-semibold text-sm">
+                Peminjam: {item.peminjam} ({item.id_member})
+              </p>
+              <p className="font-semibold text-sm">
+                Tanggal Pinjam: {formatTanggal(item.tanggal_pinjam)}
+              </p>
+              <p className="font-semibold text-sm">
+                Tanggal Kembali: {formatTanggal(item.tanggal_kembali)}
+              </p>
               <Button className="bg-navy text-white hover:bg-blue px-4 py-1 rounded mt-2">
                 KEMBALIKAN
               </Button>
@@ -147,24 +158,26 @@ export default function PeminjamanList() {
   );
 }
 
-// Fungsi bantu format tanggal
 function formatTanggal(input: string) {
   if (!input) return "-";
   const date = new Date(input);
   return format(date, "dd MMMM yyyy, HH:mm", { locale: undefined });
 }
 
-// Fungsi untuk badge status
 function getStatusBadge(status: string | undefined) {
   const value = status?.toLowerCase();
 
   switch (value) {
     case "dikembalikan":
-      return <Badge className="bg-green-500 hover:bg-green-600">Dikembalikan</Badge>;
+      return (
+        <Badge className="bg-green-500 hover:bg-green-600">Dikembalikan</Badge>
+      );
     case "terlambat":
       return <Badge variant="destructive">Terlambat</Badge>;
     case "sedang_dipinjam":
-      return <Badge className="bg-yellow-500 hover:bg-yellow-600">Dipinjam</Badge>;
+      return (
+        <Badge className="bg-yellow-500 hover:bg-yellow-600">Dipinjam</Badge>
+      );
     default:
       return <Badge className="bg-gray-300 text-black">Tidak Diketahui</Badge>;
   }
