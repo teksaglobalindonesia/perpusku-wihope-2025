@@ -1,85 +1,212 @@
+"use client"
+import { useState } from "react";
 import Link from "next/link";
+import { addBook } from "@/lib/api";
 
-export default function TambahBuku(){
-    return(
-        <>
-        <div className="w-full px-4 md:px-[64px] mt-16 md:mt-[84px] bg-[#FFEAC5] pb-6">
-            <div className="w-full flex justify-center items-center py-6 md:py-8">
-                <h1 className="font-morrisroman text-2xl md:text-3xl font-semibold">Add a New Book</h1>
-            </div>
-            <div className="w-full px-4 md:px-[64px] py-5 bg-[#6C4E31] rounded-lg text-white 
-            font-cyrodiil text-base md:text-lg">
-                <div className="w-full px-2 md:px-4 py-2">
-                    <div className="py-2">
-                        <label>
-                            Title
-                        </label>
-                        <input type="text" className="w-full mt-2 md:mt-4 py-1 border-2 
-                        rounded-md text-black" placeholder="Enter book title" />
-                    </div>
-                    <div className="py-2">
-                        <label>
-                            Author
-                        </label>
-                        <input type="text" className="w-full mt-2 md:mt-4 py-1 border-2 
-                        rounded-md text-black" placeholder="Enter author name" />
-                    </div>
-                    <div className="py-2">
-                        <label>
-                            Publisher
-                        </label>
-                        <input type="text" className="w-full mt-2 md:mt-4 py-1 border-2 
-                        rounded-md text-black" placeholder="Enter publisher" />
-                    </div>
-                    <div className="py-2">
-                        <label>
-                            Year of Publication
-                        </label>
-                        <input type="date" className="w-full mt-2 md:mt-4 py-1 border-2 
-                        rounded-md text-black" />
-                    </div>
-                    <div className="py-2">
-                        <label className="block mb-2">
-                            Category
-                        </label>
-                        <button className="px-4 bg-yellow-500 py-2 clip-custom mb-2 text-sm md:text-base">
-                            Add Category
-                        </button>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 w-full md:w-[360px]">
-                            {['History', 'Mystery', 'Comedy', 'Drama', 'Cooking', 'Arcane'].map((category) => (
-                                <label key={category} className="flex items-center gap-2 text-sm md:text-base">
-                                    <input type="radio" name="category" value={category} />
-                                    {category}
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="py-2">
-                        <label>
-                            Stock
-                        </label>
-                        <input type="number" className="w-full mt-2 md:mt-4 py-1 border-2 
-                        rounded-md text-black" placeholder="Enter total stock" />
-                    </div>
-                    <div className="py-2">
-                        <label>
-                            Cover
-                        </label>
-                        <input type="file" className="mt-2 md:mt-4 w-full" />
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-3 py-4">
-                        <Link href="/buku" className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 
-                        text-black py-2 px-4 clip-custom text-center">
-                            ← Back
-                        </Link>
-                        <button className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 
-                        text-black py-2 px-4 clip-custom">
-                            Save Book
-                        </button>
-                    </div>
-                </div>
-            </div>
+const categoriesData = [
+  { id: 12, documentId: "x4yq8tiscumal0di90spa1ji", name: "Cooking" },
+  { id: 10, documentId: "i386dq2mtb6f885p6gdw86u9", name: "Drama" },
+  { id: 8, documentId: "hdaw1e7inhcz331r2lkvqd9b", name: "Arcane" },
+  { id: 6, documentId: "pdgik95au1ntnectnm76dox7", name: "Mystery" },
+  { id: 4, documentId: "yafj2j9e4bhniemjwwfavwm7", name: "Comedy" },
+  { id: 2, documentId: "t2kjag5pkoxldm1uae9rl4g6", name: "History" },
+];
+
+export default function TambahBuku() {
+  const [title, setTitle] = useState("");
+  const [writer, setWriter] = useState("");
+  const [publisher, setPublisher] = useState("");
+  const [publishedYear, setPublishedYear] = useState("");
+  const [stock, setStock] = useState(0);
+  const [category, setCategory] = useState<string | null>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+
+  const handlePopupClose = () => {
+    setShowPopup(false);
+    setError(null);
+    setSuccess(null);
+  };
+
+  const handleSubmit = async () => {
+    setError(null);
+    setSuccess(null);
+
+    if (!title || !writer || !publisher || !publishedYear || stock <= 0 || !coverFile || !category) {
+      setError("Harap isi semua field wajib dan pilih cover image serta kategori");
+      setPopupMessage("Harap isi semua field wajib dan pilih cover image serta kategori");
+      setShowPopup(true);
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const bookData = {
+        title,
+        writer,
+        publisher,
+        published_year: publishedYear,
+        stock,
+        categories: [category],
+      };
+
+      console.log("Submitting:", { bookData, coverFile });
+
+      const res = await addBook(coverFile, bookData);
+
+      if (!res) {
+        throw new Error("No response from server");
+      }
+
+      setSuccess("Buku berhasil ditambahkan!");
+      setPopupMessage("Buku berhasil ditambahkan!");
+      setShowPopup(true);
+
+      setTitle("");
+      setWriter("");
+      setPublisher("");
+      setPublishedYear("");
+      setStock(0);
+      setCategory(null);
+      setCoverFile(null);
+
+    } catch (error) {
+      console.error("Submission error:", error);
+      const message = error instanceof Error ? error.message : "Unknown error";
+      setError(`Gagal menambahkan buku: ${message}`);
+      setPopupMessage(`Gagal menambahkan buku: ${message}`);
+      setShowPopup(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <div className="w-full px-4 md:px-[64px] mt-16 md:mt-[84px] bg-[#FFEAC5] pb-6">
+        <div className="w-full flex justify-center items-center py-6 md:py-8">
+          <h1 className="font-morrisroman text-2xl md:text-3xl font-semibold">Add a New Book</h1>
         </div>
-        </>
-    )
+        <div className="w-full px-4 md:px-[64px] py-5 bg-[#6C4E31] rounded-lg text-white font-cyrodiil text-base md:text-lg">
+          <div className="w-full px-2 md:px-4 py-2">
+            <div className="py-2">
+              <label>Title</label>
+              <input
+                type="text"
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                className="w-full mt-2 md:mt-4 py-1 border-2 rounded-md text-black"
+                placeholder="Enter book title"
+              />
+            </div>
+            <div className="py-2">
+              <label>Author</label>
+              <input
+                type="text"
+                value={writer}
+                onChange={e => setWriter(e.target.value)}
+                className="w-full mt-2 md:mt-4 py-1 border-2 rounded-md text-black"
+                placeholder="Enter author name"
+              />
+            </div>
+            <div className="py-2">
+              <label>Publisher</label>
+              <input
+                type="text"
+                value={publisher}
+                onChange={e => setPublisher(e.target.value)}
+                className="w-full mt-2 md:mt-4 py-1 border-2 rounded-md text-black"
+                placeholder="Enter publisher"
+              />
+            </div>
+            <div className="py-2">
+              <label>Year of Publication</label>
+              <input
+                type="number"
+                value={publishedYear}
+                onChange={e => setPublishedYear(e.target.value)}
+                className="w-full mt-2 md:mt-4 py-1 border-2 rounded-md text-black"
+                placeholder="YYYY"
+              />
+            </div>
+            <div className="py-2">
+              <label className="block mb-2">Category</label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 w-full md:w-[360px]">
+                {categoriesData.map((cat) => (
+                  <label key={cat.documentId} className="flex items-center gap-2 text-sm md:text-base">
+                    <input
+                      type="radio"
+                      name="category"
+                      value={cat.documentId}
+                      checked={category === cat.documentId}
+                      onChange={() => setCategory(cat.documentId)}
+                    />
+                    {cat.name}
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div className="py-2">
+              <label>Stock</label>
+              <input
+                type="number"
+                value={stock}
+                onChange={e => setStock(Number(e.target.value))}
+                className="w-full mt-2 md:mt-4 py-1 border-2 rounded-md text-black"
+                placeholder="Enter total stock"
+                min={0}
+              />
+            </div>
+            <div className="py-2">
+              <label>Cover</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={e => {
+                  if (e.target.files && e.target.files[0]) {
+                    setCoverFile(e.target.files[0]);
+                  }
+                }}
+                className="mt-2 md:mt-4 w-full"
+              />
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 py-4">
+              <Link href="/buku" className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 text-black py-2 px-4 clip-custom text-center">
+                ← Back
+              </Link>
+              <button
+                disabled={loading}
+                onClick={handleSubmit}
+                className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 text-black py-2 px-4 clip-custom"
+              >
+                {loading ? "Saving..." : "Save Book"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {showPopup && (
+        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center bg-[#F2C078] w-[90%] md:w-[500px] h-auto md:h-[142px] p-4 md:p-0 rounded-xl shadow-lg z-[9999]">
+          <div className="w-full md:w-64 font-cyrodiil flex flex-col items-center justify-center text-center">
+            <h1 className="text-lg md:text-xl mb-4">
+              {popupMessage}
+            </h1>
+            <button
+              className="bg-green-400 hover:bg-green-600 duration-300 text-white px-4 md:px-8 py-2 clip-custom"
+              onClick={handlePopupClose}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }

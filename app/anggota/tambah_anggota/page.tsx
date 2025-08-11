@@ -5,7 +5,6 @@ import Footer from "@/components/customs/layouts/footer";
 import TambahMemb from "@/components/customs/member/tambah";
 import useLoading from "@/components/customs/loading/useLoading";
 import Loading from "@/components/customs/loading/Loading";
-import { useState, useEffect } from "react";
 
 export default function Page(){
     const loading = useLoading();
