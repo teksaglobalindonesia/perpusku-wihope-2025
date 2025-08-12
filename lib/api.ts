@@ -29,20 +29,45 @@ export async function fetchAPI(
     return response.json();
 }
 
-export async function fetchBooks() {
-    return fetchAPI("/api/book/list");
+async function fetchList(endpoint: string, page = 1, pageSize = 9999) {
+    const query = new URLSearchParams({
+        page: String(page),
+        page_size: String(pageSize)
+    });
+    return fetchAPI(`${endpoint}?${query}`);
 }
 
-export async function fetchMembers() {
-    return fetchAPI("/api/member/list");
+export const fetchBooks = (page?: number, pageSize?: number) => {
+    return fetchList("/api/book/list", page, pageSize);
 }
 
-export async function fetchLoans() {
-    return fetchAPI("/api/loan/list")
+export const fetchMembers = (page?: number, pageSize?: number) => {
+    return fetchList("/api/member/list", page, pageSize);
 }
 
-export async function fetchReturn() {
-    return fetchAPI("/api/return/list")
+export const fetchLoans = (page?: number, pageSize?: number) => {
+    return fetchList("/api/loan/list", page, pageSize);
+};
+
+export const fetchReturn = (page?: number, pageSize?: number) => {
+    return fetchList("/api/return/list", page, pageSize)
+}
+
+interface Category {
+    id: number;
+    documentId: string;
+    name: string;
+    createdAt?: string;
+}
+
+export async function fetchCategories(): Promise<Category[]> {
+    try {
+        const response = await fetchAPI("/api/book-category/list");
+        return response.data || [];
+    } catch (error) {
+        console.error("Failed to fetch categories:", error);
+        return [];
+    }
 }
 
 export async function fetchBookSearch(keyword: string, page = 1, pageSize = 5) {
@@ -183,36 +208,55 @@ export async function addBook(file: File, bookData: any) {
     }
 }
 
+export async function addCategories(categoriesData:{
+    name: string
+}){
+    const res = await fetchAPI("/api/book-category/add", {
+        method: "POST",
+        body: { data: categoriesData }
+    });
+    return res;
+}
 
+export async function addLoans(loansData: {
+    book: string | null;
+    member: string | null;
+    loan_date: string | Date;
+    return_date: string | Date;
+}) {
+    if (!loansData.book || !loansData.member || !loansData.loan_date || !loansData.return_date) {
+        throw new Error("All fields are required");
+    }
 
+    const res = await fetchAPI("/api/loan/add", {
+        method: "POST",
+        body: { 
+            data: {
+                ...loansData,
+                loan_date: new Date(loansData.loan_date),
+                return_date: new Date(loansData.return_date)
+            }
+        }
+    });
+    return res;
+}
 
+export async function addReturns(returnsData: {
+    loan: string
+    actual_return_date: string | Date;
+}) {
+    if (!returnsData.loan || !returnsData.actual_return_date) {
+        throw new Error("All fields are required");
+    }
 
-// export async function addBook(bookData: {
-//     title: string;
-//     writer: string;
-//     publisher: string;
-//     published_year: string;
-//     stock: number;
-//     categories?: string[];
-// }, coverImageFile: File) {
-//     const formData = new FormData();
-
-//     formData.append('cover', coverImageFile);
-
-//     formData.append('data', JSON.stringify(bookData));
-
-//     const res = await fetch(`${API_URL}/api/book/add`, {
-//         method: 'POST',
-//         headers: {
-//         'Authorization': TOKEN,
-//         'x-wihope-name': WIHOPE_NAME,
-//         },
-//         body: formData,
-//     });
-//     if (!res.ok) {
-//         throw new Error(`HTTP error! status: ${res.status}`);
-//     }
-
-//     const json = await res.json();
-//     return json;
-// }
+    const res = await fetchAPI("/api/return/add", {
+        method: "POST",
+        body: { 
+            data: {
+                ...returnsData,
+                actual_return_date: new Date(returnsData.actual_return_date)
+            }
+        }
+    });
+    return res;
+}

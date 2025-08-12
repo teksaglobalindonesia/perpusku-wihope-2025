@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import SearchReturn from "../search/search_return";
 import Pagination from "../pagination/pagination";
+import Link from "next/link";
 
 interface Return {
     id: number;
@@ -64,6 +65,10 @@ export default function Pengembalian({ returns, books }: { returns: any[], books
                         }}
                         
                         />
+                        <Link href="/pengembalian/tambah" className="px-4 md:px-8 py-4 clip-custom 
+                        text-sm md:text-lg font-cyrodiil text-white font-semibold bg-green-500 text-center hover:bg-green-800 duration-300">
+                            Add
+                        </Link>
                     </div>
                 </div>
                 <div className="w-full border-2 md:border-4 

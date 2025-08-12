@@ -4,9 +4,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Pagination from "../pagination/pagination";
+import { addLoans } from "@/lib/api";
 
 interface Book {
     id: number;
+    documentId: string;
     title: string;
     cover?: { url: string };
     categories?: { name: string }[];
@@ -23,13 +25,21 @@ interface Member {
     documentId: string
 }
 
-export default function TambahPemjmn({ books, members}: {books: any[], members: any[] }){
+export default function TambahLoan({ books, members}: {books: any[], members: any[] }){
     const API = "https://cms-perpusku.widhimp.my.id";
     const [munculBuku, setMunculBuku] = useState(false);
     const [munculMember, setMunculMember] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [filterBook, setFilterBook] = useState<Book[]>(books);
     const [filterMember, setFilterMember] = useState<Member[]>(members);
+    const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
+    const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
+    const [loan_date, setLoan_date] = useState("");
+    const [durationWeeks, setDurationWeeks] = useState<number | null>(null);
+    const [return_date, setReturn_date] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [showPopup, setShowPopup] = useState(false); 
+    const [popupMessage, setPopupMessage] = useState("");
 
     const itemsPerPage = 3;
 
@@ -40,65 +50,131 @@ export default function TambahPemjmn({ books, members}: {books: any[], members: 
         setCurrentPage(1);
     }, [filterBook, filterMember])
 
+    const handleChooseBook = (book: any) => {
+        setSelectedBookId(book.documentId); 
+        setMunculBuku(false);
+    };
+
+    const handleChooseMember = (member: any) => {
+        setSelectedMemberId(member.documentId);
+        setMunculMember(false); 
+    };
+
+    useEffect(() => {
+        if (loan_date && durationWeeks) {
+            const startDate = new Date(loan_date);
+            startDate.setDate(startDate.getDate() + durationWeeks * 7);
+            setReturn_date(startDate.toISOString().split("T")[0]);
+        }
+    }, [loan_date, durationWeeks]);
+
+    async function handleSave() {
+    try {
+        if (!selectedBookId || !selectedMemberId || !loan_date || !return_date) {
+            setPopupMessage("Please select a book, member, and specify dates!");
+            setShowPopup(true);
+            return;
+        }
+
+        setLoading(true);
+        const payload = { 
+            book: selectedBookId,
+            member: selectedMemberId,
+            loan_date,
+            return_date
+        };
+        console.log("Data dikirim:", payload);
+
+        const res = await addLoans(payload);
+        console.log("Respon API:", res);
+
+        setPopupMessage("Loan successfully added!");
+        setShowPopup(true);
+
+    } catch (err) {
+        console.error("Error:", err);
+        setPopupMessage(err instanceof Error ? err.message : "Loan failed to add!");
+        setShowPopup(true);
+    } finally {
+        setLoading(false);
+    }
+}
+
+function handlePopupClose() {
+    setShowPopup(false);
+    setSelectedBookId(null);
+    setSelectedMemberId(null);
+    setLoan_date("");
+    setDurationWeeks(null); 
+    setReturn_date("");
+}
+
     return(
         <>
         <div className="w-full px-4 md:px-[64px] mt-16 md:mt-[84px] bg-[#FFEAC5] pb-6">
             <div className="w-full flex justify-center items-center py-6 md:py-8">
                 <h1 className="font-morrisroman text-2xl md:text-3xl font-semibold text-center">
-                    Add a New Borrowing
+                    Add a New Loan
                 </h1>
             </div>
             <div className="w-full px-4 md:px-[64px] py-5 bg-[#6C4E31] rounded-lg 
             text-white font-cyrodiil text-base md:text-lg">
                 <div className="w-full px-2 md:px-4">
                     <div className="py-2">
-                        <label>
-                            Book
-                        </label>
-                        <button className="bg-white hover:bg-[#F2C078] duration-300 w-full 
-                        mt-2 md:mt-4 py-2 px-3 border-2 rounded-md text-black" 
-                        onClick={() => setMunculBuku(true)}>
-                            Choose
-                        </button>
+                        <label>Book</label>
+                            <div className="mt-2 md:mt-4 flex items-center gap-2">
+                                <span>{selectedBookId ? `ID: ${selectedBookId}` : "No book selected"}</span>
+                            <button 
+                                className="bg-white hover:bg-[#F2C078] duration-300 py-2 px-3 border-2 rounded-md text-black" 
+                                onClick={() => setMunculBuku(true)}
+                            >
+                                Choose
+                            </button>
+                        </div>
                     </div>
                     <div className="py-2">
-                        <label>
-                            Member
-                        </label>
-                        <button onClick={() => setMunculMember(true)} className="bg-white 
-                        hover:bg-[#F2C078] duration-300 w-full mt-2 md:mt-4 py-2 px-3 border-2 rounded-md 
-                        text-black">
-                            Choose
-                        </button>
+                        <label>Member</label>
+                        <div className="mt-2 md:mt-4 flex items-center gap-2">
+                            <span>{selectedMemberId ? `ID: ${selectedMemberId}` : "No member selected"}</span>
+                            <button 
+                                className="bg-white hover:bg-[#F2C078] duration-300 py-2 px-3 border-2 rounded-md text-black" 
+                                onClick={() => setMunculMember(true)}
+                            >
+                                Choose
+                            </button>
+                        </div>
                     </div>
                     <div className="py-2">
-                        <label>
-                            Borrowing Date
-                        </label>
+                        <label>Loan Date</label>
                         <input 
                             type="date" 
-                            className="w-full mt-2 md:mt-4 py-2 px-3 border-2 rounded-md text-black" 
+                            value={loan_date}
+                            onChange={(e) => setLoan_date(e.target.value)}
+                            className="w-full mt-2 py-2 px-3 border rounded-md text-black" 
                         />
                     </div>
                     <div className="py-2">
-                        <label>
-                            Borrowing Duration
-                        </label>
-                        <select className="w-full mt-2 md:mt-4 py-2 px-3 border-2 rounded-md text-black">
-                            <option value="" defaultValue={0}></option>
-                            <option value="1 minggu">
-                                1 Week
-                            </option>
-                            <option value="2 minggu">
-                                2 Week
-                            </option>
-                            <option value="3 minggu">
-                                3 Week
-                            </option>
-                            <option value="4 minggu">
-                                4 Week
-                            </option>
+                        <label>Loan Duration</label>
+                        <select 
+                            value={durationWeeks ?? ""} 
+                            onChange={(e) => setDurationWeeks(Number(e.target.value))}
+                            className="w-full mt-2 py-2 px-3 border rounded-md text-black"
+                        >
+                            <option value="">Select duration</option>
+                            <option value={1}>1 Week</option>
+                            <option value={2}>2 Weeks</option>
+                            <option value={3}>3 Weeks</option>
+                            <option value={4}>4 Weeks</option>
                         </select>
+                    </div>
+                    <div className="py-2">
+                        <label>Return Date</label>
+                        <input 
+                            type="date" 
+                            value={return_date}
+                            readOnly
+                            className="w-full mt-2 py-2 px-3 border rounded-md bg-gray-200 cursor-not-allowed text-black" 
+                        />
                     </div>
                     <div className="flex flex-col sm:flex-row gap-3 py-4">
                         <Link 
@@ -109,10 +185,13 @@ export default function TambahPemjmn({ books, members}: {books: any[], members: 
                             ← Back
                         </Link>
                         <button 
+                            type="button"
+                            disabled={loading}
+                            onClick={handleSave}
                             className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 text-black 
                             py-2 px-4 clip-custom"
                         >
-                            Save Borrowing
+                            {loading ? "Saving..." : "Save Loan"}
                         </button>
                     </div>
                 </div>
@@ -140,7 +219,10 @@ export default function TambahPemjmn({ books, members}: {books: any[], members: 
                                 by {book.writer}
                             </h3>
                             <div className="flex mt-2">
-                            <button className="bg-green-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base">
+                            <button 
+                                onClick={() => handleChooseBook(book)} 
+                                className="bg-green-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base"
+                                >
                                 Choose
                             </button>
                             </div>
@@ -191,9 +273,12 @@ export default function TambahPemjmn({ books, members}: {books: any[], members: 
                                 {member.email}
                             </h3>
                             <div className="flex mt-2">
-                            <button className="bg-green-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base">
-                                Choose
-                            </button>
+                                <button 
+                                    onClick={() => handleChooseMember(member)} 
+                                    className="bg-green-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base"
+                                >
+                                    Choose
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -210,6 +295,22 @@ export default function TambahPemjmn({ books, members}: {books: any[], members: 
                 currentPage={currentPage}
                 totalPages={totalPages2}
                 onPageChange={(newPage) => setCurrentPage(newPage)}/>
+            </div>
+        )}
+
+        {showPopup && (
+            <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center bg-[#F2C078] w-[90%] md:w-[500px] h-auto md:h-[142px] p-4 md:p-0 rounded-xl shadow-lg z-[9999]">
+                <div className="w-full md:w-64 font-cyrodiil flex flex-col items-center justify-center text-center">
+                    <h1 className="text-lg md:text-xl mb-4">
+                        {popupMessage}
+                    </h1>
+                    <button
+                        className="bg-green-400 hover:bg-green-600 duration-300 text-white px-4 md:px-8 py-2 clip-custom"
+                        onClick={handlePopupClose}
+                    >
+                        OK
+                    </button>
+                </div>
             </div>
         )}
         </>

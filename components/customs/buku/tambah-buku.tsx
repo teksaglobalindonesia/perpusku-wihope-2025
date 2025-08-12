@@ -3,16 +3,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { addBook } from "@/lib/api";
 
-const categoriesData = [
-  { id: 12, documentId: "x4yq8tiscumal0di90spa1ji", name: "Cooking" },
-  { id: 10, documentId: "i386dq2mtb6f885p6gdw86u9", name: "Drama" },
-  { id: 8, documentId: "hdaw1e7inhcz331r2lkvqd9b", name: "Arcane" },
-  { id: 6, documentId: "pdgik95au1ntnectnm76dox7", name: "Mystery" },
-  { id: 4, documentId: "yafj2j9e4bhniemjwwfavwm7", name: "Comedy" },
-  { id: 2, documentId: "t2kjag5pkoxldm1uae9rl4g6", name: "History" },
-];
+interface Category {
+    id: number;
+    documentId: string;
+    name: string;
+    createdAt?: string;
+}
 
-export default function TambahBuku() {
+export default function TambahBuku({ categories = [] }: { categories?: Category[] }) {
   const [title, setTitle] = useState("");
   const [writer, setWriter] = useState("");
   const [publisher, setPublisher] = useState("");
@@ -138,20 +136,33 @@ export default function TambahBuku() {
             </div>
             <div className="py-2">
               <label className="block mb-2">Category</label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 w-full md:w-[360px]">
-                {categoriesData.map((cat) => (
-                  <label key={cat.documentId} className="flex items-center gap-2 text-sm md:text-base">
-                    <input
-                      type="radio"
-                      name="category"
-                      value={cat.documentId}
-                      checked={category === cat.documentId}
-                      onChange={() => setCategory(cat.documentId)}
-                    />
-                    {cat.name}
-                  </label>
-                ))}
+              <div className="mb-4">
+                <Link 
+                  href="/buku/tambah_categories" 
+                  className="px-4 bg-yellow-500 py-2 clip-custom mb-2 text-sm md:text-base inline-block"
+                >
+                  Add Category
+                </Link>
               </div>
+              {categories.length === 0 ? (
+                <p className="text-yellow-200">No categories available</p>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 w-full md:w-[360px]">
+                  {categories.map((cat) => (
+                    <label key={cat.documentId} className="flex items-center gap-2 text-sm md:text-base">
+                      <input
+                        type="radio"
+                        name="category"
+                        value={cat.documentId}
+                        checked={category === cat.documentId}
+                        onChange={() => setCategory(cat.documentId)}
+                        className="accent-[#F2C078]"
+                      />
+                      {cat.name}
+                    </label>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="py-2">
               <label>Stock</label>
