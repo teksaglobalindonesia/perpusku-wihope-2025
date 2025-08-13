@@ -3,26 +3,35 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
 export default function TambahBukuPage() {
   const router = useRouter();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [kategoriList, setKategoriList] = useState([
-    "Fiksi",
-    "Non-Fiksi",
-    "Sejarah",
-    "Romantis",
-    "Persahabatan",
+  const [kategoriList, setKategoriList] = useState<
+    { id: string; name: string }[]
+  >([
+    { id: "default1", name: "Fiksi" },
+    { id: "default2", name: "Non-Fiksi" },
+    { id: "default3", name: "Sejarah" },
+    { id: "default4", name: "Romantis" },
+    { id: "default5", name: "Persahabatan" },
   ]);
   const [kategoriTerpilih, setKategoriTerpilih] = useState<string[]>([]);
   const [showInputKategori, setShowInputKategori] = useState(false);
   const [kategoriBaru, setKategoriBaru] = useState("");
 
-  const handleKategoriChange = (value: string) => {
-    if (kategoriTerpilih.includes(value)) {
-      setKategoriTerpilih(kategoriTerpilih.filter((k) => k !== value));
+  const [judul, setJudul] = useState("");
+  const [penerbit, setPenerbit] = useState("");
+  const [penulis, setPenulis] = useState("");
+  const [tahun, setTahun] = useState("");
+  const [stok, setStok] = useState(1);
+
+  const handleKategoriChange = (id: string) => {
+    if (kategoriTerpilih.includes(id)) {
+      setKategoriTerpilih(kategoriTerpilih.filter((k) => k !== id));
     } else {
-      setKategoriTerpilih([...kategoriTerpilih, value]);
+      setKategoriTerpilih([...kategoriTerpilih, id]);
     }
   };
 
@@ -30,18 +39,77 @@ export default function TambahBukuPage() {
     setShowInputKategori(true);
   };
 
-  const handleSubmitKategoriBaru = () => {
-    if (kategoriBaru.trim() && !kategoriList.includes(kategoriBaru)) {
-      setKategoriList([...kategoriList, kategoriBaru.trim()]);
-      setKategoriBaru("");
-      setShowInputKategori(false);
+  const handleSubmitKategoriBaru = async () => {
+    if (kategoriBaru.trim()) {
+      try {
+        const res = await fetch(`${BASE_URL}/api/book-category/add`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: TOKEN,
+            "x-wihope-name": WIHOPE_NAME,
+          },
+          body: JSON.stringify({
+            data: { name: kategoriBaru.trim() },
+          }),
+        });
+
+        if (!res.ok) throw new Error("Gagal menambahkan kategori");
+        const data = await res.json();
+
+        setKategoriList([
+          ...kategoriList,
+          { id: data?.data?.documentId, name: kategoriBaru.trim() },
+        ]);
+        setKategoriBaru("");
+        setShowInputKategori(false);
+      } catch (error) {
+        console.error(error);
+        alert("Gagal menambah kategori");
+      }
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    alert("Buku berhasil ditambahkan!");
-    router.push("/buku");
+
+    if (!selectedImage) {
+      alert("Pilih cover buku terlebih dahulu!");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("files.cover", selectedImage);
+      formData.append(
+        "data",
+        JSON.stringify({
+          title: judul,
+          writer: penulis,
+          publisher: penerbit,
+          published_year: tahun,
+          stock: stok,
+          categories: kategoriTerpilih,
+        })
+      );
+
+      const res = await fetch(`${BASE_URL}/api/book/add`, {
+        method: "POST",
+        headers: {
+          Authorization: TOKEN,
+          "x-wihope-name": WIHOPE_NAME,
+        },
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Gagal menambahkan buku");
+
+      alert("Buku berhasil ditambahkan!");
+      router.push("/buku");
+    } catch (error) {
+      console.error(error);
+      alert("Terjadi kesalahan saat menambahkan buku");
+    }
   };
 
   return (
@@ -51,52 +119,93 @@ export default function TambahBukuPage() {
       <form onSubmit={handleSubmit} className="space-y-5 max-w-2xl">
         {/* Judul */}
         <div>
-          <label className="block text-sm font-semibold mb-1 font-roboto text-navy">Judul Buku</label>
+          <label className="block text-sm font-semibold mb-1 text-navy">
+            Judul Buku
+          </label>
           <input
             type="text"
+            value={judul}
+            onChange={(e) => setJudul(e.target.value)}
             required
             className="w-1/3 border border-navy rounded px-3 py-2"
             placeholder="Masukkan judul buku..."
           />
         </div>
+
+        {/* Penerbit */}
         <div>
-            <label className="block text-navy font-roboto mb-1 font-semibold text-sm">Penerbit</label>
-            <input type="text" 
-            required 
-            className="w-1-3 border border-navy rounded px-3 py-2" placeholder="masukan nama penerbit"/>
+          <label className="block text-sm font-semibold mb-1 text-navy">
+            Penerbit
+          </label>
+          <input
+            type="text"
+            value={penerbit}
+            onChange={(e) => setPenerbit(e.target.value)}
+            required
+            className="w-1/3 border border-navy rounded px-3 py-2"
+            placeholder="Masukkan nama penerbit..."
+          />
         </div>
 
         {/* Penulis */}
         <div>
-          <label className="block text-sm font-semibold font-roboto mb-1 text-navy">Penulis</label>
+          <label className="block text-sm font-semibold mb-1 text-navy">
+            Penulis
+          </label>
           <input
             type="text"
+            value={penulis}
+            onChange={(e) => setPenulis(e.target.value)}
             required
             className="w-1/3 border border-navy rounded px-3 py-2"
             placeholder="Masukkan nama penulis..."
           />
         </div>
 
-        {/* tahun terbit */}
+        {/* Tahun Terbit */}
         <div>
-            <label className="block text-sm font-roboto font-semibold text-navy mb-1">Tahun terbit</label>
-            <input type="text" 
-            required 
-            className=" w-1/3 border mb-2 border-navy px-3 py-2 rounded" 
-            placeholder="Masukan Tahun Terbit..." 
-            />
+          <label className="block text-sm font-semibold mb-1 text-navy">
+            Tahun Terbit
+          </label>
+          <input
+            type="text"
+            value={tahun}
+            onChange={(e) => setTahun(e.target.value)}
+            required
+            className="w-1/3 border border-navy rounded px-3 py-2"
+            placeholder="Masukkan Tahun Terbit..."
+          />
+        </div>
+
+        {/* Stok */}
+        <div>
+          <label className="block text-sm font-semibold mb-1 text-navy">
+            Stok
+          </label>
+          <input
+            type="number"
+            value={stok}
+            onChange={(e) => setStok(Number(e.target.value))}
+            required
+            className="w-1/3 border border-navy rounded px-3 py-2"
+            min="1"
+          />
         </div>
 
         {/* Kategori */}
         <div>
-          <label className="block text-sm font-semibold mb-2 text-navy">Kategori</label>
+          <label className="block text-sm font-semibold mb-2 text-navy">
+            Kategori
+          </label>
 
-          {/* Tombol Tambah Kategori */}
-          <Button type="button" onClick={handleTambahKategori} className="bg-navy text-white hover:bg-blue mb-3">
+          <Button
+            type="button"
+            onClick={handleTambahKategori}
+            className="bg-navy text-white hover:bg-blue mb-3"
+          >
             + Tambah Kategori
           </Button>
 
-          {/* Form Input Tambah Kategori */}
           {showInputKategori && (
             <div className="flex gap-2 mb-3">
               <input
@@ -112,17 +221,19 @@ export default function TambahBukuPage() {
             </div>
           )}
 
-          {/* Checkbox */}
           <div className="flex flex-wrap gap-4">
             {kategoriList.map((kategori) => (
-              <label key={kategori} className="flex items-center gap-2 text-black">
+              <label
+                key={kategori.id}
+                className="flex items-center gap-2 text-black"
+              >
                 <input
                   type="checkbox"
-                  value={kategori}
-                  checked={kategoriTerpilih.includes(kategori)}
-                  onChange={() => handleKategoriChange(kategori)}
+                  value={kategori.id}
+                  checked={kategoriTerpilih.includes(kategori.id)}
+                  onChange={() => handleKategoriChange(kategori.id)}
                 />
-                {kategori}
+                {kategori.name}
               </label>
             ))}
           </div>
@@ -130,7 +241,9 @@ export default function TambahBukuPage() {
 
         {/* Gambar */}
         <div>
-          <label className="block text-sm text-navy font-semibold mb-1">Cover</label>
+          <label className="block text-sm text-navy font-semibold mb-1">
+            Cover
+          </label>
           <input
             type="file"
             accept="image/*"

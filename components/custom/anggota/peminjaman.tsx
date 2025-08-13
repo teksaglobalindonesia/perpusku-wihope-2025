@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { API_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
+import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
 
 interface Peminjaman {
@@ -28,7 +28,7 @@ export default function PeminjamanAnggota({ id }: { id: string }) {
     const fetchPeminjaman = async () => {
       try {
         const response = await fetch(
-          `https://cms-perpusku.widhimp.my.id/api/loan/list?page=${currentPage}&page_size=${itemsPerPage}`,
+          `${BASE_URL}/api/loan/list?page=${currentPage}&page_size=${itemsPerPage}`,
           {
               method: "GET",
                 headers: {

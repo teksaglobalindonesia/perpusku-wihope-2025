@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { API_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
+import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
 
 export default function PengembalianList() {
@@ -19,7 +19,7 @@ export default function PengembalianList() {
       setLoading(true);
       try {
         const response = await fetch(
-          `https://cms-perpusku.widhimp.my.id/api/return/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchTerm}`,
+          `${BASE_URL}/api/return/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchTerm}`,
           {
             method: "GET",
             headers: {

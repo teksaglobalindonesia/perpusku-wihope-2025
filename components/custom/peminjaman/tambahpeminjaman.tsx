@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import PilihBuku from "@/components/custom/peminjaman/pilihbuku";
 import PilihAnggota from "@/components/custom/peminjaman/pilihanggota";
+import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
+import { error } from "console";
 
 export default function TambahPeminjaman() {
   const [selectedBuku, setSelectedBuku] = useState<{ id: number; title: string } | null>(null);
@@ -11,24 +13,56 @@ export default function TambahPeminjaman() {
   const [tanggal, setTanggal] = useState("");
   const [durasi, setDurasi] = useState("1 minggu");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const hitungReturnDate = (loanDate: string, durasi: string) => {
+    const d = new Date (loanDate);
+    if (durasi === "1 minggu") d.setDate(d.getDate() + 7);
+    if (durasi === "2 minggu") d.setDate(d.getDate() + 14);
+    if (durasi === "3 minggu") d.setDate(d.getDate() + 21);
+    return d.toISOString().split("T")[0];
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedBuku || !selectedAnggota || !tanggal) {
       alert("Mohon lengkapi semua data.");
       return;
     }
 
-    const data = {
-      bukuId: selectedBuku.id,
-      anggotaId: selectedAnggota.id,
-      tanggalPeminjaman: tanggal,
-      durasi,
-    };
+    try{
+      const returnDate = hitungReturnDate(tanggal, durasi);
+      
+      const res = await fetch (`${BASE_URL}/api/loan/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+            Authorization: TOKEN,
+            "x-wihope-name": WIHOPE_NAME,
+        },
+        body: JSON.stringify({
+          data:{
+            member: selectedAnggota.id,
+            book: selectedBuku.id,
+            loan_date: tanggal,
+            return_date: returnDate,
+          },
+        }),
+        cache: "no-cache",
+      });
+      
+      if (!res.ok) throw new Error ("gagal menyimpan peminjaman");
 
-    console.log("Data peminjaman:", data);
-    alert("Data peminjaman berhasil disimpan!");
+      alert("Data peminjaman berhasil di simpan!");
+      setSelectedBuku(null);
+      setSelectedAnggota(null);
+      setTanggal("");
+      setDurasi("1 minggu");
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kesalahan saat menyimpan peminjaman")
+    }
   };
 
+  
   return (
     <main className="px-6 py-8">
       <h1 className="font-bold mb-4 text-xl text-navy">Tambah Peminjaman</h1>

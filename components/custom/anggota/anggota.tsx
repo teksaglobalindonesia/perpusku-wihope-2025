@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import HapusAnggotaDialog from "@/components/custom/anggota/hapusanggota";
-import { API_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
+import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
 export default function Anggota() {
   const [anggotaList, setAnggotaList] = useState<any[]>([]);
@@ -17,7 +17,7 @@ export default function Anggota() {
   const fetchAnggota = async () => {
     try {
       const response = await fetch(
-        `https://cms-perpusku.widhimp.my.id/api/member/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchTerm}`,
+        `${BASE_URL}/api/member/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchTerm}`,
         {
           method: "GET",
           headers: {

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import HapusDialog from "@/components/custom/buku/hapuusbuku";
-import { API_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
+import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
 const itemsPerPage = 6;
 
@@ -19,7 +19,7 @@ export default function BukuPage() {
     const fetchBooks = async () => {
       try {
         const response = await fetch(
-          `https://cms-perpusku.widhimp.my.id/api/book/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchTerm}`,
+          `${BASE_URL}/api/book/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchTerm}`,
           {
             method: "GET",
             headers: {

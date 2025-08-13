@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import { API_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
+import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
 
 export default function PeminjamanList() {
@@ -20,7 +20,7 @@ export default function PeminjamanList() {
     const fetchPeminjaman = async () => {
       try {
         const response = await fetch(
-          `https://cms-perpusku.widhimp.my.id/api/loan/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchTerm}`,
+          `${BASE_URL}/api/loan/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchTerm}`,
           {
             method: "GET",
             headers: {
