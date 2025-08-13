@@ -13,9 +13,10 @@ interface Return {
 
 interface Props {
     onSearch: (filteredData: Return[]) => void;
+    className?: string;
 }
 
-export default function SearchReturn({ onSearch }: Props) {
+export default function SearchReturn({ onSearch, className }: Props) {
     const [query, setQuery] = useState("");
 
     useEffect(() => {
@@ -39,7 +40,7 @@ export default function SearchReturn({ onSearch }: Props) {
         <>
         <input type="text" 
             placeholder="Search by name, book, or date..."
-            className="px-4 py-2 border-2 md:border-4 rounded-md text-sm md:text-lg"
+            className={`px-4 py-2 border-2 md:border-4 rounded-md text-sm md:text-lg w-full ${className ?? ""}`}
             value={query}
             onChange={(e) => setQuery(e.target.value)}    
         />

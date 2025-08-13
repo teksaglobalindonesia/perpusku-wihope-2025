@@ -39,7 +39,8 @@ import { useState, useEffect } from "react";
       <Pinjaman 
       loans={loans}
       books={books}/>
-      <Pengembali returns={returns}/>
+      <Pengembali returns={returns}
+      books={books}/>
       <Goodbye/>
       <Footer/>
       </>

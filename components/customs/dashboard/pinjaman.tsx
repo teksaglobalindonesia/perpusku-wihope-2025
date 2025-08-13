@@ -32,9 +32,9 @@ export default function Pinjaman({ loans = [], books }: { loans?: any[], books: 
     const todayStr = today.toDateString();
 
     const todayLoans = filterLoan.filter((loan) => {
-    if (!loan.createdAt) return false;
-    const createdAtStr = new Date(loan.createdAt).toDateString();
-    return createdAtStr === todayStr;
+        if (!loan.createdAt) return false;
+        const createdAtStr = new Date(loan.createdAt).toDateString();
+        return createdAtStr === todayStr;
     });
 
     const itemsPerPage = 2;

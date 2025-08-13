@@ -76,7 +76,7 @@ export default function Pengembalian({ returns, books }: { returns: any[], books
                     {filterReturn.length === 0 ? (
                         <div className="w-full text-center py-10">
                             <p className="text-xl md:text-2xl font-cyrodiil">
-                                There is no loans available right now
+                                There is no returns available right now
                             </p>
                         </div>
                     ) : (
