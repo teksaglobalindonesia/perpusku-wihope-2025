@@ -68,6 +68,11 @@ export default function Peminjaman({ peminjamans, books, returns }: { peminjaman
         return actualReturnDate > returnDate;
     }
 
+    const isReturn = (loanItem: Return) => {
+        return loanItem.return && loanItem.return.actual_return_date ? true : false;
+    };
+
+
     return(
         <>
         <div className="w-full bg-[#FFEAC5] mt-16 md:mt-[84px] px-4 md:px-[64px] py-6 md:py-[40px]">
@@ -94,7 +99,7 @@ export default function Peminjaman({ peminjamans, books, returns }: { peminjaman
                                 There is no loans available right now
                             </p>
                         </div>
-                    ): (
+                    ) : (
                         <>
                         {filterLoan.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((peminjam) => {
                         const bookData = peminjam.book ? getBookData(peminjam.book.id) : null;
@@ -133,8 +138,12 @@ export default function Peminjaman({ peminjamans, books, returns }: { peminjaman
                                                 Returning: {peminjam.return_date instanceof Date ? peminjam.return_date.toLocaleDateString() : peminjam.return_date}
                                             </h4>
                                             <div className="flex flex-wrap gap-2 md:gap-3 mt-2">
-                                                <div className="bg-green-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base transition-colors duration-300 hover:bg-green-600 hover:text-white">
-                                                    Return
+                                                <div className="flex flex-wrap gap-2 md:gap-3 mt-2">
+                                                    {isReturn(peminjam) ? (
+                                                        <div className="bg-green-500 px-4 py-1 md:px-8 clip-custom text-xs md:text-base">
+                                                            Returned
+                                                        </div>
+                                                    ):null}
                                                 </div>
                                             </div>
                                         </div>

@@ -124,7 +124,7 @@ function handlePopupClose() {
 
                     <div className="flex flex-col sm:flex-row gap-3 py-4">
                         <Link 
-                            href="/peminjaman" 
+                            href="/pengembalian" 
                             className="bg-[#F0F2BD] hover:bg-[#F2C078] duration-300 
                             text-black py-2 px-4 clip-custom text-center"
                         >
