@@ -8,7 +8,7 @@ import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
 const itemsPerPage = 6;
 
-export default function BukuPage() {
+export default function BukuPage({ data }: {data: any[]}) {
   const [books, setBooks] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
