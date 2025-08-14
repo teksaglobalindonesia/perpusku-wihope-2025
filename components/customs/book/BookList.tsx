@@ -82,12 +82,18 @@ export const BookList = ({ type, data, layout }: BookListPropTypes) => {
             onChange={(e) => setSearchValue(e.target.value)}
           />
           {type == 'all' && (
-            <Link
-              href={`/book/new`}
-              className="w-full rounded-sm bg-brand-primary px-4 py-1 text-center text-white"
-            >
-              Tambah
-            </Link>
+            <>
+              <Link href={`/book/new`}>
+                <p className='className="w-full rounded-sm bg-brand-primary px-4 py-1 text-center text-white '>
+                  Tambah
+                </p>
+              </Link>
+              <Link href={`/book/category`}>
+                <p className="w-full rounded-sm bg-brand-primary px-4 py-1 text-center text-white">
+                  Kategori
+                </p>
+              </Link>
+            </>
           )}
         </div>
       </div>
@@ -107,7 +113,7 @@ export const BookList = ({ type, data, layout }: BookListPropTypes) => {
                 <div className="flex  justify-center sm:w-[200px] sm:justify-normal">
                   <div className="relative h-[300px] w-[200px]">
                     <Image
-                      src={`${BASE_URL}${data?.cover?.url}`}
+                      src={data?.cover ? `${BASE_URL}${data?.cover?.url}` : ''}
                       fill
                       alt=""
                       className="object-cover object-center"
@@ -143,7 +149,7 @@ export const BookList = ({ type, data, layout }: BookListPropTypes) => {
                           setDeleteDialogData((prev) => ({
                             ...prev,
                             isShow: true,
-                            identifier: data?.title
+                            identifier: data?.documentId
                           }));
                         }}
                       >
@@ -173,10 +179,11 @@ export const BookList = ({ type, data, layout }: BookListPropTypes) => {
         />
 
         <DeleteDialog
+          type="book"
           deleteDialogData={deleteDialogData}
           setDeleteDialog={setDeleteDialogData}
           title="Hapus Buku"
-          message={`Apakah anda yakin ingin menghapus buku ${deleteDialogData.identifier}`}
+          message={`Apakah anda yakin ingin menghapus buku ini?`}
         />
       </div>
     </div>

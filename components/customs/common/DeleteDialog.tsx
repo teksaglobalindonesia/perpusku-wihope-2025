@@ -3,30 +3,43 @@ import React from 'react';
 import { SetDeleteDialog } from '@/types/DeleteDialog';
 import { UseBodyOverflow } from '@/hooks/custom/useBodyOverflow';
 import { useEffect, SetStateAction, Dispatch } from 'react';
-
-// type CtaType = Array<{ text: string; type: 'cancel' | 'delete' }>;
+import { fetcher } from '@/lib/fetcher';
 
 type DialogPropsType = {
-  setDeleteDialog: Dispatch<SetStateAction<SetDeleteDialog>>;
   deleteDialogData: SetDeleteDialog;
   title: string;
   message: string;
+  type: 'book' | 'member';
+  setDeleteDialog: Dispatch<SetStateAction<SetDeleteDialog>>;
 };
 
 export const DeleteDialog = ({
-  setDeleteDialog,
   deleteDialogData,
   title,
-  message
+  message,
+  type,
+  setDeleteDialog
 }: DialogPropsType) => {
   UseBodyOverflow(deleteDialogData.isShow);
-  // useEffect(() => {
-  //   if (deleteDialogData.isShow) {
-  //     window.document.body.style.overflow = 'hidden';
-  //   } else {
-  //     window.document.body.style.overflow = 'auto';
-  //   }
-  // }, [deleteDialogData]);
+
+  const handleDeleteData = async () => {
+    setDeleteDialog((prev) => ({
+      ...prev,
+      isDelete: true,
+      isShow: false
+    }));
+
+    const response = await fetcher({
+      path: type == 'book' ? '/book/delete' : '/member/delete',
+      method: 'POST',
+      body: { documentId: deleteDialogData.identifier },
+      pagination: {
+        isActive: false
+      }
+    });
+
+    window.location.reload();
+  };
 
   return (
     deleteDialogData?.isShow && (
@@ -48,13 +61,7 @@ export const DeleteDialog = ({
               Batal
             </button>
             <button
-              onClick={() =>
-                setDeleteDialog((prev) => ({
-                  ...prev,
-                  isDelete: true,
-                  isShow: false
-                }))
-              }
+              onClick={handleDeleteData}
               className="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700"
             >
               Hapus

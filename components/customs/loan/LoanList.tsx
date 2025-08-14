@@ -10,6 +10,7 @@ import { format } from 'date-fns';
 import { StatusBadge } from '@/components/customs/loan/StatusBadge';
 import { getLoanStatus } from '@/lib/getLoanStatus';
 import Link from 'next/link';
+import { ConfirmReturnDialog } from './ConfirmReturnDialog';
 type LoanListPropsType = {
   today?: boolean;
   layout: {
@@ -30,7 +31,16 @@ export const LoanList = ({
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPage, setTotalPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isReturned, setisReturned] = useState<{
+    isShow: boolean;
+    identifier: string;
+  }>({
+    identifier: '',
+    isShow: false
+  });
+
   const [searchValue, setSearchValue] = useState<string>('');
+
   const debaunceSearchValue = useDebaunce(searchValue, 500);
 
   useEffect(() => {
@@ -130,8 +140,17 @@ export const LoanList = ({
                     <span>{dateFormat(data?.return?.actual_return_date)}</span>
                   </p>
                 )}
-                {!today && data?.return && (
-                  <button className="my-2 rounded-sm bg-action-green px-3 py-1 text-neutral-white">
+                {!data?.return && (
+                  <button
+                    className="my-2 rounded-sm bg-action-green px-3 py-1 text-neutral-white"
+                    onClick={() =>
+                      setisReturned((prev) => ({
+                        ...prev,
+                        isShow: true,
+                        identifier: data?.documentId
+                      }))
+                    }
+                  >
                     KEMBALIKAN
                   </button>
                 )}
@@ -154,6 +173,12 @@ export const LoanList = ({
           totalPages={totalPage}
         />
       )}
+      {/*  */}
+      <ConfirmReturnDialog
+        identifier={isReturned.identifier}
+        isShow={isReturned.isShow}
+        setIsShow={setisReturned}
+      />
     </div>
   );
 };

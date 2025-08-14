@@ -103,7 +103,7 @@ export const MemberList = ({ data, pageSize }: MemberListPropsType) => {
                     setDeleteDialogData((prev) => ({
                       ...prev,
                       isShow: true,
-                      identifier: data?.name
+                      identifier: data?.documentId
                     }))
                   }
                 >
@@ -121,10 +121,11 @@ export const MemberList = ({ data, pageSize }: MemberListPropsType) => {
           />
         )}
         <DeleteDialog
+          type="member"
           deleteDialogData={deleteDialogData}
           setDeleteDialog={setDeleteDialogData}
           title="Hapus Buku"
-          message={`Apakah anda yakin ingin menghapus Anggota: ${deleteDialogData.identifier}`}
+          message={`Apakah anda yakin ingin menghapus Anggota ini?`}
         />
       </div>
     </div>

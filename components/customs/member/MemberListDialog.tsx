@@ -88,7 +88,7 @@ export const MemberListDialog = ({
                 onClick={() =>
                   setSelectedData?.((prev: SelectedDataType) => ({
                     ...prev,
-                    member: { isShow: false, indentifier: data?.email }
+                    member: { isShow: false, indentifier: data }
                   }))
                 }
               >

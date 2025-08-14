@@ -5,7 +5,7 @@ import { fetcher } from '@/lib/fetcher';
 export default async function Return() {
   const pageSize = 10;
   const loanDatas = await fetcher({
-    path: '/loan/list',
+    path: '/loan/list?status=loaned',
     pagination: {
       pageSize
     }

@@ -106,7 +106,7 @@ export const BookListDialog = ({
                       onClick={() =>
                         setSelectedData?.((prev: SelectedDataType) => ({
                           ...prev,
-                          book: { isShow: false, indentifier: data?.documentId }
+                          book: { isShow: false, indentifier: data }
                         }))
                       }
                     >

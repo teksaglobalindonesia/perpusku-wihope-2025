@@ -113,11 +113,11 @@ export const ReturnList = ({
                     {dateFormat(data?.return?.actual_return_date)}
                   </span>
                 </p>
-                {!today && (
+                {/* {!today && (
                   <button className="my-2 rounded-sm bg-action-green px-3 py-1 text-neutral-white">
                     KEMBALIKAN
                   </button>
-                )}
+                )} */}
               </div>
               {isLate(data?.return_date, data?.return) && (
                 <h1 className="rounded-sm bg-action-error px-3 py-1 text-neutral-white">
@@ -140,3 +140,23 @@ export const ReturnList = ({
     </div>
   );
 };
+
+//
+
+// book.categories.map((bookCategori: any, i: number)) =>{
+//   categories.map((categori: any, i:number) => (
+//     <input type='checkbox' checked={bookCategori?.documentId  === categori? true: false } />
+//   ))
+// }
+
+// categories.map((category: any) => (
+//   <input
+//     type="checkbox"
+//     checked={book.categories.some(
+//       (bookCategory: any) => bookCategory?.documentId === category?.documentId
+//     )}
+//      onChange={() => setCategoriesSelected(prev => prev.includes(category.id) ? prev.filter(id => id !== category.id) : [...prev, category.id]
+//       )
+//     }
+//   />
+// ));

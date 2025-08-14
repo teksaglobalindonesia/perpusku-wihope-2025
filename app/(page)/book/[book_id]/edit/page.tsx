@@ -9,9 +9,21 @@ export default async function AddBookForm({ params }: { params: any }) {
     query: 'populate=cover&populate=categories'
   });
 
+  const bookCategories = await fetcher({
+    path: '/book-category/list',
+    pagination: {
+      isActive: false
+    }
+  });
+
   return (
     <div>
-      <BookForm type="edit" title="Edit Buku" data={bookData.data} />
+      <BookForm
+        type="edit"
+        title="Edit Buku"
+        data={bookData.data}
+        categories={bookCategories.data?.data}
+      />
     </div>
   );
 }
