@@ -7,10 +7,10 @@ export default async function Page() {
   return (
     <>
       <Hero />
-      <h1 className="m-8 rounded-lg bg-red-200 px-8 py-5 text-3xl">
-        📚{' '}
-        <span className="font-normal text-red-700 underline">
-          ♦️List Buku Habis
+      <h1 className="ml-10 mt-10 pl-6 text-3xl">
+        {' '}
+        <span className="rounded-lg bg-red-300 px-5 py-3 font-normal text-red-950 underline">
+          ❌ List Buku Habis
         </span>
       </h1>
       <Book filterOutOfStock />

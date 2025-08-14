@@ -95,7 +95,7 @@ const Kembali = () => {
         <div className="space-y-4">
           {paginatedItems.map((Kembali) => {
             const Terlambat =
-              Kembali.return_date > Kembali.return.actual_return_date
+              Kembali.return_date >= Kembali.return.actual_return_date
                 ? ''
                 : 'Terlambat';
             return (

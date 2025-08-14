@@ -28,7 +28,7 @@ type Item = {
 };
 
 type BookProps = {
-  filterOutOfStock?: boolean; // kontrol tampilan buku habis
+  filterOutOfStock?: boolean;
 };
 
 const Book: React.FC<BookProps> = ({ filterOutOfStock = false }) => {
@@ -100,14 +100,16 @@ const Book: React.FC<BookProps> = ({ filterOutOfStock = false }) => {
   return (
     <div className="min-h-[540px] w-full">
       <div className="mt-6 flex flex-row justify-between p-4 px-9 font-light">
-        <div className="ml-12">
+        <div className="mr-14 flex justify-end">
           <input
             type="text"
             placeholder="Search by title, writer, or category..."
-            className="mb-2 w-64 rounded border px-3 py-1"
+            className="mb-2 ml-2 w-64 rounded border px-3 py-1"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
           />
+        </div>
+        <div className="flex justify-start">
           {!filterOutOfStock && (
             <Link href="/book/add">
               <button className="text-md ml-4 rounded-md bg-green-400 px-2 py-1 font-bold text-gray-700 hover:bg-green-300">

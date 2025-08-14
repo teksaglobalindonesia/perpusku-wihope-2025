@@ -1,61 +1,89 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import Pagination from '../pagination';
+import { BASE_URL, TOKEN, WIHOPE_NAME } from '@/lib/constant';
 
-const Member = [
-  { nama: 'Joh', noAnggota: '12345', email: 'john@yahodie.com' },
-  { nama: 'Jane', noAnggota: '67890', email: 'jennie@gmail.com' },
-  { nama: 'Doe', noAnggota: '54321', email: 'dodo@gmail.com' }
-];
-
-const Peminjaman = [
-  {
-    judulBuku: 'Buku A',
-    peminjam: 'Gw',
-    tanggal: 1,
-    waktu: '07-2025',
-    tanggalKembali: 2,
-    waktuKembali: '07-2025'
-  },
-  {
-    judulBuku: 'Bumi',
-    peminjam: 'John Doe',
-    tanggal: 20,
-    waktu: '07-2025',
-    tanggalKembali: 25,
-    waktuKembali: '07-2025'
-  },
-  {
-    judulBuku: 'Laskar Pelangi',
-    peminjam: 'Jane Smith',
-    tanggal: 18,
-    waktu: '07-2025',
-    tanggalKembali: 25,
-    waktuKembali: '07-2025'
-  },
-  {
-    judulBuku: 'Hujan',
-    peminjam: 'Dimas Saputra',
-    tanggal: 21,
-    waktu: '07-2025',
-    tanggalKembali: 28,
-    waktuKembali: '07-2025'
-  },
-  {
-    judulBuku: 'Rindu',
-    peminjam: 'Alya Rahma',
-    tanggal: 22,
-    waktu: '07-2025',
-    tanggalKembali: 29,
-    waktuKembali: '07-2025'
-  }
-];
+type Lending = {
+  book: {
+    title: string;
+    id: number;
+  };
+  member: {
+    name: string;
+    id_member: string;
+  };
+  loan_date: number;
+  return_date: number;
+  actual_return_date: number;
+};
 
 const Pinjam = () => {
-  const pathname = usePathname();
-  const [lending, setLending] = useState(Peminjaman);
+  const [loading, setLoading] = useState(true);
+  const [lending, setLending] = useState<Lending[]>([]);
+  const [keyword, setKeyword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  const searchParams = useSearchParams();
+  const memberId = searchParams.get('memberId');
+  const nameId = searchParams.get('nameId');
+
+  // Fetch daftar pinjaman
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `${BASE_URL}/api/loan/list?status=loaned`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: TOKEN,
+              'x-wihope-name': WIHOPE_NAME
+            },
+            cache: 'no-store'
+          }
+        );
+
+        if (!response.ok) throw new Error('Gagal mengambil data');
+
+        const json = await response.json();
+        setLending(json.data || []);
+        setError(null);
+      } catch (err: any) {
+        console.error('❌ Error saat fetch:', err);
+        setError(err.message || 'Terjadi kesalahan saat memuat data');
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  // Cari nama anggota berdasarkan memberId dari data lending
+  const memberName = memberId
+    ? lending.find((item) => item.member.id_member === memberId)?.member.name ||
+      'Tidak ditemukan'
+    : 'Semua anggota';
+
+  const hasilPencarian = lending
+    .filter((pinjam) => !memberId || pinjam.member.id_member === memberId)
+    .filter(
+      (pinjam) =>
+        pinjam.book.title.toLowerCase().includes(keyword.toLowerCase()) ||
+        pinjam.member.name.toLowerCase().includes(keyword.toLowerCase()) ||
+        pinjam.loan_date.toString().includes(keyword) ||
+        pinjam.return_date.toString().includes(keyword)
+    );
+
+  const totalPages = Math.ceil(hasilPencarian.length / itemsPerPage);
+  const paginatedItems = hasilPencarian.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="min-h-[540px] w-full">
@@ -65,69 +93,82 @@ const Pinjam = () => {
           <span className="font-normal text-yellow-900 underline">
             List Pinjaman Anggota
           </span>
-          <h2 className="text-start text-xl">Anggota : {Member[2].nama}</h2>
         </div>
         <div>
           <input
             type="text"
             placeholder="Search..."
             className="rounded border px-3 py-1"
+            value={keyword}
+            onChange={(e) => {
+              setKeyword(e.target.value);
+              setCurrentPage(1);
+            }}
           />
-          <Link href="/peminjaman/add">
-            <button className="text-md mx-2 rounded-md bg-yellow-400 px-2 py-1 font-bold text-gray-800 hover:bg-yellow-300">
-              Tambah Peminjaman
-            </button>
-          </Link>
         </div>
       </div>
+      <h2 className="ml-8">
+        <span className="rounded-lg bg-yellow-200 px-3 py-1 text-xl">
+          Anggota: {memberName}
+        </span>
+      </h2>
 
-      {/* Tabel */}
+      {/* Tabel daftar pinjaman */}
       <div className="mx-8 mb-8 rounded-md p-4">
-        <div className="space-y-4">
-          {lending.map((item) => {
-            const Terlambat =
-              item.tanggal + 7 > item.tanggalKembali ? '' : 'Terlambat';
-            return (
-              <div
-                key={item.judulBuku}
-                className="flex items-center justify-between rounded border p-4"
-              >
-                <div className="mx-4 flex items-center gap-4">
-                  <div>
-                    <p className="font-semibold">{item.judulBuku}</p>
-                    <p className="text-sm">Peminjam: {item.peminjam}</p>
-                    <p className="text-sm">
-                      Tanggal Peminjaman: {item.tanggal}-{item.waktu}
-                    </p>
-                    <p className="text-sm">
-                      Tanggal Pengembalian: {item.tanggalKembali}-
-                      {item.waktuKembali}
-                    </p>
-                    <button className="my-1 mr-1 rounded bg-yellow-500 px-5 py-2 text-sm font-bold text-white hover:bg-yellow-400">
-                      Kembalikan
-                    </button>
+        {loading ? (
+          <p className="text-center text-gray-500">Loading data pinjaman...</p>
+        ) : error ? (
+          <p className="text-center text-red-500">{error}</p>
+        ) : paginatedItems.length === 0 ? (
+          <p className="text-center text-gray-500">
+            Tidak ada pinjaman yang ditemukan
+          </p>
+        ) : (
+          <div className="space-y-4">
+            {paginatedItems.map((item) => {
+              const terlambat =
+                item.actual_return_date > item.return_date ? 'Terlambat' : '';
+              return (
+                <div
+                  key={item.book.id}
+                  className="flex items-center justify-between rounded border p-4"
+                >
+                  <div className="mx-4 flex items-center gap-4">
+                    <div>
+                      <p className="font-semibold">{item.book.title}</p>
+                      <p className="text-sm">Peminjam: {item.member.name}</p>
+                      <p className="text-sm">
+                        Tanggal Peminjaman: {item.loan_date}
+                      </p>
+                      <p className="text-sm">
+                        Jadwal Pengembalian: {item.return_date}
+                      </p>
+                      <p className="text-sm">
+                        Tanggal Pengembalian: {item.actual_return_date}
+                      </p>
+                      <button className="my-1 mr-1 rounded bg-yellow-500 px-5 py-2 text-sm font-bold text-white hover:bg-yellow-400">
+                        Kembalikan
+                      </button>
+                    </div>
                   </div>
+                  {terlambat && (
+                    <span className="rounded bg-yellow-700 px-6 py-2 text-white">
+                      {terlambat}
+                    </span>
+                  )}
                 </div>
-                {Terlambat && (
-                  <span className="rounded bg-yellow-700 px-6 py-2 text-white">
-                    {Terlambat}
-                  </span>
-                )}
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
 
-        <div className="mt-6 flex justify-center space-x-2 text-sm text-gray-700">
-          {['<', 1, 2, '...', 20, '>'].map((item, index) => (
-            <div
-              key={index}
-              className="cursor-pointer rounded-md border px-3 py-1 hover:bg-yellow-100"
-            >
-              {item}
-            </div>
-          ))}
-        </div>
+        {paginatedItems.length > 0 && !loading && !error && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        )}
       </div>
     </div>
   );

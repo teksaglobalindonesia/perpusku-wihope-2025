@@ -60,15 +60,6 @@ const Anggota = () => {
       anggota.id_member.toLowerCase().includes(keyword.toLowerCase())
   );
 
-  // const [members, setMembers] = useState(initialMember);
-
-  // const handleHapusClick = (noAnggota: string) => {
-  //   const konfirmasi = confirm(`Yakin ingin menghapus anggota ${noAnggota}?`);
-  //   if (konfirmasi) {
-  //     setMembers((prev) => prev.filter((m) => m.noAnggota !== noAnggota));
-  //   }
-  // };
-
   const totalPages = Math.ceil(hasilPencarian.length / itemsPerPage);
   const paginatedItems = hasilPencarian.slice(
     (currentPage - 1) * itemsPerPage,
@@ -77,26 +68,24 @@ const Anggota = () => {
 
   return (
     <div className="min-h-[540px] w-full">
-      <div className="mt-6 flex flex-row justify-between p-4 px-9 font-light">
-        <h1 className="ml-12 rounded-lg bg-yellow-200 px-3 py-1 text-3xl">
-          🫂{' '}
-          <span className="font-normal text-yellow-900 underline">
-            List Anggota Perpusku
-          </span>
-        </h1>
-        <div className="ml-12">
-          <input
-            type="text"
-            placeholder="Search by name, email, or id"
-            className="mb-3 w-64 rounded border px-3 py-1"
-            onChange={(e) => setKeyword(e.target.value)}
-          />
-          <Link href={navItems[0].path}>
-            <button className="text-md mx-2 rounded-md bg-green-400 px-2 py-1 font-bold text-gray-700 hover:bg-green-300">
-              {navItems[0].label}
-            </button>
-          </Link>
-        </div>
+      <h1 className="ml-10 mt-10  text-3xl">
+        {' '}
+        <span className="rounded-lg bg-yellow-300 px-5 py-3 font-normal text-yellow-700 underline">
+          🫂 List Anggota Perpusku
+        </span>
+      </h1>
+      <div className="mt-6 flex flex-row items-center justify-between p-4 px-9 font-light">
+        <input
+          type="text"
+          placeholder="Search by name, email, or id"
+          className="w-64 rounded border px-3 py-1"
+          onChange={(e) => setKeyword(e.target.value)}
+        />
+        <Link href={navItems[0].path}>
+          <button className="text-md rounded-md bg-green-400 px-2 py-1 font-bold text-gray-700 hover:bg-green-300">
+            {navItems[0].label}
+          </button>
+        </Link>
       </div>
 
       {/* Tabel */}
@@ -116,7 +105,9 @@ const Anggota = () => {
                   <p className="text-sm">{Members.id_member}</p>
                   <p className="text-sm">{Members.email}</p>
 
-                  <Link href={`/anggota/anggotaPinjam`}>
+                  <Link
+                    href={`/anggota/anggotaPinjam?memberId=${Members.id_member}`}
+                  >
                     <button className="my-1 mr-1 rounded bg-yellow-500 px-3 py-1 text-sm font-bold text-white">
                       Peminjaman
                     </button>

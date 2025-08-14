@@ -76,26 +76,25 @@ const Pinjam = () => {
 
   return (
     <div className="min-h-[540px] w-full">
-      <div className="mt-6 flex flex-row justify-between p-4 px-9 font-light">
-        <h1 className="ml-12 rounded-lg bg-purple-200 px-3 py-1 text-3xl">
-          {'🛒'}
-          <span className="font-normal text-purple-900 underline">
-            List Peminjaman
-          </span>
-        </h1>
-        <div className="ml-12">
-          <input
-            type="text"
-            placeholder="Search by title, name, or date"
-            className="mb-3 w-64 rounded border px-3 py-1"
-            onChange={(e) => setKeyword(e.target.value)}
-          />
-          <Link href="/peminjaman/add">
-            <button className="text-md mx-2 rounded-md bg-green-400 px-2 py-1 font-bold text-gray-700 hover:bg-green-300">
-              Tambah Peminjaman
-            </button>
-          </Link>
-        </div>
+      <h1 className="ml-10 mt-10  text-3xl">
+        {''}
+        <span className="rounded-lg bg-purple-200 px-5 py-3 font-normal text-purple-900 underline">
+          🛒 List Peminjaman
+        </span>
+      </h1>
+      <div className="mt-6 flex flex-row items-center justify-between p-4 px-9 font-light">
+        <input
+          type="text"
+          placeholder="Search by title, name, or date"
+          className="w-64 rounded border px-3 py-1"
+          onChange={(e) => setKeyword(e.target.value)}
+        />
+
+        <Link href="/peminjaman/add">
+          <button className="text-md rounded-md bg-green-400 px-2 py-1 font-bold text-gray-700 hover:bg-green-300">
+            Tambah Peminjaman
+          </button>
+        </Link>
       </div>
 
       {/* Tabel */}
