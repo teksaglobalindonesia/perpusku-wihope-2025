@@ -37,14 +37,22 @@ export const CardGambar = ({ ...props }: CardGambarProps) => {
         >
           {/* Foto dan Deskripsi */}
           <div className="flex flex-1 flex-col gap-4 p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-6">
-            <div className="relative h-48 w-full shrink-0 overflow-hidden rounded-md border border-beige-300 shadow-inner sm:h-32 sm:w-24">
-              <Image
-                src={item.imageSrc}
-                alt="Book Cover"
-                layout="fill"
-                objectFit="cover"
-                className="transition-transform duration-300 hover:scale-105"
-              />
+            <div className="group relative h-48 w-full shrink-0 overflow-hidden rounded-md border border-beige-300 shadow-inner sm:h-32 sm:w-24">
+              {item.imageSrc && !item.imageSrc.includes('undefined') ? (
+                <Image
+                  src={item.imageSrc}
+                  alt={item.title || 'Book Cover'}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              ) : (
+                <Image
+                  src="/placeholder-cover.jpg"
+                  alt="Default Cover"
+                  fill
+                  className="object-cover"
+                />
+              )}
             </div>
 
             <div className="flex-1">
@@ -52,7 +60,7 @@ export const CardGambar = ({ ...props }: CardGambarProps) => {
                 <h2 className="text-lg font-semibold text-vintage-brown sm:text-xl">
                   {item.title}
                 </h2>
-                <div className="flex flex-wrap flex-col gap-x-4 gap-y-1 text-sm sm:text-base">
+                <div className="flex flex-col flex-wrap gap-x-4 gap-y-1 text-sm sm:text-base">
                   <p className="text-beige-700">
                     <span className="font-medium text-beige-800">Genre:</span>{' '}
                     {item.genre}

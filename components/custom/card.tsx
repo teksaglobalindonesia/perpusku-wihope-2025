@@ -1,3 +1,5 @@
+import { Button } from '@/components/ui/button';
+import { DialogClose } from '@/components/ui/dialog';
 type CardProps = {
   cardItems?: Array<{
     title?: string;
@@ -8,12 +10,14 @@ type CardProps = {
     label?: 'dipinjam' | 'terlambat' | 'dikembalikan';
     showButton?: boolean;
   }>;
+  selectMode?: boolean;
+  onSelect?: (index: number) => void;
 };
 
-export const Card = ({ ...props }: CardProps) => {
+export const Card = ({ cardItems, selectMode, onSelect }: CardProps) => {
   return (
     <div className="grid gap-4 md:gap-6">
-      {props.cardItems?.map((item, index) => (
+      {cardItems?.map((item, index) => (
         <div
           key={index}
           className="flex flex-col overflow-hidden rounded-xl border border-beige-300 bg-beige-50 shadow-md shadow-beige-200/50 transition-all hover:shadow-lg hover:shadow-beige-300/30 sm:flex-row"
@@ -24,45 +28,51 @@ export const Card = ({ ...props }: CardProps) => {
               <h3 className="text-lg font-semibold text-vintage-brown sm:text-xl">
                 {item.title}
               </h3>
-              
+
               <div className="grid gap-2 text-sm sm:text-base">
                 {item.peminjam && (
                   <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-                    <span className="min-w-[90px] font-medium text-beige-800">
-                      Peminjam:
-                    </span>
+                    <span className="min-w-[90px] font-medium text-beige-800">Peminjam:</span>
                     <span>{item.peminjam}</span>
                   </div>
                 )}
-                
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-                  <span className="min-w-[90px] font-medium text-beige-800">
-                    Pinjaman:
-                  </span>
+                  <span className="min-w-[90px] font-medium text-beige-800">Pinjaman:</span>
                   <span>{item.peminjaman}</span>
                 </div>
-                
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-                  <span className="min-w-[90px] font-medium text-beige-800">
-                    Pengembalian:
-                  </span>
+                  <span className="min-w-[90px] font-medium text-beige-800">Pengembalian:</span>
                   <span>{item.pengembalian}</span>
                 </div>
-                
                 {item.dikembalikan && (
                   <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-                    <span className="min-w-[90px] font-medium text-beige-800">
-                      Dikembalikan:
-                    </span>
+                    <span className="min-w-[90px] font-medium text-beige-800">Dikembalikan:</span>
                     <span>{item.dikembalikan}</span>
                   </div>
                 )}
               </div>
-              
-              {(item.label === 'dipinjam' || (item.label === 'terlambat' && item.showButton !== false)) && (
-                <button className="mt-3 w-full rounded-md bg-vintage-sage px-4 py-2 font-vintage text-sm font-medium text-white transition-all hover:bg-vintage-sage/70 sm:w-36">
-                  Kembalikan
-                </button>
+
+
+              {selectMode ? (
+                <DialogClose asChild>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="mt-3 w-full sm:w-36 bg-vintage-terracotta hover:bg-vintage-terracotta text-white hover:text-white font-vintage text-sm"
+                    onClick={() => onSelect?.(index)}
+                  >
+                    Pilih
+                  </Button>
+                </DialogClose>
+              ) : (
+                (item.label === 'dipinjam' || item.label === 'terlambat') &&
+                item.showButton !== false && (
+                  <Button
+                    className="mt-3 w-full sm:w-36 bg-vintage-sage hover:bg-vintage-sage text-white font-vintage text-sm"
+                  >
+                    Kembalikan
+                  </Button>
+                )
               )}
             </div>
           </div>
