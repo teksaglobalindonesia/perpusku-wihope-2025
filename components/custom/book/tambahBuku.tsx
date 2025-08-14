@@ -71,7 +71,7 @@ const TambahBuku = () => {
       formData.append('data', JSON.stringify(payload));
 
       if (form.cover) {
-        formData.append('files.cover', form.cover);
+        formData.append('cover', form.cover);
       }
 
       const response = await fetch(`${BASE_URL}/api/book/add/`, {
