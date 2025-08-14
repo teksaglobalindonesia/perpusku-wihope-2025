@@ -5,6 +5,7 @@ import Image from "next/image";
 import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
 type Item = {
+    documentId?: string;
     title?: string;
     writer?: string;
     name?: string;
@@ -29,6 +30,8 @@ export const Tah_pinjam = () => {
     const [items, setItems] = useState<Item[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [totalPages, setTotalPages] = useState(1);
+    const [tanggalPinjam, setTanggalPinjam] = useState("");
+    const [durasiPinjam, setDurasiPinjam] = useState("");
     const itemsPerPage = 2;
 
     useEffect(() => {
@@ -112,6 +115,51 @@ export const Tah_pinjam = () => {
     );
 
     const paginatedItems = useMemo(() => filteredItems, [filteredItems]);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedBuku || !selectedAnggota || !tanggalPinjam || !durasiPinjam) {
+            alert("Lengkapi semua data terlebih dahulu!");
+            return;
+        }
+
+        const loanDate = new Date(tanggalPinjam);
+        const returnDate = new Date(loanDate);
+        returnDate.setDate(loanDate.getDate() + parseInt(durasiPinjam) * 7);
+
+        try {
+            const res = await fetch(`${BASE_URL}/api/loan/add`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: TOKEN,
+                    "x-wihope-name": WIHOPE_NAME,
+                },
+                body: JSON.stringify({
+                    data: {
+                        member: selectedAnggota.documentId,
+                        book: selectedBuku.documentId,
+                        loan_date: tanggalPinjam,
+                        return_date: returnDate.toISOString().split("T")[0],
+                    },
+                }),
+                cache: "no-store",
+            });
+
+            const result = await res.json();
+            if (res.ok) {
+                alert("Peminjaman berhasil disimpan!");
+                setSelectedBuku(null);
+                setSelectedAnggota(null);
+                setTanggalPinjam("");
+                setDurasiPinjam("");
+            } else {
+                alert(result.message || "Gagal menyimpan peminjaman");
+            }
+        } catch (error) {
+            console.error("Gagal menyimpan peminjaman:", error);
+        }
+    };
 
     return (
         <>
@@ -211,7 +259,7 @@ export const Tah_pinjam = () => {
             <div className="max-w-2xl mx-auto bg-white p-10 rounded-2xl shadow-lg">
                 <h1 className="text-3xl font-bold text-[#000000] mb-8 pb-4">✏️ Tambah Peminjaman</h1>
 
-                <form className="space-y-6">
+                <form className="space-y-6" onSubmit={handleSubmit}>
                     <div>
                         <label htmlFor="buku" className="block text-sm font-medium text-gray-700 mb-1">Buku</label>
                         <input
@@ -221,7 +269,7 @@ export const Tah_pinjam = () => {
                             onClick={() => bukaModal("buku")}
                             readOnly
                             placeholder="Pilih Buku"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm cursor-pointer"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-[#5bbd87] focus:outline-none"
                             required
                         />
                     </div>
@@ -235,7 +283,7 @@ export const Tah_pinjam = () => {
                             onClick={() => bukaModal("anggota")}
                             readOnly
                             placeholder="Pilih Anggota"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm cursor-pointer"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-[#5bbd87] focus:outline-none"
                             required
                         />
                     </div>
@@ -245,7 +293,9 @@ export const Tah_pinjam = () => {
                         <input
                             type="date"
                             id="tanggal"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-700"
+                            value={tanggalPinjam}
+                            onChange={(e) => setTanggalPinjam(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-[#5bbd87] focus:outline-none"
                             required
                         />
                     </div>
@@ -254,10 +304,12 @@ export const Tah_pinjam = () => {
                         <label htmlFor="durasi" className="block text-sm font-medium text-gray-700 mb-1">Durasi Peminjaman</label>
                         <select
                             id="durasi"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-700"
+                            value={durasiPinjam}
+                            onChange={(e) => setDurasiPinjam(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-[#5bbd87] focus:outline-none"
                             required
                         >
-                            <option value="" disabled selected>Pilih Durasi</option>
+                            <option value="" disabled>Pilih Durasi</option>
                             <option value="1">1 Minggu</option>
                             <option value="2">2 Minggu</option>
                             <option value="3">3 Minggu</option>

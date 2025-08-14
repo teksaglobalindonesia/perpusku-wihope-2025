@@ -1,3 +1,8 @@
+"use client";
+
+import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
+import { useState } from "react";
+
 export const Edit_anggota = () => {
     return (
         <div className="max-w-2xl mx-auto bg-white p-10 rounded-2xl shadow-lg">

@@ -1,6 +1,7 @@
 'use client'
 
 import { BASE_URL, TOKEN, WIHOPE_NAME } from '@/lib/constant';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export type pengembali = {
@@ -83,18 +84,23 @@ export const Kembaliya = () => {
             <div className="bg-[#edf0f1] mx-4 sm:mx-6 md:mx-10 lg:mx-24 my-8 drop-shadow-lg rounded-lg pb-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-6 py-6 gap-4">
                     <h1 className="text-xl sm:text-2xl text-black font-medium">Pengembalian</h1>
-                    <div className="flex items-center bg-white px-3 py-1 rounded text-black w-full sm:w-auto">
-                        🔍
-                        <input
-                            type="text"
-                            placeholder="Pencarian..."
-                            value={searchTerm}
-                            onChange={(e) => {
-                                setSearchTerm(e.target.value);
-                                setCurrentPage(1);
-                            }}
-                            className="ml-2 bg-transparent outline-none placeholder-black w-full sm:w-[150px]"
-                        />
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
+                        <div className="flex items-center bg-white px-3 py-1 rounded text-black w-full sm:w-auto">
+                            🔍
+                            <input
+                                type="text"
+                                placeholder="Pencarian..."
+                                value={searchTerm}
+                                onChange={(e) => {
+                                    setSearchTerm(e.target.value);
+                                    setCurrentPage(1);
+                                }}
+                                className="ml-2 bg-transparent outline-none placeholder-black w-full sm:w-[150px]"
+                            />
+                        </div>
+                        <Link href="tambah_pengembalian" className="bg-[#5bbd87] hover:bg-[#4a996d] px-4 py-2 rounded-sm transition text-white text-sm sm:text-base w-full sm:w-auto text-center">
+                            Tambah
+                        </Link>
                     </div>
                 </div>
 
