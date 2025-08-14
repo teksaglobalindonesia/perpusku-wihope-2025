@@ -100,3 +100,42 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+@keyframes animate {
+  0% {
+    background-color: #2194f3;
+    color: blue;
+  }
+  20% {
+    background-color: #2e7d31;
+    color: violet;
+  }
+  30% {
+    background-color: #4caf4f;
+    color: #e53835;
+  }
+  40% {
+    background-color: #4d4d4d;
+    color: tomato;
+  }
+  50% {
+    background-color: tomato;
+    color: #4d4d4d;
+  }
+  70% {
+    background-color: #e53835;
+    color: #4caf4f;
+  }
+  80% {
+    background-color: violet;
+    color: #2e7d31;
+  }
+  90% {
+    background-color: blue;
+    color: #2194f3;
+  }
+}
+
+.animasiBikinSakitMata {
+  animation: animate 1s ease-in-out infinite;
+}
