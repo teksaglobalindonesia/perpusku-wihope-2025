@@ -26,7 +26,8 @@ export const Dashboard = ({ data }: { data: any[] }) => {
             title: bookData?.title,
             genre: bookData?.categories?.map((c: any) => c.name).join(', '),
             author: bookData?.writer,
-            stock: bookData?.stock
+            stock: bookData?.stock,
+            documentId: bookData?.documentId,
           }))}
         />
       </div>

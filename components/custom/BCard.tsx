@@ -9,7 +9,7 @@ import Link from 'next/link';
 export const BCard = ({
   initialData,
   initialPage,
-  initialQuery,
+  initialQuery
 }: {
   initialData: any;
   initialPage: number;
@@ -35,9 +35,9 @@ export const BCard = ({
         headers: {
           'Content-Type': 'application/json',
           Authorization: TOKEN,
-          'x-wihope-name': WIHOPE_NAME,
+          'x-wihope-name': WIHOPE_NAME
         },
-        cache: 'no-store',
+        cache: 'no-store'
       });
 
       const json = await res.json();
@@ -49,7 +49,43 @@ export const BCard = ({
     }
   };
 
-  // Fetch ulang saat page atau query berubah (setelah initial mount)
+const handleDelete = async (index: number) => {
+  const books = data?.data || [];
+  const itemToDelete = books[index];
+  
+  if (!itemToDelete) {
+    alert('Data buku tidak ditemukan');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${BASE_URL}/api/book/delete`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: TOKEN,
+        'x-wihope-name': WIHOPE_NAME,
+      },
+      body: JSON.stringify({
+        documentId: itemToDelete.documentId,
+      }),
+      cache: 'no-store',
+    });
+
+    if (response.ok) {
+      // Refresh data setelah delete berhasil
+      await fetchBooks();
+    } else {
+      const errorText = await response.text(); // Coba dapatkan pesan error
+      console.error('Error response:', errorText);
+      alert(`Gagal menghapus: ${response.status} - ${errorText}`);
+    }
+  } catch (err) {
+    console.error('Error saat menghapus buku:', err);
+    alert('Terjadi kesalahan saat menghapus buku');
+  }
+};
+
   useEffect(() => {
     if (isInitialMount) {
       setIsInitialMount(false);
@@ -64,37 +100,37 @@ export const BCard = ({
   const totalItems = data?.meta?.pagination?.total || 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-navyBlue to-navyBlue-100/30 p-8">
+    <div className="to-navyBlue-100/30 min-h-screen bg-gradient-to-br from-navyBlue p-8">
       <div className="flex flex-col">
         {/* Header Section */}
-        <div className="mb-8 border-b border-navyBlue-300/40 pb-6">
+        <div className="border-navyBlue-300/40 mb-8 border-b pb-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="group">
-              <h1 className="mb-2 font-vintage text-4xl text-white/80 transition-colors duration-300 group-hover:text-navyBlue-800">
+              <h1 className="group-hover:text-navyBlue-800 mb-2 font-vintage text-4xl text-white/80 transition-colors duration-300">
                 Koleksi Buku
               </h1>
-              <p className="font-vintage italic text-white/80 transition-colors duration-300 group-hover:text-navyBlue-700/90">
+              <p className="group-hover:text-navyBlue-700/90 font-vintage italic text-white/80 transition-colors duration-300">
                 Katalog literatur pengetahuan perpustakaan
               </p>
             </div>
 
             <Link
               href="/book/addBook"
-              className="flex items-center justify-center gap-2 rounded-lg bg-navyBlue px-5 py-2.5 font-vintage text-white shadow-lg transition-all duration-300 hover:bg-DNavy hover:scale-[1.02] hover:shadow-xl active:scale-95"
+              className="flex items-center justify-center gap-2 rounded-lg bg-navyBlue px-5 py-2.5 font-vintage text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-DNavy hover:shadow-xl active:scale-95"
             >
               <Plus className="h-5 w-5 transition-transform duration-300 group-hover:rotate-90" />
               <span>Tambah Buku</span>
             </Link>
           </div>
 
-          <div className="relative mt-6 group">
+          <div className="group relative mt-6">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <Search className="h-5 w-5 text-navyBlue-600 transition-colors duration-300 group-hover:text-navyBlue-700" />
+              <Search className="text-navyBlue-600 group-hover:text-navyBlue-700 h-5 w-5 transition-colors duration-300" />
             </div>
             <input
               type="text"
               placeholder="Cari buku..."
-              className="block w-full rounded-xl border-2 border-navyBlue-300/50 bg-white/80 py-2.5 pl-10 pr-3 font-vintage text-navyBlue-800 placeholder-navyBlue-500/70 transition-all duration-300 focus:border-navyBlue-600 focus:bg-white/95 focus:outline-none focus:ring-2 focus:ring-navyBlue-300/30 hover:border-navyBlue-400/70 hover:shadow-md"
+              className="border-navyBlue-300/50 text-navyBlue-800 placeholder-navyBlue-500/70 focus:border-navyBlue-600 focus:ring-navyBlue-300/30 hover:border-navyBlue-400/70 block w-full rounded-xl border-2 bg-white/80 py-2.5 pl-10 pr-3 font-vintage transition-all duration-300 hover:shadow-md focus:bg-white/95 focus:outline-none focus:ring-2"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -110,37 +146,41 @@ export const BCard = ({
               <div className="h-32 animate-pulse rounded-lg bg-white/60"></div>
             </div>
           ) : books.length > 0 ? (
-            <div className="rounded-2xl border-2 border-navyBlue-200/50 bg-white/80 p-6 backdrop-blur-sm shadow-lg transition-all duration-500 hover:border-navyBlue-300/70 hover:shadow-xl">
+            <div className="border-navyBlue-200/50 hover:border-navyBlue-300/70 rounded-2xl border-2 bg-white/80 p-6 shadow-lg backdrop-blur-sm transition-all duration-500 hover:shadow-xl">
               <CardGambar
                 cardItems={books.map((bookData: any) => ({
+                  documentId: bookData?.documentId,
                   imageSrc: `${BASE_URL}${bookData?.cover?.url}`,
                   title: bookData?.title,
-                  genre: bookData?.categories?.map((c: any) => c.name).join(', '),
+                  genre: bookData?.categories
+                    ?.map((c: any) => c.name)
+                    .join(', '),
                   author: bookData?.writer,
                   stock: bookData?.stock,
-                  buttons: ['edit', 'delete'],
+                  buttons: ['edit', 'delete']
                 }))}
+                onDelete={handleDelete}
               />
             </div>
           ) : (
-            <div className="rounded-2xl border-2 border-navyBlue-200/50 bg-white/80 py-12 text-center shadow-lg backdrop-blur-sm transition-all duration-500 hover:border-navyBlue-300/70 hover:shadow-xl">
+            <div className="border-navyBlue-200/50 hover:border-navyBlue-300/70 rounded-2xl border-2 bg-white/80 py-12 text-center shadow-lg backdrop-blur-sm transition-all duration-500 hover:shadow-xl">
               <div className="mb-4 transform transition-transform duration-500 hover:scale-110">
                 <Bookmark
-                  className="mx-auto h-16 w-16 text-navyBlue-400/80"
+                  className="text-navyBlue-400/80 mx-auto h-16 w-16"
                   strokeWidth={1.5}
                 />
               </div>
-              <h3 className="mb-3 font-vintage text-2xl font-semibold text-navyBlue-700">
+              <h3 className="text-navyBlue-700 mb-3 font-vintage text-2xl font-semibold">
                 Tidak ada buku
               </h3>
-              <p className="mx-auto mb-6 max-w-md text-navyBlue-600/80">
+              <p className="text-navyBlue-600/80 mx-auto mb-6 max-w-md">
                 {query
                   ? 'Tidak ada buku yang cocok dengan pencarian Anda'
                   : 'Belum ada buku dalam koleksi'}
               </p>
               {!query && (
                 <Link href="/book/addBook">
-                  <button className="px-6 py-2.5 bg-gradient-to-r from-navyBlue-500 to-navyBlue-600 text-white font-vintage rounded-lg shadow-md hover:from-navyBlue-600 hover:to-navyBlue-700 hover:scale-[1.03] hover:shadow-lg active:scale-95 transition-all duration-300">
+                  <button className="from-navyBlue-500 to-navyBlue-600 hover:from-navyBlue-600 hover:to-navyBlue-700 rounded-lg bg-gradient-to-r px-6 py-2.5 font-vintage text-white shadow-md transition-all duration-300 hover:scale-[1.03] hover:shadow-lg active:scale-95">
                     Tambah Buku Pertama
                   </button>
                 </Link>
@@ -162,10 +202,10 @@ export const BCard = ({
 
         {/* Stats Footer */}
         {!loading && books.length > 0 && (
-          <div className="mt-6 text-center font-vintage text-sm text-navyBlue-600/90 transition-colors duration-300 hover:text-navyBlue-700">
-            Menampilkan{' '}
-            <span className="font-bold">{books.length}</span> buku dari total{' '}
-            <span className="font-bold">{totalItems || 0}</span> koleksi
+          <div className="text-navyBlue-600/90 hover:text-navyBlue-700 mt-6 text-center font-vintage text-sm transition-colors duration-300">
+            Menampilkan <span className="font-bold">{books.length}</span> buku
+            dari total <span className="font-bold">{totalItems || 0}</span>{' '}
+            koleksi
           </div>
         )}
       </div>

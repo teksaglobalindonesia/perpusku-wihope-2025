@@ -212,7 +212,8 @@ export const PJCreate = () => {
                       genre: book.genre,
                       author: book.author,
                       stock: book.stock,
-                      buttons: []
+                      buttons: [],
+                      documentId: book.documentId
                     }))}
                     onEdit={handleSelectedBook}
                     showSelectButton={true}

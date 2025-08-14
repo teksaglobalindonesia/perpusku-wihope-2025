@@ -1,9 +1,9 @@
 import { BFormEdit } from '@/components/custom/BFormEdit';
 
-export default function Page() {
+export default function Page({ params }: { params: { id: string } }) {
   return (
     <>
-      <BFormEdit />
+      <BFormEdit id={params.id}/>
     </>
   );
 }

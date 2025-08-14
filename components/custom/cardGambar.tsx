@@ -15,6 +15,7 @@ import { Button } from '../ui/button';
 
 export type CardGambarProps = {
   cardItems?: Array<{
+    documentId: string;
     imageSrc: string;
     title: string;
     genre: string;
@@ -32,7 +33,7 @@ export const CardGambar = ({ ...props }: CardGambarProps) => {
     <div className="grid gap-4 md:gap-6">
       {props.cardItems?.map((item, index) => (
         <div
-          key={index}
+          key={item.documentId || index} 
           className="flex flex-col overflow-hidden rounded-xl border border-beige-300 bg-beige-100 shadow-md shadow-beige-200/30 transition-all hover:shadow-lg hover:shadow-beige-300/20 sm:flex-row"
         >
           {/* Foto dan Deskripsi */}
@@ -43,6 +44,7 @@ export const CardGambar = ({ ...props }: CardGambarProps) => {
                   src={item.imageSrc}
                   alt={item.title || 'Book Cover'}
                   fill
+                  sizes="(max-width: 640px) 100vw, 96px" // Tambahkan sizes untuk performance
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               ) : (
@@ -50,6 +52,7 @@ export const CardGambar = ({ ...props }: CardGambarProps) => {
                   src="/placeholder-cover.jpg"
                   alt="Default Cover"
                   fill
+                  sizes="(max-width: 640px) 100vw, 96px" // Tambahkan sizes
                   className="object-cover"
                 />
               )}
@@ -88,7 +91,7 @@ export const CardGambar = ({ ...props }: CardGambarProps) => {
                 )}
 
                 {item.buttons?.includes('edit') && (
-                  <Link href="/book/editBook">
+                  <Link href={`/book/editBook/${item.documentId}`}>
                     <button className="rounded-md border border-beige-400 bg-beige-200 px-4 py-1.5 text-sm text-beige-800 shadow-inner hover:bg-beige-300">
                       Edit
                     </button>
@@ -138,10 +141,12 @@ export const CardGambar = ({ ...props }: CardGambarProps) => {
                         <DialogClose asChild>
                           <Button
                             variant="destructive"
-                            onClick={() => props.onDelete?.(index)}
+                            onClick={(e) => {
+                              e.preventDefault(); // Cegah dialog close otomatis
+                              props.onDelete?.(index);
+                            }}
                           >
-                            {' '}
-                            Hapus{' '}
+                            Hapus
                           </Button>
                         </DialogClose>
                       </DialogFooter>

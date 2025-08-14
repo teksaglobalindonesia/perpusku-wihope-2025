@@ -20,42 +20,80 @@ export const Members = ({
   const [query, setQuery] = useState(initialQuery);
   const [loading, setLoading] = useState(false);
   const [isInitialMount, setIsInitialMount] = useState(true);
+
+  // Fungsi untuk fetch data anggota
+  const fetchMembers = async () => {
+    setLoading(true);
+    try {
+      const url = new URL(`${BASE_URL}/api/member/list`);
+      url.searchParams.append('page', page.toString());
+      url.searchParams.append('page_size', '4');
+      if (query) url.searchParams.append('search', query);
+
+      const res = await fetch(url.toString(), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: TOKEN,
+          'x-wihope-name': WIHOPE_NAME
+        },
+        cache: 'no-store'
+      });
+
+      const json = await res.json();
+      setData(json);
+    } catch (err) {
+      console.error('Gagal fetch data anggota:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fungsi delete anggota
+  const handleDelete = async (index: number) => {
+    const members = data?.data || [];
+    const memberToDelete = members[index];
+
+    if (!memberToDelete) return;
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/member/delete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: TOKEN,
+          'x-wihope-name': WIHOPE_NAME,
+        },
+        body: JSON.stringify({
+          documentId: memberToDelete.documentId,
+        }),
+        cache: 'no-store',
+      });
+
+      if (response.ok) {
+        // Refresh data dengan fetch ulang (dan tampilkan loading)
+        await fetchMembers();
+      } else {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        // Biarkan dialog di MembersCard menangani error
+      }
+    } catch (err) {
+      console.error('Error saat menghapus anggota:', err);
+      // Handle dengan toast atau tampilkan di dialog
+    }
+  };
+
+  // Efek untuk fetch ulang saat page atau query berubah
   useEffect(() => {
     if (isInitialMount) {
       setIsInitialMount(false);
       return;
     }
-
-    const fetchMembers = async () => {
-      setLoading(true);
-      try {
-        const url = new URL(`${BASE_URL}/api/member/list`);
-        url.searchParams.append('page', page.toString());
-        url.searchParams.append('page_size', '4');
-        if (query) url.searchParams.append('search', query);
-
-        const res = await fetch(url.toString(), {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: TOKEN,
-            'x-wihope-name': WIHOPE_NAME
-          },
-          cache: 'no-store'
-        });
-
-        const json = await res.json();
-        setData(json);
-      } catch (err) {
-        console.error('Gagal fetch data anggota', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchMembers();
   }, [page, query]);
 
+  // Ekstrak data
   const members = data?.data || [];
   const totalPage = data?.meta?.pagination?.page_count || 1;
   const totalItems = data?.meta?.pagination?.total || 0;
@@ -114,8 +152,9 @@ export const Members = ({
                   id_member: anggotaData?.id_member,
                   email: anggotaData?.email,
                   buttons: ['peminjaman', 'edit', 'delete'],
-                  documentId: anggotaData?.documentId
+                  documentId: anggotaData?.documentId,
                 }))}
+                onDelete={handleDelete}
               />
             </div>
           ) : (

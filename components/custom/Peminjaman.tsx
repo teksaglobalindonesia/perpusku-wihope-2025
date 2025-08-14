@@ -57,7 +57,6 @@ export const Loan = ({
   }, [page, query]);
   const loans = data?.data || [];
   const totalPage = data?.meta?.pagination?.page_count || 1;
-  const totalItems = data?.meta?.pagination?.total || 0;
 
   return (
     <div className="min-h-screen rounded-lg bg-gradient-to-br from-botanical-50 to-botanical-300/50 p-8">
@@ -107,14 +106,14 @@ export const Loan = ({
             </div>
           ) : loans.length > 0 ? (
             <div className="rounded-2xl border-2 border-terracotta-200/50 bg-white/80 p-6 backdrop-blur-sm transition-all duration-500 hover:border-terracotta-300/70 hover:shadow-xl">
-            <Card
-              cardItems={loans.map((loanList: any) => ({
-                title: loanList?.book.title,
-                peminjam: loanList?.member.name,
-                peminjaman: loanList?.loan_date,
-                pengembalian: loanList?.return_date
-              }))}
-            />
+              <Card
+                cardItems={loans.map((loanList: any) => ({
+                  title: loanList?.book?.title || 'Judul tidak tersedia',
+                  peminjam: loanList?.member?.name || 'Nama tidak tersedia',
+                  peminjaman: loanList?.loan_date || '-',
+                  pengembalian: loanList?.return_date || '-'
+                }))}
+              />
             </div>
           ) : (
             <div className="rounded-2xl border-2 border-botanical-200/50 bg-white/80 py-12 text-center shadow-lg backdrop-blur-sm transition-all duration-500 hover:border-botanical-300/70 hover:shadow-xl">
@@ -144,7 +143,7 @@ export const Loan = ({
         </div>
 
         {/* Pagination */}
-        {totalPage > 1 &&  (
+        {totalPage > 1 && (
           <div className="mt-8 transform transition-transform duration-300 hover:scale-[1.01]">
             <Pagination
               currentPage={page}
