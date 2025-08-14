@@ -480,3 +480,59 @@ export async function deleteMember(documentId: string){
         throw error;
     }
 }
+
+export async function updateBookStock(documentId: string, newStock: number){
+    try{
+        const payload = {
+            documentId: documentId,
+            data: {
+                stock: newStock
+            }
+        }
+
+        const res = await fetch(`${API_URL}/api/book/edit`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${TOKEN}`,
+                "x-wihope-name": WIHOPE_NAME,
+            },
+            body: JSON.stringify(payload)
+        })
+        const resData = await res.json()
+
+        if(!res.ok){
+            throw new Error(resData.message || `HTTP error! status: ${res.status}`)
+        }
+        return resData
+    } catch (error){
+        console.error("Error in updateBookStock:", error)
+        throw error
+    }
+}
+
+export async function decreaseBookStock(documentId: string, amount: number = 1){
+    try{
+        const book = await fetchBookById(documentId)
+        const currentStock = book.stock || 0
+        const newStock = Math.max(0, currentStock - amount)
+
+        return await updateBookStock(documentId, newStock)
+    } catch (error){
+        console.error("Error in decreaseBookStock:", error)
+        throw error
+    }
+}
+
+export async function increaseBookStock(documentId: string, amount: number = 1) {
+    try{
+        const book = await fetchBookById(documentId)
+        const currentStock = book.stock || 0
+        const newStock = currentStock + amount
+
+        return await updateBookStock(documentId, newStock)
+    } catch (error){
+        console.error("Error in increaseBookStock:", error)
+        throw error
+    }
+}

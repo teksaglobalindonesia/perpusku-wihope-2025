@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Pagination from "../pagination/pagination";
-import { addLoans } from "@/lib/api";
+import { addLoans, decreaseBookStock } from "@/lib/api";
 
 interface Book {
     id: number;
@@ -51,6 +51,11 @@ export default function TambahLoan({ books, members}: {books: any[], members: an
     }, [filterBook, filterMember])
 
     const handleChooseBook = (book: any) => {
+        if(book.stock <= 0){
+            setPopupMessage("Book is out of stock!")
+            setShowPopup(true)
+            return
+        }
         setSelectedBookId(book.documentId); 
         setMunculBuku(false);
     };
@@ -76,6 +81,13 @@ export default function TambahLoan({ books, members}: {books: any[], members: an
             return;
         }
 
+        const selectedBook = books.find(book => book.documentId === selectedBookId)
+        if(selectedBook && selectedBook.stock <= 0){
+            setPopupMessage("Book is out of stock!")
+            setShowPopup(true)
+            return
+        }
+
         setLoading(true);
         const payload = { 
             book: selectedBookId,
@@ -87,6 +99,13 @@ export default function TambahLoan({ books, members}: {books: any[], members: an
 
         const res = await addLoans(payload);
         console.log("Respon API:", res);
+
+        try{
+            await decreaseBookStock(selectedBookId, 1)
+            console.log("Book stock decreased successfully!")
+        } catch (stockerror){
+            console.error("Failed to decreased book stock:", stockerror)
+        }
 
         setPopupMessage("Loan successfully added!");
         setShowPopup(true);
@@ -222,6 +241,7 @@ function handlePopupClose() {
                             <button 
                                 onClick={() => handleChooseBook(book)} 
                                 className="bg-green-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base"
+                                disabled={book.stock <= 0}
                                 >
                                 Choose
                             </button>
