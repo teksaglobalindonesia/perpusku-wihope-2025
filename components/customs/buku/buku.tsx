@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import SearchBook from "../search/search_buku";
 import Pagination from "../pagination/pagination";
+import { deleteBook } from "@/lib/api";
+
 
 interface Book {
   id: number;
@@ -13,6 +15,7 @@ interface Book {
   categories?: { name: string }[];
   writer: string;
   stock: number;
+  documentId: string;
 }
 
 export default function ListBuku({ books }: { books: any[] }) {
@@ -21,6 +24,8 @@ export default function ListBuku({ books }: { books: any[] }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [munculPopup, setMunculPopup] = useState(false);
   const [filterBooks, setFilterBooks] = useState<Book[]>(books);
+  const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const itemsPerPage = 5;
 
@@ -29,6 +34,33 @@ export default function ListBuku({ books }: { books: any[] }) {
   useEffect(() => {
     setCurrentPage(1);
   }, [filterBooks]);
+
+  const handleDeleteClick = (documentId: string) => {
+    setSelectedBookId(documentId);
+    setMunculPopup(true);
+  };
+
+  const handleConfirmDelete = async () => {
+  if (!selectedBookId) return;
+  
+  try {
+    setIsDeleting(true);
+    await deleteBook(selectedBookId);
+    
+    setFilterBooks(prevBooks => 
+      prevBooks.filter(book => book.documentId !== selectedBookId)
+    );
+
+    setMunculPopup(false);
+
+    window.location.reload();
+  } catch (error) {
+    console.error("Failed to delete book:", error);
+  } finally {
+    setIsDeleting(false);
+  }
+};
+
 
   return (
     <>
@@ -80,14 +112,14 @@ export default function ListBuku({ books }: { books: any[] }) {
                           </h3>
                           <div className="flex gap-2 md:gap-3 mt-2">
                             <Link
-                              href={`/buku/edit_buku`}
+                              href={`/buku/edit_buku/${book.documentId}`}
                               className="bg-yellow-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base transition-colors duration-300 hover:bg-yellow-500"
-                              >
+                            >
                               Edit
                             </Link>
                             <button
                               className="bg-red-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base transition-colors duration-300 hover:bg-red-500"
-                              onClick={() => setMunculPopup(true)}>
+                              onClick={() => handleDeleteClick(book.documentId)}>
                               Delete
                             </button>
                           </div>
@@ -125,10 +157,18 @@ export default function ListBuku({ books }: { books: any[] }) {
           </h1>
           <div className="flex flex-col sm:flex-row gap-3 md:gap-5 justify-center 
           md:justify-start mt-4 text-base md:text-lg">
-            <button className="bg-red-500 px-4 md:px-8 py-2 clip-custom">
-              DELETE
+            <button 
+              className="bg-red-500 px-4 md:px-8 py-2 clip-custom disabled:bg-red-300"
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "DELETE"}
             </button>
-            <button className="border-2 rounded-md px-3 py-2" onClick={() => setMunculPopup(false)}>
+            <button 
+              className="border-2 rounded-md px-3 py-2" 
+              onClick={() => setMunculPopup(false)}
+              disabled={isDeleting}
+            >
               CANCEL
             </button>
           </div>

@@ -185,7 +185,7 @@ export async function addBook(file: File, bookData: any) {
         
         formData.append("data", JSON.stringify(payload));
 
-        const response = await fetch(`${API_URL}/api/book/add`, {
+        const res = await fetch(`${API_URL}/api/book/add`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${TOKEN}`,
@@ -194,10 +194,10 @@ export async function addBook(file: File, bookData: any) {
             body: formData,
         });
 
-        const responseData = await response.json();
+        const responseData = await res.json();
 
-        if (!response.ok) {
-            throw new Error(responseData.message || `HTTP error! status: ${response.status}`);
+        if (!res.ok) {
+            throw new Error(responseData.message || `HTTP error! status: ${res.status}`);
         }
 
         return responseData;
@@ -259,4 +259,224 @@ export async function addReturns(returnsData: {
         }
     });
     return res;
+}
+
+export async function fetchBookById(documentId: string) {
+    try {
+        console.log("Fetching book with documentId:", documentId);
+        console.log("API URL:", `${API_URL}/api/book/detail?id=${documentId}`);
+        
+        const res = await fetch(`${API_URL}/api/book/detail?id=${documentId}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${TOKEN}`,
+                "x-wihope-name": WIHOPE_NAME,
+            },
+        });
+
+        const resData = await res.json();
+        console.log("API Response:", resData);
+
+        if (!res.ok) {
+            throw new Error(resData.message || `HTTP error! status: ${res.status}`);
+        }
+
+        let book = null;
+        
+        if (resData.data && typeof resData.data === 'object' && !Array.isArray(resData.data)) {
+            book = resData.data;
+        }
+        else if (resData.data && Array.isArray(resData.data) && resData.data.length > 0) {
+            book = resData.data[0];
+        }
+        else if (resData.id || resData.documentId) {
+            book = resData;
+        }
+
+        if (!book) {
+            throw new Error("Book not found in response");
+        }
+
+        return book;
+    } catch (error) {
+        console.error("Error in fetchBookById:", error);
+        throw error;
+    }
+}
+
+export async function editBook(
+    documentId: string,
+    file: File | null,
+    bookData: any
+){
+    try{
+        const formData = new FormData();
+
+        if(file){
+            formData.append("cover", file, file.name);
+        }
+
+        const payload = {
+            title: bookData.title,
+            writer: bookData.writer,
+            publisher: bookData.publisher,
+            published_year: String(bookData.published_year).substring(0, 4),
+            stock: Number(bookData.stock),
+            categories: bookData.categories || undefined
+        }
+
+        formData.append("documentId", documentId)
+        formData.append("data", JSON.stringify(payload))
+
+        const res = await fetch(`${API_URL}/api/book/edit`, {
+            method: "PATCH",
+            headers: {
+                "Authorization": `Bearer ${TOKEN}`,
+                "x-wihope-name": WIHOPE_NAME,
+            },
+            body: formData
+        })
+        const resData = await res.json();
+
+        if(!res.ok){
+            throw new Error(resData.message || `HTTP error! status: ${res.status}`)
+        }
+        return resData
+    } catch (error){
+        console.error("Error in editBook:", error)
+        throw error
+    }
+}
+
+export async function fetchMemberById(documentId: string){
+    try{
+        console.log("Fetching member with documentId:", documentId)
+        console.log("API URL:", `${API_URL}/api/member/detail?id=${documentId}`)
+
+        const res = await fetch(`${API_URL}/api/member/detail?id=${documentId}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${TOKEN}`,
+                "x-wihope-name": WIHOPE_NAME,
+            }
+        })
+
+        const resData = await res.json()
+        console.log("API Response:", resData)
+
+        if(!res.ok){
+            throw new Error(resData.message || `HTTP error! status: ${res.status}`)
+        }
+
+        let member = null;
+
+        if(resData.data && typeof resData.data === 'object' && !Array.isArray(resData.data)){
+            member = resData.data
+        } else if(resData.data && Array.isArray(resData.data) && resData.data.length > 0){
+            member = resData.data[0]
+        } else if(resData.id || resData.documentId){
+            member = resData
+        }
+        return member
+    } catch (error){
+        console.error("Error in fetchMemberById:", error)
+        throw error
+    }
+}
+
+export async function editMember(memberData: any) {
+    try {
+        const payload = {
+            documentId: memberData.documentId,
+            data: {
+                name: memberData.name,
+                email: memberData.email,
+                address: memberData.address,
+                id_member: memberData.id_member
+            }
+        };
+
+        console.log("Sending edit request with payload:", payload);
+
+        const res = await fetch(`${API_URL}/api/member/edit`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${TOKEN}`, // Tambahkan Bearer jika perlu
+                "x-wihope-name": WIHOPE_NAME,
+            },
+            body: JSON.stringify(payload),
+            cache: 'no-store',
+        });
+
+        const responseData = await res.json();
+        console.log("Edit response:", responseData);
+
+        if (!res.ok) {
+            throw new Error(responseData.message || `HTTP error! status: ${res.status}`);
+        }
+
+        return responseData;
+
+    } catch (error) {
+        console.error("Error in editMember:", error);
+        throw error;
+    }
+}
+
+export async function deleteBook(documentId: string) {
+    try {
+        const res = await fetch(`${API_URL}/api/book/delete`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${TOKEN}`,
+                "x-wihope-name": WIHOPE_NAME,
+            },
+            body: JSON.stringify({
+                documentId: documentId
+            }),
+            cache: 'no-store',
+        });
+
+        const resData = await res.json();
+
+        if (!res.ok) {
+            throw new Error(resData.message || `HTTP error! status: ${res.status}`);
+        }
+
+        return resData;
+
+    } catch (error) {
+        console.error("Error in deleteBook:", error);
+        throw error;
+    }
+}
+
+export async function deleteMember(documentId: string){
+    try{
+        const res = await fetch(`${API_URL}/api/member/delete`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${TOKEN}`,
+                "x-wihope-name": WIHOPE_NAME,
+            },
+            body: JSON.stringify({
+                documentId: documentId
+            }),
+            cache: "no-store",
+        })
+        
+        const resData = await res.json();
+
+        if(!res.ok){
+            throw new Error(resData.message || `HTTP error! status: ${res.status}`)
+        }
+
+        return resData
+    } catch (error){
+        console.error("Error in deleteMember:", error)
+        throw error;
+    }
 }

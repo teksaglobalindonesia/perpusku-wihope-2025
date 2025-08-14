@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import SearchMember from "../search/search_member";
 import Pagination from "../pagination/pagination";
+import { deleteMember } from "@/lib/api";
 
 interface Member {
     id: number;
@@ -18,6 +19,8 @@ export default function ListAnggota({ members }: { members: any[]}){
     const [currentPage, setCurrentPage] = useState(1);
     const [munculPopup, setMunculPopup] = useState(false);
     const [filterMember, setFilterMember] = useState<Member[]>(members);
+    const [selectedMemberId, SetSelectedMemberId] = useState<string | null>(null)
+    const [isDeleting, setIsDeleting] = useState(false)
 
     const itemsPerPage = 5;
     const totalPages = Math.ceil(filterMember.length / itemsPerPage);
@@ -25,6 +28,30 @@ export default function ListAnggota({ members }: { members: any[]}){
     useEffect(() => {
         setCurrentPage(1);
     }, [filterMember]);
+
+    const handleDeleteClick = (documentId: string) => {
+        SetSelectedMemberId(documentId)
+        setMunculPopup(true)
+    }
+
+    const handleConfirmDelete = async () => {
+        if (!selectedMemberId) return;
+        try{
+            setIsDeleting(true);
+            await deleteMember(selectedMemberId)
+
+            setFilterMember(prevMembers =>
+                prevMembers.filter(member => member.documentId !== selectedMemberId)
+            )
+            setMunculPopup(false)
+
+            window.location.reload()
+        } catch (error){
+            console.error("Failed to deleted member:", error)
+        } finally{
+            setIsDeleting(false)
+        }
+    }
 
     return(
         <>
@@ -73,12 +100,12 @@ export default function ListAnggota({ members }: { members: any[]}){
                                         className="bg-blue-500 px-4 py-1 md:px-8 clip-custom text-xs md:text-base transition-colors duration-300 hover:bg-blue-700">
                                             Borrowing
                                         </Link>
-                                        <Link href="/anggota/edit_member" className="bg-yellow-400 px-4 py-1 
+                                        <Link href={`/anggota/edit_member/${member.documentId}`}  className="bg-yellow-400 px-4 py-1 
                                         md:px-8 clip-custom text-xs md:text-base transition-colors duration-300 hover:bg-yellow-500">
                                             Edit
                                         </Link>
                                         <button className="bg-red-400 px-4 py-1 md:px-8 clip-custom text-xs 
-                                        md:text-base transition-colors duration-300 hover:bg-red-500" onClick={() => setMunculPopup(true)}>
+                                        md:text-base transition-colors duration-300 hover:bg-red-500" onClick={() => handleDeleteClick(member.documentId)}>
                                             Delete
                                         </button>
                                     </div>
@@ -107,11 +134,11 @@ export default function ListAnggota({ members }: { members: any[]}){
                     </h1>
                     <div className="flex flex-col sm:flex-row gap-3 md:gap-5 justify-center 
                     md:justify-start mt-4 text-base md:text-lg">
-                        <button className="bg-red-500 px-4 md:px-8 py-2 clip-custom">
-                            DELETE
+                        <button className="bg-red-500 px-4 md:px-8 py-2 clip-custom" onClick={handleConfirmDelete} disabled={isDeleting}>
+                            {isDeleting ? "Deleting..." : "DELETE"}
                         </button>
                         <button className="border-2 rounded-md px-3 py-2 md:px-4 md:py-0" 
-                        onClick={() => setMunculPopup(false)}>
+                        onClick={() => setMunculPopup(false)} disabled={isDeleting}>
                             CANCEL
                         </button>
                     </div>
