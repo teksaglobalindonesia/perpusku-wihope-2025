@@ -127,9 +127,9 @@ export const L_LoanList = ({ statusBukuItems = [], pagination }: LoanListType) =
                                     <div className="sm:grid flex-col flex gap-8 sm:grid-cols-12 items-center">
                                         <div className="col-span-1 sm:col-span-9 space-y-3 text-center sm:text-left">
                                             <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">PEMINJAMAN</div>
-                                            <h2 className="text-3xl font-bold text-black leading-tight">{item.book.title}</h2>
-                                            <div className="text-lg text-gray-600 font-medium">Peminjam: {item.member.name}</div>
-                                            <div className="text-lg text-gray-600 font-medium">Tanggal Peminjaman: {item.loan_date}</div>
+                                            <h2 className="text-3xl font-bold text-black leading-tight">{item.book?.title || "Invalid Book"}</h2>
+                                            <div className="text-lg text-gray-600 font-medium">Peminjam: {item.member?.name || "Invalid User"}</div>
+                                            <div className="text-lg text-gray-600 font-medium">Tanggal Peminjaman: {item?.loan_date || "Invalid Date"}</div>
                                             <div className="text-lg text-gray-600 font-medium">
                                                 Tanggal Pengembalian: {item.return_date || 'Belum dikembalikan'}
                                             </div>

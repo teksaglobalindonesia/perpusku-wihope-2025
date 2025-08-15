@@ -9,8 +9,7 @@ import { BookListType } from '@/app/dashboard/books/page';
 export const B_BookList = ({ bookListItems = [], pagination }: BookListType) => {
     const [page, setPage] = useState<number>(pagination?.page || 1);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [bookToDeleteTitle, setBookToDeleteTitle] = useState<string | null>(null);
-    const [bookToDeleteId, setBookToDeleteId] = useState<number | null>(null);
+    const [selectedBook, setSelectedBook] = useState<{ documentId: string; name: string } | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [filteredBooks, setFilteredBooks] = useState<Book[]>(bookListItems);
     const [paginationMeta, setPaginationMeta] = useState<Pagination['pagination']>(
@@ -20,27 +19,27 @@ export const B_BookList = ({ bookListItems = [], pagination }: BookListType) => 
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
             const fetchBooks = async () => {
-                    const response = await fetch(
-                        `${BASE_URL}/api/book/list?page=${page}&page_size=${paginationMeta.page_size}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''
-                        }`,
-                        {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                Authorization: TOKEN,
-                                'x-wihope-name': NAME,
-                            },
-                            cache: 'no-store',
-                        }
-                    );
-                    const { data, meta } = await response.json();
-                    setFilteredBooks(data || []);
-                    setPaginationMeta(meta?.pagination || {
-                        page: 1,
-                        page_size: paginationMeta.page_size,
-                        total: 0,
-                        page_count: 1,
-                    });
+                const response = await fetch(
+                    `${BASE_URL}/api/book/list?page=${page}&page_size=${paginationMeta.page_size}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''
+                    }`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: TOKEN,
+                            'x-wihope-name': NAME,
+                        },
+                        cache: 'no-store',
+                    }
+                );
+                const { data, meta } = await response.json();
+                setFilteredBooks(data || []);
+                setPaginationMeta(meta?.pagination || {
+                    page: 1,
+                    page_size: paginationMeta.page_size,
+                    total: 0,
+                    page_count: 1,
+                });
             };
             fetchBooks();
         }, 100);
@@ -75,32 +74,61 @@ export const B_BookList = ({ bookListItems = [], pagination }: BookListType) => 
         setPage(1);
     };
 
-    const handleEdit = (id: number) => {
-        // console.log("EDIT item pada produk:", id);
-    };
-
-    const handleDelete = (id: number) => {
-        const book = filteredBooks.find((b) => b.id === id);
-        if (book) {
-            setBookToDeleteTitle(book.title || null);
-            setBookToDeleteId(book.id || null);
-            setShowDeleteModal(true);
-        }
+    const handleDelete = (documentId: string, name: string) => {
+        setSelectedBook({ documentId, name });
+        setShowDeleteModal(true);
     };
 
     const confirmDelete = async () => {
-        if (bookToDeleteId !== null) {
+        if (!selectedBook) return;
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/book/delete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: TOKEN,
+                    'x-wihope-name': NAME,
+                },
+                body: JSON.stringify({
+                    documentId: selectedBook.documentId,
+                }),
+                cache: 'no-store',
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to delete book');
+            }
+
+            setFilteredBooks((prevBooks) =>
+                prevBooks.filter((book) => book.documentId !== selectedBook.documentId)
+            );
+
+            setPaginationMeta((prevMeta) => {
+                const newTotal = prevMeta.total - 1;
+                const newPageCount = Math.ceil(newTotal / prevMeta.page_size);
+                return {
+                    ...prevMeta,
+                    total: newTotal,
+                    page_count: newPageCount,
+                };
+            });
+
+            if (filteredBooks.length === 1 && page > 1) {
+                setPage(page - 1);
+            }
+        } catch (error) {
+            console.error('Error deleting book:', error);
+        } finally {
             setShowDeleteModal(false);
-            setBookToDeleteId(null);
-            setBookToDeleteTitle(null);
-            // Add actual delete API call here if needed
+            setSelectedBook(null);
         }
     };
 
     const cancelDelete = () => {
         setShowDeleteModal(false);
-        setBookToDeleteId(null);
-        setBookToDeleteTitle(null);
+        setSelectedBook(null);
     };
 
     const getButtonStyles = (isDisabled: boolean, isActive: boolean = false) => `
@@ -167,7 +195,7 @@ export const B_BookList = ({ bookListItems = [], pagination }: BookListType) => 
                                         </div>
                                         <div className="col-span-1 sm:col-span-7 space-y-3 text-center sm:text-left py-5">
                                             <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-                                                {item.categories[0]?.name}
+                                                {item.categories?.map((cat) => cat?.name).filter(Boolean).join(', ') || 'No category'}
                                             </div>
                                             <h2 className="text-3xl font-bold text-black leading-tight">{item.title}</h2>
                                             <div className="text-lg text-gray-600 font-medium">{item.writer}</div>
@@ -178,13 +206,14 @@ export const B_BookList = ({ bookListItems = [], pagination }: BookListType) => 
                                             </div>
                                             <div className="flex flex-row sm:flex-col gap-2">
                                                 <Link
-                                                    href={`/dashboard/books/edit/${item.id}`}
+                                                    href={`/dashboard/books/edit/${item.documentId}`}
                                                     className="bg-white w-full text-black border-2 border-black px-6 py-3 text-sm font-bold tracking-wider hover:bg-black hover:text-white transition-colors duration-300 text-center"
+                                                    onClick={() => console.log('Navigating to edit book with documentId:', item.documentId)}
                                                 >
-                                                    <button onClick={() => handleEdit(item.id || 0)}>EDIT</button>
+                                                    EDIT
                                                 </Link>
                                                 <button
-                                                    onClick={() => handleDelete(item.id || 0)}
+                                                    onClick={() => item.documentId && handleDelete(item.documentId, item.title)}
                                                     className="bg-white w-full text-black border-2 border-black px-6 py-3 text-sm font-bold tracking-wider hover:bg-black hover:text-white transition-colors duration-300"
                                                 >
                                                     HAPUS
@@ -248,9 +277,9 @@ export const B_BookList = ({ bookListItems = [], pagination }: BookListType) => 
                 {/* Delete Modal */}
                 {showDeleteModal && (
                     <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-                        <div className="flex flex-col w-[500px] max-w-[90vw] bg-white border-2 border-black-xl shadow-lg items-center justify-center gap-4 px-6 py-6">
+                        <div className="flex flex-col w-[500px] max-w-[90vw] bg-white border-2 border-black shadow-lg items-center justify-center gap-4 px-6 py-6">
                             <div className="text-xl font-semibold text-black text-center">
-                                Apakah yakin ingin menghapus <span className="text-red-500">{bookToDeleteTitle}</span>?
+                                Apakah yakin ingin menghapus <span className="text-red-500">{selectedBook?.name}</span>?
                             </div>
                             <div className="flex flex-row gap-4">
                                 <button

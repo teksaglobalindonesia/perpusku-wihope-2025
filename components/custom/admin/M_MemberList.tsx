@@ -8,7 +8,7 @@ import { Member, Pagination } from '@/type/api-response';
 export const M_MemberList = ({ userItems = [], pagination }: UserType) => {
     const [page, setPage] = useState<number>(pagination?.pagination.page || 1);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<{ id_member: string; name: string } | null>(null);
+    const [selectedUser, setSelectedUser] = useState<{ documentId: string; name: string } | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [filteredUsers, setFilteredUsers] = useState<Member[]>(userItems);
     const [paginationMeta, setPaginationMeta] = useState<Pagination['pagination']>(
@@ -73,66 +73,55 @@ export const M_MemberList = ({ userItems = [], pagination }: UserType) => {
         setPage(1);
     };
 
-    const handleEdit = (id_member: string) => {
-        // console.log('EDIT item pada produk:', id_member);
-    };
-
-    const handleDelete = (id_member: string, name: string) => {
-        setSelectedUser({ id_member, name });
+    const handleDelete = (documentId: string, name: string) => {
+        setSelectedUser({ documentId, name });
         setShowDeleteModal(true);
     };
 
     const confirmDelete = async () => {
-        if (selectedUser) {
-            const response = await fetch(`${BASE_URL}/api/member/${selectedUser.id_member}`, {
-                method: 'DELETE',
+        if (!selectedUser) return;
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/member/delete`, {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: TOKEN,
                     'x-wihope-name': NAME,
                 },
+                body: JSON.stringify({
+                    documentId: selectedUser.documentId,
+                }),
+                cache: 'no-store',
             });
-            if (response.ok) {
-                const fetchResponse = await fetch(
-                    `${BASE_URL}/api/member/list?page=${page}&page_size=2${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''
-                    }`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: TOKEN,
-                            'x-wihope-name': NAME,
-                        },
-                        cache: 'no-store',
-                    }
-                );
-                if (fetchResponse.ok) {
-                    const { data, meta } = await fetchResponse.json();
-                    setFilteredUsers(data || []);
-                    setPaginationMeta(
-                        meta?.pagination || {
-                            page: 1,
-                            page_size: 2,
-                            total: data?.length || 0,
-                            page_count: Math.ceil((data?.length || 0) / 2),
-                        }
-                    );
-                } else {
-                    console.error('Failed to fetch members after deletion:', fetchResponse.statusText);
-                    setFilteredUsers([]);
-                    setPaginationMeta({
-                        page: 1,
-                        page_size: 2,
-                        total: 0,
-                        page_count: 1,
-                    });
-                }
-            } else {
-                console.error('Failed to delete member:', response.statusText);
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to delete member');
             }
+
+            setFilteredUsers((prevUsers) =>
+                prevUsers.filter((user) => user.documentId !== selectedUser.documentId)
+            );
+
+            setPaginationMeta((prevMeta) => {
+                const newTotal = prevMeta.total - 1;
+                const newPageCount = Math.ceil(newTotal / prevMeta.page_size);
+                return {
+                    ...prevMeta,
+                    total: newTotal,
+                    page_count: newPageCount,
+                };
+            });
+
+            if (filteredUsers.length === 1 && page > 1) {
+                setPage(page - 1);
+            }
+            setShowDeleteModal(false);
+            setSelectedUser(null);
+        } catch (error) {
+            console.error('Error deleting member:', error);
         }
-        setShowDeleteModal(false);
-        setSelectedUser(null);
     };
 
     const cancelDelete = () => {
@@ -141,8 +130,8 @@ export const M_MemberList = ({ userItems = [], pagination }: UserType) => {
     };
 
     const getButtonStyles = (isDisabled: boolean, isActive: boolean = false) => `
-    px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors
-    ${isDisabled
+        px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors
+        ${isDisabled
             ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
             : isActive
                 ? 'bg-black text-white border-black'
@@ -191,7 +180,7 @@ export const M_MemberList = ({ userItems = [], pagination }: UserType) => {
                     {filteredUsers.length > 0 ? (
                         filteredUsers.map((item) => (
                             <div
-                                key={item.id_member}
+                                key={item.documentId}
                                 className="bg-white border-2 border-black hover:bg-gray-50 transition-colors duration-300"
                             >
                                 <div className="p-8">
@@ -211,13 +200,13 @@ export const M_MemberList = ({ userItems = [], pagination }: UserType) => {
                                                     PEMINJAMAN
                                                 </Link>
                                                 <Link
-                                                    href={`/dashboard/members/edit/${item.id_member}`}
+                                                    href={`/dashboard/members/edit/${item.documentId}`}
                                                     className="bg-white text-center text-black border-2 border-black px-6 py-3 text-sm font-bold tracking-wider hover:bg-black hover:text-white transition-colors duration-300"
                                                 >
-                                                    <button onClick={() => handleEdit(item.id_member)}>EDIT</button>
+                                                    EDIT
                                                 </Link>
                                                 <button
-                                                    onClick={() => handleDelete(item.id_member, item.name)}
+                                                    onClick={() => handleDelete(item.documentId, item.name)}
                                                     className="bg-white text-black border-2 border-black px-6 py-3 text-sm font-bold tracking-wider hover:bg-black hover:text-white transition-colors duration-300"
                                                 >
                                                     HAPUS

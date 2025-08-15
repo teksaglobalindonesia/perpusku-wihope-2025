@@ -15,7 +15,7 @@ export const D_EmptyBook = ({ statusBookItems = [], pagination }: StatusBukuType
 
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
-            const fetchBooks = async () => {
+            const fetchEmpty = async () => {
                 const response = await fetch(
                     `${BASE_URL}/api/book/list?page=${page}&page_size=2${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''
                     }`,
@@ -30,19 +30,18 @@ export const D_EmptyBook = ({ statusBookItems = [], pagination }: StatusBukuType
                     }
                 );
                 const { data, meta } = await response.json();
-                // Filter for stock === 0
                 const emptyBooks = (data || []).filter((item: Book) => item.stock === 0);
                 setFilteredEmpty(emptyBooks);
                 setPaginationMeta(
                     meta?.pagination || {
-                        page: 1,
+                        page: 2,
                         page_size: 2,
-                        total: emptyBooks.length,
-                        page_count: Math.ceil(emptyBooks.length / 2),
+                        total: data?.length || 0,
+                        page_count: Math.ceil((data?.length || 0) / 2),
                     }
-                )
+                );
             };
-            fetchBooks();
+            fetchEmpty();
         }, 100);
 
         return () => clearTimeout(debounceTimer);
@@ -76,14 +75,14 @@ export const D_EmptyBook = ({ statusBookItems = [], pagination }: StatusBukuType
     };
 
     const getButtonStyles = (isDisabled: boolean, isActive: boolean = false) => `
-    px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors
-    ${isDisabled
+        px-4 py-2 border-2 text-sm font-bold tracking-wider transition-colors
+        ${isDisabled
             ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
             : isActive
                 ? 'bg-black text-white border-black'
                 : 'bg-white text-black border-black hover:bg-black hover:text-white'
         }
-  `;
+    `;
 
     return (
         <div className="max-h-[80%] bg-gray-50 px-5 md:px-10 pb-16">
@@ -95,7 +94,7 @@ export const D_EmptyBook = ({ statusBookItems = [], pagination }: StatusBukuType
                             BUKU STOK HABIS
                         </h1>
                         <div className="inline-block bg-black text-white px-8 py-4 text-sm font-medium tracking-wider">
-                            {paginationMeta.total === 0 ? 'EMPTY' : `${paginationMeta.total} ITEMS`}
+                            {filteredEmpty.length === 0 ? 'EMPTY' : `${filteredEmpty.length} ITEMS`}
                         </div>
                     </div>
                     <div className="w-full sm:max-w-md relative">
@@ -117,7 +116,7 @@ export const D_EmptyBook = ({ statusBookItems = [], pagination }: StatusBukuType
                 {/* Content Grid */}
                 <div className="space-y-8">
                     {filteredEmpty.length > 0 ? (
-                        filteredEmpty.map((item) => (
+                        filteredEmpty.map((item) => ( // Ensure only 2 items are displayed
                             <div
                                 key={item.id}
                                 className="bg-white border-2 border-black hover:bg-gray-50 transition-colors duration-300"
@@ -137,7 +136,7 @@ export const D_EmptyBook = ({ statusBookItems = [], pagination }: StatusBukuType
                                         </div>
                                         <div className="sm:col-span-7 space-y-3 text-center sm:text-left">
                                             <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-                                                {item.categories[0]?.name}
+                                                {item.categories?.map((cat) => cat?.name).filter(Boolean).join(', ') || 'No category'}
                                             </div>
                                             <h2 className="text-3xl font-bold text-black leading-tight">{item.title}</h2>
                                             <div className="text-lg text-gray-600 font-medium">{item.writer}</div>

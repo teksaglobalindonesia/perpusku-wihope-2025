@@ -1,4 +1,5 @@
-import { B_EditBook } from '@/components/custom/admin/B_EditBook';
+import B_EditBook from "@/components/custom/admin/B_EditBook";
+
 
 const B_Edit = () => {
     return (

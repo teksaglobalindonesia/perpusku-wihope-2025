@@ -30,7 +30,7 @@
 
   export interface Book {
     id: number;
-    documentId: string;
+    documentId?: string;
     title: string;
     writer: string;
     publisher: string;
@@ -38,7 +38,7 @@
     stock: number;
     createdAt: string;
     cover: Cover;
-    categories: Category[];
+    categories?: Category[];
   }
 
   export interface BookSummary {
