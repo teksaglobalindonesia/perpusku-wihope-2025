@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import SearchLoan from "../search/search_loan";
 import Pagination from "../pagination/pagination";
 import { deleteLoan } from "@/lib/api";
+import { addReturns, increaseBookStock } from "@/lib/api";
 
 interface Loan {
     id: number;
@@ -52,6 +53,10 @@ export default function Peminjaman({ peminjamans, books, returns }: { peminjaman
     const [selectedLoanId, setSelectedLoanId] = useState<string | null>(null);
     const [munculPopup, setMunculPopup] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupMessage, setPopupMessage] = useState("");
+    const [selectedReturnLoan, setSelectedReturnLoan] = useState<Loan | null>(null);
+
 
     const itemsPerPage = 5;
     const totalPages = Math.ceil(filterLoan.length / itemsPerPage);
@@ -72,10 +77,6 @@ export default function Peminjaman({ peminjamans, books, returns }: { peminjaman
         
         return actualReturnDate > returnDate;
     }
-
-    const isReturn = (loanItem: Return) => {
-        return loanItem.return && loanItem.return.actual_return_date ? true : false;
-    };
 
     const handleDeleteClick = (documentId: string) => {
         setSelectedLoanId(documentId);
@@ -101,6 +102,40 @@ export default function Peminjaman({ peminjamans, books, returns }: { peminjaman
         } finally {
             setIsDeleting(false);
         }
+    };
+
+    const confirmReturn = async () => {
+        if (!selectedReturnLoan) return;
+        try {
+            await addReturns({
+            loan: selectedReturnLoan.documentId,
+            actual_return_date: new Date().toISOString(),
+            });
+
+            if (selectedReturnLoan.book?.id) {
+            await increaseBookStock(String(selectedReturnLoan.book.id));
+            }
+
+            await deleteLoan(selectedReturnLoan.documentId);
+            setFilterLoan(prev => prev.filter(item => item.documentId !== selectedReturnLoan.documentId));
+            setPopupMessage("Book returned successfully");
+        } catch {
+            setPopupMessage("Failed to return the book. Please try again");
+        } finally {
+            setSelectedReturnLoan(null);
+        }
+    };
+
+    const handlePopupClose = () => {
+        setShowPopup(false);
+        setPopupMessage("");
+        setSelectedReturnLoan(null);
+    };
+
+    const handleReturnClick = (loan: Loan) => {
+        setPopupMessage("Are you sure you want to return this book?");
+        setSelectedReturnLoan(loan);
+        setShowPopup(true);
     };
 
     return(
@@ -181,13 +216,14 @@ export default function Peminjaman({ peminjamans, books, returns }: { peminjaman
                                                 </button>
                                             </div>
                                             <div className="flex flex-wrap gap-2 md:gap-3 mt-2">
-                                                <div className="flex flex-wrap gap-2 md:gap-3 mt-2">
-                                                    {isReturn(peminjam) ? (
-                                                        <div className="bg-green-500 px-4 py-1 md:px-8 clip-custom text-xs md:text-base">
-                                                            Returned
-                                                        </div>
-                                                    ):null}
-                                                </div>
+                                                {!returns.some(r => r.loan?.documentId === peminjam.documentId) && (
+                                                    <button
+                                                        className="bg-green-500 text-white px-4 py-1 md:px-8 clip-custom text-xs md:text-base transition-colors duration-300 hover:bg-green-600"
+                                                        onClick={() => handleReturnClick(peminjam)}
+                                                    >
+                                                        Return
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -236,6 +272,40 @@ export default function Peminjaman({ peminjamans, books, returns }: { peminjaman
                 CANCEL
                 </button>
             </div>
+            </div>
+        </div>
+        )}
+
+        {showPopup && (
+        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center bg-[#F2C078] w-[90%] md:w-[500px] h-auto md:h-[142px] p-4 md:p-0 rounded-xl shadow-lg z-[9999]">
+            <div className="w-full md:w-64 font-cyrodiil flex flex-col items-center justify-center text-center">
+                <h1 className="text-lg md:text-xl mb-4">{popupMessage}</h1>
+                {popupMessage === "Are you sure you want to return this book?" ? (
+                    <div className="flex gap-4">
+                        <button
+                            className="bg-green-400 hover:bg-green-600 duration-300 text-white px-4 md:px-8 py-2 clip-custom"
+                            onClick={confirmReturn}
+                        >
+                            YES
+                        </button>
+                        <button
+                            className="border-2 rounded-md px-3 py-2"
+                            onClick={handlePopupClose}
+                        >
+                            NO
+                        </button>
+                    </div>
+                ) : (
+                    <button
+                    className="bg-green-400 hover:bg-green-600 duration-300 text-white px-4 md:px-8 py-2 clip-custom"
+                    onClick={() => {
+                        handlePopupClose();
+                        window.location.reload();
+                    }}
+                    >
+                    OK
+                    </button>
+                )}
             </div>
         </div>
         )}

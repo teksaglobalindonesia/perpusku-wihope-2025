@@ -101,10 +101,10 @@ export async function addBook(file: File, bookData: any) {
 
 export async function fetchBookById(documentId: string) {
     try {
-        console.log("Fetching book with documentId:", documentId);
-        console.log("API URL:", `${API_URL}/api/book/detail?id=${documentId}`);
-        
-        const res = await fetch(`${API_URL}/api/book/detail?id=${documentId}`, {
+        const url = `${API_URL}/api/book/detail?id=${documentId}`;
+        console.log("Fetching book:", url);
+
+        const res = await fetch(url, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${TOKEN}`,
@@ -112,33 +112,26 @@ export async function fetchBookById(documentId: string) {
             },
         });
 
-        const resData = await res.json();
-        console.log("API Response:", resData);
+        if (!res.ok) throw new Error(`HTTP ${res.status} - ${await res.text()}`);
 
-        if (!res.ok) {
-            throw new Error(resData.message || `HTTP error! status: ${res.status}`);
-        }
-
-        let book = null;
-        
-        if (resData.data && typeof resData.data === 'object' && !Array.isArray(resData.data)) {
-            book = resData.data;
-        }
-        else if (resData.data && Array.isArray(resData.data) && resData.data.length > 0) {
-            book = resData.data[0];
-        }
-        else if (resData.id || resData.documentId) {
-            book = resData;
+        const text = await res.text();
+        if (!text) {
+            console.warn(`Empty response for documentId: ${documentId}`);
+            return null;
         }
 
-        if (!book) {
-            throw new Error("Book not found in response");
-        }
+        const data = JSON.parse(text);
+        console.log("API Response:", data);
 
-        return book;
-    } catch (error) {
-        console.error("Error in fetchBookById:", error);
-        throw error;
+        if (data?.data) {
+            return Array.isArray(data.data) ? data.data[0] ?? null : data.data;
+        }
+        if (data?.id || data?.documentId) return data;
+
+        return null;
+    } catch (err) {
+        console.error("Error in fetchBookById:", err);
+        return null;
     }
 }
 
@@ -254,16 +247,24 @@ export async function decreaseBookStock(documentId: string, amount: number = 1){
     }
 }
 
-export async function increaseBookStock(documentId: string, amount: number = 1) {
-    try{
-        const book = await fetchBookById(documentId)
-        const currentStock = book.stock || 0
-        const newStock = currentStock + amount
+export async function increaseBookStock(bookId: string) {
+    try {
+        const book = await fetchBookById(bookId);
+        if (!book) return false;
 
-        return await updateBookStock(documentId, newStock)
-    } catch (error){
-        console.error("Error in increaseBookStock:", error)
-        throw error
+        const res = await fetch(`${API_URL}/api/book/update/${bookId}`, {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${TOKEN}`,
+                "Content-Type": "application/json",
+                "x-wihope-name": WIHOPE_NAME,
+            },
+            body: JSON.stringify({ stock: (book.stock ?? 0) + 1 }),
+        });
+
+        return res.ok;
+    } catch {
+        return false;
     }
 }
 
@@ -347,41 +348,29 @@ export async function addMember(memberData: {
     return res;
 }
 
-export async function fetchMemberById(documentId: string){
-    try{
-        console.log("Fetching member with documentId:", documentId)
-        console.log("API URL:", `${API_URL}/api/member/detail?id=${documentId}`)
-
+export async function fetchMemberById(documentId: string) {
+    try {
         const res = await fetch(`${API_URL}/api/member/detail?id=${documentId}`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${TOKEN}`,
                 "x-wihope-name": WIHOPE_NAME,
             }
-        })
+        });
 
-        const resData = await res.json()
-        console.log("API Response:", resData)
+        const resData = await res.json();
+        if (!res.ok) throw new Error(resData.message || `HTTP ${res.status}`);
 
-        if(!res.ok){
-            throw new Error(resData.message || `HTTP error! status: ${res.status}`)
+        if (resData.data) {
+            return Array.isArray(resData.data) ? resData.data[0] : resData.data;
         }
-
-        let member = null;
-
-        if(resData.data && typeof resData.data === 'object' && !Array.isArray(resData.data)){
-            member = resData.data
-        } else if(resData.data && Array.isArray(resData.data) && resData.data.length > 0){
-            member = resData.data[0]
-        } else if(resData.id || resData.documentId){
-            member = resData
-        }
-        return member
-    } catch (error){
-        console.error("Error in fetchMemberById:", error)
-        throw error
+        return (resData.id || resData.documentId) ? resData : null;
+    } catch (err) {
+        console.error("Error in fetchMemberById:", err);
+        throw err;
     }
 }
+
 
 export async function editMember(memberData: any) {
     try {
@@ -451,7 +440,7 @@ export async function deleteMember(documentId: string){
     }
 }
 
-//Trust only in loans
+//Trust only in the loans
 export const fetchLoans = (page?: number, pageSize?: number) => {
     return fetchList("/api/loan/list", page, pageSize);
 };
@@ -500,22 +489,15 @@ export async function editLoan(loanDocumentId: string, updateData: {
     book_documentId?: string
     loan_date?: string | Date
     return_date?: string | Date
-}){
-    try{
-        const formatData = {
+}) {
+    try {
+        const fmt = (d: any) => d instanceof Date ? d.toISOString().split('T')[0] : d;
+        const body = {
             documentId: loanDocumentId,
-            ...(updateData.book_documentId !== undefined && { book: updateData.book_documentId}),
-            ...(updateData.loan_date !== undefined && {
-                loan_date: updateData.loan_date instanceof Date 
-                    ? updateData.loan_date.toISOString().split('T')[0] 
-                    : updateData.loan_date
-            }),
-            ...(updateData.return_date !== undefined && {
-                return_date: updateData.return_date instanceof Date 
-                    ? updateData.return_date.toISOString().split('T')[0] 
-                    : updateData.return_date
-            })
-        }
+            ...(updateData.book_documentId && { book: updateData.book_documentId }),
+            ...(updateData.loan_date && { loan_date: fmt(updateData.loan_date) }),
+            ...(updateData.return_date && { return_date: fmt(updateData.return_date) })
+        };
 
         const res = await fetch(`${API_URL}/api/loan/edit`, {
             method: "PATCH",
@@ -524,50 +506,38 @@ export async function editLoan(loanDocumentId: string, updateData: {
                 "Authorization": `Bearer ${TOKEN}`,
                 "x-wihope-name": WIHOPE_NAME,
             },
-            body: JSON.stringify(formatData)
-        })
-
-        const resData = await res.json()
-        if(!res.ok) throw new Error(resData.message || `HTTP error! status: ${res.status}`)
-
-        return resData.data 
-            ? (Array.isArray(resData.data) ? resData.data[0] : resData.data)
-            : (resData.id || resData.documentId ? resData : null)
-
-    } catch (error){
-        console.error("Error in editLoan:", error)
-        throw error
-    }
-}
-
-export async function deleteLoan(documentId: string) {
-    try {
-        const res = await fetch(`${API_URL}/api/loan/delete`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${TOKEN}`,
-                "x-wihope-name": WIHOPE_NAME,
-            },
-            body: JSON.stringify({
-                documentId: documentId
-            }),
-            cache: 'no-store',
+            body: JSON.stringify(body)
         });
 
-        const resData = await res.json();
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`);
 
-        if (!res.ok) {
-            throw new Error(resData.message || `HTTP error! status: ${res.status}`);
-        }
-
-        return resData;
-
-    } catch (error) {
-        console.error("Error in deleteLoan:", error);
-        throw error;
+        return data.data
+            ? (Array.isArray(data.data) ? data.data[0] : data.data)
+            : ((data.id || data.documentId) ? data : null);
+    } catch (err) {
+        console.error("Error in editLoan:", err);
+        throw err;
     }
 }
+
+
+export async function deleteLoan(id: string) {
+    const res = await fetch(`${API_URL}/api/loan/delete`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${TOKEN}`,
+            "x-wihope-name": WIHOPE_NAME,
+        },
+        body: JSON.stringify({ documentId: id }),
+        cache: "no-store",
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`);
+    return data;
+}
+
 
 //Don't underestimate the power of the return side
 export const fetchReturn = (page?: number, pageSize?: number) => {
@@ -611,34 +581,22 @@ export async function addReturns(returnsData: {
     return res;
 }
 
-export async function deleteReturns(documentId: string) {
-    try {
-        const res = await fetch(`${API_URL}/api/loan/delete`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${TOKEN}`,
-                "x-wihope-name": WIHOPE_NAME,
-            },
-            body: JSON.stringify({
-                documentId: documentId
-            }),
-            cache: 'no-store',
-        });
-
-        const resData = await res.json();
-
-        if (!res.ok) {
-            throw new Error(resData.message || `HTTP error! status: ${res.status}`);
-        }
-
-        return resData;
-
-    } catch (error) {
-        console.error("Error in deleteLoan:", error);
-        throw error;
-    }
+export async function deleteReturns(id: string) {
+    const res = await fetch(`${API_URL}/api/loan/delete`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${TOKEN}`,
+            "x-wihope-name": WIHOPE_NAME,
+        },
+        body: JSON.stringify({ documentId: id }),
+        cache: "no-store",
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`);
+    return data;
 }
+
 
 
 // export async function fetchLoanbyMemberId(documentId: string){

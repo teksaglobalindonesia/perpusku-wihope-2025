@@ -97,7 +97,7 @@ export default function EditLoan({ books, documentId }: {books: Book[], document
         setLoading(true)
         try{
             if(originalBookId && originalBookId !== selectedBookId){
-                await increaseBookStock(originalBookId, 1)
+                await increaseBookStock(originalBookId)
                 await decreaseBookStock(selectedBookId, 1)
             } else if(!originalBookId && selectedBookId){
                 await decreaseBookStock(selectedBookId, 1)
