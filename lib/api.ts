@@ -540,6 +540,35 @@ export async function editLoan(loanDocumentId: string, updateData: {
     }
 }
 
+export async function deleteLoan(documentId: string) {
+    try {
+        const res = await fetch(`${API_URL}/api/loan/delete`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${TOKEN}`,
+                "x-wihope-name": WIHOPE_NAME,
+            },
+            body: JSON.stringify({
+                documentId: documentId
+            }),
+            cache: 'no-store',
+        });
+
+        const resData = await res.json();
+
+        if (!res.ok) {
+            throw new Error(resData.message || `HTTP error! status: ${res.status}`);
+        }
+
+        return resData;
+
+    } catch (error) {
+        console.error("Error in deleteLoan:", error);
+        throw error;
+    }
+}
+
 //Don't underestimate the power of the return side
 export const fetchReturn = (page?: number, pageSize?: number) => {
     return fetchList("/api/return/list", page, pageSize)
@@ -581,6 +610,36 @@ export async function addReturns(returnsData: {
     });
     return res;
 }
+
+export async function deleteReturns(documentId: string) {
+    try {
+        const res = await fetch(`${API_URL}/api/loan/delete`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${TOKEN}`,
+                "x-wihope-name": WIHOPE_NAME,
+            },
+            body: JSON.stringify({
+                documentId: documentId
+            }),
+            cache: 'no-store',
+        });
+
+        const resData = await res.json();
+
+        if (!res.ok) {
+            throw new Error(resData.message || `HTTP error! status: ${res.status}`);
+        }
+
+        return resData;
+
+    } catch (error) {
+        console.error("Error in deleteLoan:", error);
+        throw error;
+    }
+}
+
 
 // export async function fetchLoanbyMemberId(documentId: string){
 //     try{

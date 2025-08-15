@@ -5,6 +5,7 @@ import Image from "next/image";
 import SearchReturn from "../search/search_return";
 import Pagination from "../pagination/pagination";
 import Link from "next/link";
+import { deleteReturns } from "@/lib/api";
 
 interface Return {
     id: number;
@@ -24,12 +25,17 @@ interface Return {
     return?: {
         actual_return_date: Date | string;
     };
+    documentId: string;
 }
 
 export default function Pengembalian({ returns, books }: { returns: any[], books: any[] } ){
     const API = "https://cms-perpusku.widhimp.my.id";
     const [currentPage, setCurrentPage] = useState(1);
     const [filterReturn, setFilterReturn] = useState<Return[]>(returns)
+    const [selectedReturnId, setSelectedReturnId] = useState<string | null>(null);
+    const [munculPopup, setMunculPopup] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
         
     const itemsPerPage = 5;
     const totalPages = Math.ceil(filterReturn.length / itemsPerPage);
@@ -51,6 +57,31 @@ export default function Pengembalian({ returns, books }: { returns: any[], books
         return actualReturnDate > returnDate;
     }
     
+    const handleDeleteClick = (documentId: string) => {
+        setSelectedReturnId(documentId);
+        setMunculPopup(true);
+    };
+        
+    const handleConfirmDelete = async () => {
+        if (!selectedReturnId) return;
+            
+        try {
+            setIsDeleting(true);
+            await deleteReturns(selectedReturnId);
+            setFilterReturn(prevReturns => 
+                prevReturns.filter(returns => returns.documentId !== selectedReturnId)
+            );
+            
+            setMunculPopup(false);
+            
+            window.location.reload();
+        } catch (error) {
+            console.error("Failed to delete book:", error);
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
     return(
         <>
         <div className="w-full bg-[#FFEAC5] mt-16 md:mt-[84px] px-4 md:px-[64px] py-6 md:py-[40px]">
@@ -117,9 +148,19 @@ export default function Pengembalian({ returns, books }: { returns: any[], books
                                         <h4 className="line-clamp-1 md:line-clamp-none">
                                             Returning: {returns.return_date instanceof Date ? returns.return_date.toLocaleDateString() : returns.return_date}
                                         </h4>
-                                        {/* <h5 className="line-clamp-1 md:line-clamp-none">
-                                            Returned: {returns.dikembalikan} 
-                                        </h5> */}
+                                        <div className="flex gap-2 md:gap-3 mt-2">
+                                            {/* <Link
+                                            href={`/peminjaman/edit/${peminjam.documentId}`}
+                                            className="bg-yellow-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base transition-colors duration-300 hover:bg-yellow-500"
+                                            >
+                                                Edit
+                                            </Link> */}
+                                            <button
+                                            className="bg-red-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base transition-colors duration-300 hover:bg-red-500"
+                                            onClick={() => handleDeleteClick(returns.documentId)}>
+                                                Delete
+                                            </button>
+                                            </div>
                                     </div>
                                 </div>
                                 {isLateReturn(returns) && (
@@ -143,6 +184,33 @@ export default function Pengembalian({ returns, books }: { returns: any[], books
                 />
             </div>
         </div>
+        {munculPopup && (
+        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center 
+        justify-center bg-[#F2C078] w-[90%] md:w-[500px] h-auto md:h-[142px] p-4 md:p-0 rounded-xl shadow-lg">
+            <div className="w-full md:w-64 font-cyrodiil">
+            <h1 className="text-lg md:text-xl text-center md:text-left">
+                Are you sure you want to delete this return?
+            </h1>
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-5 justify-center 
+            md:justify-start mt-4 text-base md:text-lg">
+                <button 
+                className="bg-red-500 px-4 md:px-8 py-2 clip-custom disabled:bg-red-300"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+                >
+                {isDeleting ? "Deleting..." : "DELETE"}
+                </button>
+                <button 
+                className="border-2 rounded-md px-3 py-2" 
+                onClick={() => setMunculPopup(false)}
+                disabled={isDeleting}
+                >
+                CANCEL
+                </button>
+            </div>
+            </div>
+        </div>
+        )}
         </>
     )
 }

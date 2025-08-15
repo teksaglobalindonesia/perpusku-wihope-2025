@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import SearchLoan from "../search/search_loan";
 import Pagination from "../pagination/pagination";
+import { deleteLoan } from "@/lib/api";
 
 interface Loan {
     id: number;
@@ -48,6 +49,9 @@ export default function Peminjaman({ peminjamans, books, returns }: { peminjaman
     const API = "https://cms-perpusku.widhimp.my.id";
     const [currentPage, setCurrentPage] = useState(1);
     const [filterLoan, setFilterLoan] = useState<Loan[]>(peminjamans);
+    const [selectedLoanId, setSelectedLoanId] = useState<string | null>(null);
+    const [munculPopup, setMunculPopup] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const itemsPerPage = 5;
     const totalPages = Math.ceil(filterLoan.length / itemsPerPage);
@@ -73,6 +77,31 @@ export default function Peminjaman({ peminjamans, books, returns }: { peminjaman
         return loanItem.return && loanItem.return.actual_return_date ? true : false;
     };
 
+    const handleDeleteClick = (documentId: string) => {
+        setSelectedLoanId(documentId);
+        setMunculPopup(true);
+    };
+    
+    const handleConfirmDelete = async () => {
+        if (!selectedLoanId) return;
+        
+        try {
+            setIsDeleting(true);
+            await deleteLoan(selectedLoanId);
+            
+            setFilterLoan(prevLoans => 
+            prevLoans.filter(loan => loan.documentId !== selectedLoanId)
+            );
+        
+            setMunculPopup(false);
+        
+            window.location.reload();
+        } catch (error) {
+            console.error("Failed to delete book:", error);
+        } finally {
+            setIsDeleting(false);
+        }
+    };
 
     return(
         <>
@@ -145,11 +174,11 @@ export default function Peminjaman({ peminjamans, books, returns }: { peminjaman
                                                 >
                                                 Edit
                                                 </Link>
-                                                {/* <button
+                                                <button
                                                 className="bg-red-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base transition-colors duration-300 hover:bg-red-500"
-                                                onClick={() => handleDeleteClick(book.documentId)}>
+                                                onClick={() => handleDeleteClick(peminjam.documentId)}>
                                                 Delete
-                                                </button> */}
+                                                </button>
                                             </div>
                                             <div className="flex flex-wrap gap-2 md:gap-3 mt-2">
                                                 <div className="flex flex-wrap gap-2 md:gap-3 mt-2">
@@ -183,6 +212,33 @@ export default function Peminjaman({ peminjamans, books, returns }: { peminjaman
                 />
             </div>
         </div>
+        {munculPopup && (
+        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center 
+        justify-center bg-[#F2C078] w-[90%] md:w-[500px] h-auto md:h-[142px] p-4 md:p-0 rounded-xl shadow-lg">
+            <div className="w-full md:w-64 font-cyrodiil">
+            <h1 className="text-lg md:text-xl text-center md:text-left">
+                Are you sure you want to delete this loan?
+            </h1>
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-5 justify-center 
+            md:justify-start mt-4 text-base md:text-lg">
+                <button 
+                className="bg-red-500 px-4 md:px-8 py-2 clip-custom disabled:bg-red-300"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+                >
+                {isDeleting ? "Deleting..." : "DELETE"}
+                </button>
+                <button 
+                className="border-2 rounded-md px-3 py-2" 
+                onClick={() => setMunculPopup(false)}
+                disabled={isDeleting}
+                >
+                CANCEL
+                </button>
+            </div>
+            </div>
+        </div>
+        )}
         </>
     )
 }
