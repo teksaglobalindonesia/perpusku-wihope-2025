@@ -73,6 +73,9 @@ module.exports = {
       },
       fontFamily: {
         roboto: 'var(--font-roboto), sans-serif',
+        planewalker: ['Planewalker', 'sans-serif'],
+        morrisroman: ['MorrisRoman', 'sans-serif'],
+        cyrodiil: ['Cyrodiil', 'sans-serif'],
       },
       keyframes: {
         'accordion-down': {
@@ -98,5 +101,15 @@ module.exports = {
       }
     }
   },
-  plugins: [require('tailwindcss-animate'), require('@tailwindcss/line-clamp')]
+  plugins: [
+    require('tailwindcss-animate'),
+    require('@tailwindcss/line-clamp'),
+    function ({ addUtilities }) {
+      addUtilities({
+        '.clip-custom': {
+          'clip-path': 'polygon(calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 20px 100%, 0 50%, 20px 0%)'
+        }
+      });
+    }
+  ]
 };

@@ -21,6 +21,10 @@ const nextConfig = {
         protocol: 'http',
         hostname: 'localhost',
       },
+      {
+        protocol: 'https',
+        hostname: 'cms-perpusku.widhimp.my.id',
+      },
     ]
   },
   transpilePackages: ['geist']

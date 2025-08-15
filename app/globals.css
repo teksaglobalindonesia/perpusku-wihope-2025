@@ -78,8 +78,83 @@
   }
 }
 
+@font-face {
+  font-family: 'Planewalker';
+  src: url('/fonts/planewalker/Planewalker.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Planewalker';
+  src: url('/fonts/planewalker/Planewalker-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Planewalker';
+  src: url('/fonts/planewalker/Planewalker-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Planewalker';
+  src: url('/fonts/planewalker/Planewalker-BoldItalic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'MorrisRoman';
+  src: url('/fonts/morris-roman-black/MorrisRoman-Black.ttf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cyrodiil';
+  src: url('/fonts/cyrodiil/Cyrodiil.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cyrodiil';
+  src: url('/fonts/cyrodiil/Cyrodiil-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cyrodiil';
+  src: url('/fonts/cyrodiil/Cyrodiil-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cyrodiil';
+  src: url('/fonts/cyrodiil/Cyrodiil-Bold-Italic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
 body {
   font-family: var(--font-roboto), sans-serif;
+  font-family: var(--font-planewalker), sans-serif;
+  font-family: var(--font-morrisroman), sans-serif;
+  font-family: var(--font-cyrodiil), sans-serif;
 }
 
 html {
