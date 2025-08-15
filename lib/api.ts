@@ -1,0 +1,3 @@
+export const BASE_URL = 'https://cms-perpusku.widhimp.my.id';
+export const TOKEN = 'Bearer 68bde9631aa5a3759fb1d87ae70de30ddc35117b4788296d1a0af00d4a590c0c10859a964084c1ea88f15b5aec416e13922545cf02820d38ebbb6facad7c1211af15d46fec14c7ccdf9fe3d610196a0fa14d38221a3485a3546df845df8cd38740f68c60a1991129bd4e3cedfc341de59b8a972a58270fce48e70d756526ae97'
+export const NAME = 'shaka'
