@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Pagination from "../pagination/pagination";
-import { addReturns } from "@/lib/api";
+import { addReturns, increaseBookStock } from "@/lib/api";
 
 interface Loan {
     id: number;
@@ -14,6 +14,7 @@ interface Loan {
         cover?: {
             url: string;
         };
+        documentId: string;
     };
     member?: {
         id: number;
@@ -30,6 +31,7 @@ export default function TambahReturn({ loans, books }: {loans: any[], books: any
     const [filterLoan, setFilterLoan] = useState<Loan[]>(loans);
     const [munculLoan, setMunculLoan] = useState(false);
     const [selectedLoanId, setSelectedLoanId] = useState<string | null>(null);
+    const [selectedBookDocumentId, setSelectedBookDocumentId] = useState<string | null>(null)
     const [actual_return_date, setLoan] = useState("");
     const [loading, setLoading] = useState(false);
     const [showPopup, setShowPopup] = useState(false); 
@@ -49,6 +51,9 @@ export default function TambahReturn({ loans, books }: {loans: any[], books: any
 
     const handleChooseLoan = (loan: any) => {
         setSelectedLoanId(loan.documentId); 
+        if(loan.book?.documentId){
+            setSelectedBookDocumentId(loan.book.documentId)
+        }
         setMunculLoan(false);
     };
 
@@ -71,6 +76,13 @@ export default function TambahReturn({ loans, books }: {loans: any[], books: any
         const res = await addReturns(payload);
         console.log("Respon API:", res);
 
+        if(selectedBookDocumentId){
+            try{
+                await increaseBookStock(selectedBookDocumentId, 1)
+            } catch (stockError){
+                console.error("Failed to increase book stock:", stockError)
+            }
+        }
         setPopupMessage("Return successfully added!");
         setShowPopup(true);
 
@@ -94,7 +106,7 @@ function handlePopupClose() {
         <div className="w-full px-4 md:px-[64px] mt-16 md:mt-[84px] bg-[#FFEAC5] pb-6">
             <div className="w-full flex justify-center items-center py-6 md:py-8">
                 <h1 className="font-morrisroman text-2xl md:text-3xl font-semibold text-center">
-                    Add a New Loan
+                    Add a New Return
                 </h1>
             </div>
             <div className="w-full px-4 md:px-[64px] py-5 bg-[#6C4E31] rounded-lg 
@@ -170,7 +182,7 @@ function handlePopupClose() {
                                         Borrower: {loan.member?.name}
                                     </h2>
                                     <h3>
-                                        Borrowing{loan.loan_date instanceof Date ? loan.loan_date.toLocaleDateString() : loan.loan_date}
+                                        Borrowing: {loan.loan_date instanceof Date ? loan.loan_date.toLocaleDateString() : new Date(loan.loan_date).toLocaleDateString()}
                                     </h3>
                                     <h4>
                                         Returning: {loan.return_date instanceof Date ? loan.return_date.toLocaleDateString() : loan.return_date}

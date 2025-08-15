@@ -21,6 +21,7 @@ interface Loan {
     };
     loan_date: Date;
     return_date: Date;
+    documentId: string
 }
 
 interface Return {
@@ -137,6 +138,19 @@ export default function Peminjaman({ peminjamans, books, returns }: { peminjaman
                                             <h4 className="line-clamp-1 md:line-clamp-none">
                                                 Returning: {peminjam.return_date instanceof Date ? peminjam.return_date.toLocaleDateString() : peminjam.return_date}
                                             </h4>
+                                            <div className="flex gap-2 md:gap-3 mt-2">
+                                                <Link
+                                                href={`/peminjaman/edit/${peminjam.documentId}`}
+                                                className="bg-yellow-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base transition-colors duration-300 hover:bg-yellow-500"
+                                                >
+                                                Edit
+                                                </Link>
+                                                {/* <button
+                                                className="bg-red-400 px-4 py-1 md:px-8 clip-custom text-xs md:text-base transition-colors duration-300 hover:bg-red-500"
+                                                onClick={() => handleDeleteClick(book.documentId)}>
+                                                Delete
+                                                </button> */}
+                                            </div>
                                             <div className="flex flex-wrap gap-2 md:gap-3 mt-2">
                                                 <div className="flex flex-wrap gap-2 md:gap-3 mt-2">
                                                     {isReturn(peminjam) ? (

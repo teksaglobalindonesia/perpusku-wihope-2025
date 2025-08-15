@@ -37,37 +37,9 @@ async function fetchList(endpoint: string, page = 1, pageSize = 9999) {
     return fetchAPI(`${endpoint}?${query}`);
 }
 
+//Fetch only for sacred books
 export const fetchBooks = (page?: number, pageSize?: number) => {
     return fetchList("/api/book/list", page, pageSize);
-}
-
-export const fetchMembers = (page?: number, pageSize?: number) => {
-    return fetchList("/api/member/list", page, pageSize);
-}
-
-export const fetchLoans = (page?: number, pageSize?: number) => {
-    return fetchList("/api/loan/list", page, pageSize);
-};
-
-export const fetchReturn = (page?: number, pageSize?: number) => {
-    return fetchList("/api/return/list", page, pageSize)
-}
-
-interface Category {
-    id: number;
-    documentId: string;
-    name: string;
-    createdAt?: string;
-}
-
-export async function fetchCategories(): Promise<Category[]> {
-    try {
-        const response = await fetchAPI("/api/book-category/list");
-        return response.data || [];
-    } catch (error) {
-        console.error("Failed to fetch categories:", error);
-        return [];
-    }
 }
 
 export async function fetchBookSearch(keyword: string, page = 1, pageSize = 5) {
@@ -85,87 +57,6 @@ export async function fetchBookSearch(keyword: string, page = 1, pageSize = 5) {
         console.error("Gagal fetch book search:", err);
         return [];
     }
-}
-
-export async function fetchLoanSearch(keyword: string, page = 1, pageSize = 5) {
-    try{
-        const query = new URLSearchParams({
-            page: String(page),
-            page_size: String(pageSize),
-            search: keyword
-        });
-
-        const res = await fetchAPI(`/api/loan/list?${query}`);
-
-        return Array.isArray(res?.data) ? res.data : [];
-    } catch (err) {
-        console.error("Gagal fetch loan search:", err);
-        return[];
-    }
-}
-
-export async function fetchMemberSearch(keyword: string, page = 1, pageSize = 5) {
-    try{
-        const query = new URLSearchParams({
-            page: String(page),
-            page_size: String(pageSize),
-            search: keyword
-        });
-
-        const res = await fetchAPI(`/api/member/list?${query}`);
-
-        return Array.isArray(res?.data) ? res.data : [];
-    } catch (err) {
-        console.error("Gagal fetch loan search:", err);
-        return[];
-    }
-}
-
-export async function fetchReturnSearch(keyword: string, page = 1, pageSize = 5) {
-    try{
-        const query = new URLSearchParams({
-            page: String(page),
-            page_size: String(pageSize),
-            search: keyword
-        });
-
-        const res = await fetchAPI(`/api/return/list?${query}`);
-
-        return Array.isArray(res?.data) ? res.data : [];
-    } catch (err) {
-        console.error("Gagal fetch loan search:", err);
-        return[];
-    }
-}
-
-export async function fetchLoanMember(documentId: string) {
-    try {
-        const query = new URLSearchParams({
-            id_member: documentId,
-        });
-
-        const res = await fetchAPI(`/api/loan/list?${query}`);
-
-        return {
-            data: Array.isArray(res?.data) ? res.data : [],
-        };
-    } catch (err) {
-        console.error("Gagal fetch loan member:", err);
-        return { data: [] };
-    }
-}
-
-export async function addMember(memberData: {
-    id_member: string;
-    name: string;
-    email: string;
-    address: string;
-}) {
-    const res = await fetchAPI("/api/member/add", {
-        method: "POST",
-        body: { data: memberData }
-    });
-    return res;
 }
 
 export async function addBook(file: File, bookData: any) {
@@ -206,59 +97,6 @@ export async function addBook(file: File, bookData: any) {
         console.error("Error in addBookWithCover:", error);
         throw error;
     }
-}
-
-export async function addCategories(categoriesData:{
-    name: string
-}){
-    const res = await fetchAPI("/api/book-category/add", {
-        method: "POST",
-        body: { data: categoriesData }
-    });
-    return res;
-}
-
-export async function addLoans(loansData: {
-    book: string | null;
-    member: string | null;
-    loan_date: string | Date;
-    return_date: string | Date;
-}) {
-    if (!loansData.book || !loansData.member || !loansData.loan_date || !loansData.return_date) {
-        throw new Error("All fields are required");
-    }
-
-    const res = await fetchAPI("/api/loan/add", {
-        method: "POST",
-        body: { 
-            data: {
-                ...loansData,
-                loan_date: new Date(loansData.loan_date),
-                return_date: new Date(loansData.return_date)
-            }
-        }
-    });
-    return res;
-}
-
-export async function addReturns(returnsData: {
-    loan: string
-    actual_return_date: string | Date;
-}) {
-    if (!returnsData.loan || !returnsData.actual_return_date) {
-        throw new Error("All fields are required");
-    }
-
-    const res = await fetchAPI("/api/return/add", {
-        method: "POST",
-        body: { 
-            data: {
-                ...returnsData,
-                actual_return_date: new Date(returnsData.actual_return_date)
-            }
-        }
-    });
-    return res;
 }
 
 export async function fetchBookById(documentId: string) {
@@ -304,11 +142,7 @@ export async function fetchBookById(documentId: string) {
     }
 }
 
-export async function editBook(
-    documentId: string,
-    file: File | null,
-    bookData: any
-){
+export async function editBook(documentId: string, file: File | null, bookData: any){
     try{
         const formData = new FormData();
 
@@ -348,82 +182,6 @@ export async function editBook(
     }
 }
 
-export async function fetchMemberById(documentId: string){
-    try{
-        console.log("Fetching member with documentId:", documentId)
-        console.log("API URL:", `${API_URL}/api/member/detail?id=${documentId}`)
-
-        const res = await fetch(`${API_URL}/api/member/detail?id=${documentId}`, {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${TOKEN}`,
-                "x-wihope-name": WIHOPE_NAME,
-            }
-        })
-
-        const resData = await res.json()
-        console.log("API Response:", resData)
-
-        if(!res.ok){
-            throw new Error(resData.message || `HTTP error! status: ${res.status}`)
-        }
-
-        let member = null;
-
-        if(resData.data && typeof resData.data === 'object' && !Array.isArray(resData.data)){
-            member = resData.data
-        } else if(resData.data && Array.isArray(resData.data) && resData.data.length > 0){
-            member = resData.data[0]
-        } else if(resData.id || resData.documentId){
-            member = resData
-        }
-        return member
-    } catch (error){
-        console.error("Error in fetchMemberById:", error)
-        throw error
-    }
-}
-
-export async function editMember(memberData: any) {
-    try {
-        const payload = {
-            documentId: memberData.documentId,
-            data: {
-                name: memberData.name,
-                email: memberData.email,
-                address: memberData.address,
-                id_member: memberData.id_member
-            }
-        };
-
-        console.log("Sending edit request with payload:", payload);
-
-        const res = await fetch(`${API_URL}/api/member/edit`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${TOKEN}`, // Tambahkan Bearer jika perlu
-                "x-wihope-name": WIHOPE_NAME,
-            },
-            body: JSON.stringify(payload),
-            cache: 'no-store',
-        });
-
-        const responseData = await res.json();
-        console.log("Edit response:", responseData);
-
-        if (!res.ok) {
-            throw new Error(responseData.message || `HTTP error! status: ${res.status}`);
-        }
-
-        return responseData;
-
-    } catch (error) {
-        console.error("Error in editMember:", error);
-        throw error;
-    }
-}
-
 export async function deleteBook(documentId: string) {
     try {
         const res = await fetch(`${API_URL}/api/book/delete`, {
@@ -449,34 +207,6 @@ export async function deleteBook(documentId: string) {
 
     } catch (error) {
         console.error("Error in deleteBook:", error);
-        throw error;
-    }
-}
-
-export async function deleteMember(documentId: string){
-    try{
-        const res = await fetch(`${API_URL}/api/member/delete`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${TOKEN}`,
-                "x-wihope-name": WIHOPE_NAME,
-            },
-            body: JSON.stringify({
-                documentId: documentId
-            }),
-            cache: "no-store",
-        })
-        
-        const resData = await res.json();
-
-        if(!res.ok){
-            throw new Error(resData.message || `HTTP error! status: ${res.status}`)
-        }
-
-        return resData
-    } catch (error){
-        console.error("Error in deleteMember:", error)
         throw error;
     }
 }
@@ -536,3 +266,354 @@ export async function increaseBookStock(documentId: string, amount: number = 1) 
         throw error
     }
 }
+
+//Categories, you were the chosen one! It was said that you would destroy the books, not join them! Bring Balance to the CRUD, not leave it in darkness
+interface Category {
+    id: number;
+    documentId: string;
+    name: string;
+    createdAt?: string;
+}
+
+export async function fetchCategories(): Promise<Category[]> {
+    try {
+        const response = await fetchAPI("/api/book-category/list");
+        return response.data || [];
+    } catch (error) {
+        console.error("Failed to fetch categories:", error);
+        return [];
+    }
+}
+
+export async function addCategories(categoriesData:{
+    name: string
+}){
+    const res = await fetchAPI("/api/book-category/add", {
+        method: "POST",
+        body: { data: categoriesData }
+    });
+    return res;
+}
+
+//Fetch for our council members
+export const fetchMembers = (page?: number, pageSize?: number) => {
+    return fetchList("/api/member/list", page, pageSize);
+}
+
+export async function fetchMemberSearch(keyword: string, page = 1, pageSize = 5) {
+    try{
+        const query = new URLSearchParams({
+            page: String(page),
+            page_size: String(pageSize),
+            search: keyword
+        });
+
+        const res = await fetchAPI(`/api/member/list?${query}`);
+
+        return Array.isArray(res?.data) ? res.data : [];
+    } catch (err) {
+        console.error("Gagal fetch loan search:", err);
+        return[];
+    }
+}
+
+export async function fetchLoanMember(documentId: string) {
+    try {
+        const query = new URLSearchParams({
+            id_member: documentId,
+        });
+
+        const res = await fetchAPI(`/api/loan/list?${query}`);
+
+        return {
+            data: Array.isArray(res?.data) ? res.data : [],
+        };
+    } catch (err) {
+        console.error("Gagal fetch loan member:", err);
+        return { data: [] };
+    }
+}
+
+export async function addMember(memberData: {
+    id_member: string;
+    name: string;
+    email: string;
+    address: string;
+}) {
+    const res = await fetchAPI("/api/member/add", {
+        method: "POST",
+        body: { data: memberData }
+    });
+    return res;
+}
+
+export async function fetchMemberById(documentId: string){
+    try{
+        console.log("Fetching member with documentId:", documentId)
+        console.log("API URL:", `${API_URL}/api/member/detail?id=${documentId}`)
+
+        const res = await fetch(`${API_URL}/api/member/detail?id=${documentId}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${TOKEN}`,
+                "x-wihope-name": WIHOPE_NAME,
+            }
+        })
+
+        const resData = await res.json()
+        console.log("API Response:", resData)
+
+        if(!res.ok){
+            throw new Error(resData.message || `HTTP error! status: ${res.status}`)
+        }
+
+        let member = null;
+
+        if(resData.data && typeof resData.data === 'object' && !Array.isArray(resData.data)){
+            member = resData.data
+        } else if(resData.data && Array.isArray(resData.data) && resData.data.length > 0){
+            member = resData.data[0]
+        } else if(resData.id || resData.documentId){
+            member = resData
+        }
+        return member
+    } catch (error){
+        console.error("Error in fetchMemberById:", error)
+        throw error
+    }
+}
+
+export async function editMember(memberData: any) {
+    try {
+        const payload = {
+            documentId: memberData.documentId,
+            data: {
+                name: memberData.name,
+                email: memberData.email,
+                address: memberData.address,
+                id_member: memberData.id_member
+            }
+        };
+
+        console.log("Sending edit request with payload:", payload);
+
+        const res = await fetch(`${API_URL}/api/member/edit`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${TOKEN}`,
+                "x-wihope-name": WIHOPE_NAME,
+            },
+            body: JSON.stringify(payload),
+            cache: 'no-store',
+        });
+
+        const responseData = await res.json();
+        console.log("Edit response:", responseData);
+
+        if (!res.ok) {
+            throw new Error(responseData.message || `HTTP error! status: ${res.status}`);
+        }
+
+        return responseData;
+
+    } catch (error) {
+        console.error("Error in editMember:", error);
+        throw error;
+    }
+}
+
+export async function deleteMember(documentId: string){
+    try{
+        const res = await fetch(`${API_URL}/api/member/delete`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${TOKEN}`,
+                "x-wihope-name": WIHOPE_NAME,
+            },
+            body: JSON.stringify({
+                documentId: documentId
+            }),
+            cache: "no-store",
+        })
+        
+        const resData = await res.json();
+
+        if(!res.ok){
+            throw new Error(resData.message || `HTTP error! status: ${res.status}`)
+        }
+
+        return resData
+    } catch (error){
+        console.error("Error in deleteMember:", error)
+        throw error;
+    }
+}
+
+//Trust only in loans
+export const fetchLoans = (page?: number, pageSize?: number) => {
+    return fetchList("/api/loan/list", page, pageSize);
+};
+
+export async function fetchLoanSearch(keyword: string, page = 1, pageSize = 5) {
+    try{
+        const query = new URLSearchParams({
+            page: String(page),
+            page_size: String(pageSize),
+            search: keyword
+        });
+
+        const res = await fetchAPI(`/api/loan/list?${query}`);
+
+        return Array.isArray(res?.data) ? res.data : [];
+    } catch (err) {
+        console.error("Gagal fetch loan search:", err);
+        return[];
+    }
+}
+
+export async function addLoans(loansData: {
+    book: string | null;
+    member: string | null;
+    loan_date: string | Date;
+    return_date: string | Date;
+}) {
+    if (!loansData.book || !loansData.member || !loansData.loan_date || !loansData.return_date) {
+        throw new Error("All fields are required");
+    }
+
+    const res = await fetchAPI("/api/loan/add", {
+        method: "POST",
+        body: { 
+            data: {
+                ...loansData,
+                loan_date: new Date(loansData.loan_date),
+                return_date: new Date(loansData.return_date)
+            }
+        }
+    });
+    return res;
+}
+
+export async function editLoan(loanDocumentId: string, updateData: {
+    book_documentId?: string
+    loan_date?: string | Date
+    return_date?: string | Date
+}){
+    try{
+        const formatData = {
+            documentId: loanDocumentId,
+            ...(updateData.book_documentId !== undefined && { book: updateData.book_documentId}),
+            ...(updateData.loan_date !== undefined && {
+                loan_date: updateData.loan_date instanceof Date 
+                    ? updateData.loan_date.toISOString().split('T')[0] 
+                    : updateData.loan_date
+            }),
+            ...(updateData.return_date !== undefined && {
+                return_date: updateData.return_date instanceof Date 
+                    ? updateData.return_date.toISOString().split('T')[0] 
+                    : updateData.return_date
+            })
+        }
+
+        const res = await fetch(`${API_URL}/api/loan/edit`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${TOKEN}`,
+                "x-wihope-name": WIHOPE_NAME,
+            },
+            body: JSON.stringify(formatData)
+        })
+
+        const resData = await res.json()
+        if(!res.ok) throw new Error(resData.message || `HTTP error! status: ${res.status}`)
+
+        return resData.data 
+            ? (Array.isArray(resData.data) ? resData.data[0] : resData.data)
+            : (resData.id || resData.documentId ? resData : null)
+
+    } catch (error){
+        console.error("Error in editLoan:", error)
+        throw error
+    }
+}
+
+//Don't underestimate the power of the return side
+export const fetchReturn = (page?: number, pageSize?: number) => {
+    return fetchList("/api/return/list", page, pageSize)
+}
+
+export async function fetchReturnSearch(keyword: string, page = 1, pageSize = 5) {
+    try{
+        const query = new URLSearchParams({
+            page: String(page),
+            page_size: String(pageSize),
+            search: keyword
+        });
+
+        const res = await fetchAPI(`/api/return/list?${query}`);
+
+        return Array.isArray(res?.data) ? res.data : [];
+    } catch (err) {
+        console.error("Gagal fetch loan search:", err);
+        return[];
+    }
+}
+
+export async function addReturns(returnsData: {
+    loan: string
+    actual_return_date: string | Date;
+}) {
+    if (!returnsData.loan || !returnsData.actual_return_date) {
+        throw new Error("All fields are required");
+    }
+
+    const res = await fetchAPI("/api/return/add", {
+        method: "POST",
+        body: { 
+            data: {
+                ...returnsData,
+                actual_return_date: new Date(returnsData.actual_return_date)
+            }
+        }
+    });
+    return res;
+}
+
+// export async function fetchLoanbyMemberId(documentId: string){
+//     try{
+//         console.log("Fetching loan with member documentId:", documentId)
+//         console.log("API URL:", `${API_URL}/api/loan/list?id_member=${documentId}`)
+
+//         const res = await fetch(`${API_URL}/api/loan/list?id_member=${documentId}`, {
+//             method: "GET",
+//             headers: {
+//                 "Authorization": `Bearer ${TOKEN}`,
+//                 "x-wihope-name": WIHOPE_NAME,
+//             }
+//         })
+//         const resData = await res.json()
+//         console.log("API Response:", resData)
+
+//         if(!res.ok){
+//             throw new Error(resData.message || `HTTP error! status: ${res.status}`)
+//         }
+        
+//         let loans = []
+
+//         if(resData.data && Array.isArray(resData.data)){
+//             loans = resData.data
+//         } else if(resData.data && typeof resData.data === `object` && !Array.isArray(resData.data)){
+//             loans = [resData.data]
+//         } else if(resData.id || resData.documentId){
+//             loans = [resData]
+//         }
+
+//         return loans
+//     } catch (error){
+//         console.error("Error in fetchLoanByMemberDocumentId:", error)
+//         throw error
+//     }
+// }
