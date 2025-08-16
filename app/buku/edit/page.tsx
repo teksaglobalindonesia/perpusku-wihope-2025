@@ -1,11 +1,8 @@
-"use client";
-
-import {BookList} from '@/components/buku/booklist';
 import Footer from '@/components/customs/footer';
 import Header from '@/components/customs/header';
+import EditBook from '@/components/buku/editBook';
 
 export default function Page() {
-
   return (
     <>
       <Header
@@ -17,7 +14,7 @@ export default function Page() {
           { text: 'Pengembalian', link: '/pengembalian' }
         ]}
       />
-      <BookList />
+      <EditBook/>
       <Footer
         items={[
           { text: 'Dashboard', link: '/' },

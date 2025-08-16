@@ -1,10 +1,44 @@
+'use client'
+
 import Header from '@/components/customs/header';
 import { StokHabis } from '@/components/customs/bukustokhabis';
 import PeminjamanHariIni from '@/components/customs/peminjamanHariIni';
 import PengembalianHariIni from '@/components/customs/pengembalianHariini';
 import Footer from '@/components/customs/footer';
+import { useEffect,useState } from 'react';
+import { BASE_URL, WIHOPE_NAME, TOKEN } from '@/lib/constant';
 
 export default function Page() {
+  const [bukuState, setBukuState] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(`${BASE_URL}/api/book/list`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: TOKEN,
+            'x-wihope-name': WIHOPE_NAME,
+          },
+          cache: 'no-store',
+        });
+        if (!res.ok) {
+          setError('Gagal memuat data buku');
+          setLoading(false);
+          return;
+        }
+        const json = await res.json();
+        setBukuState(json?.data ?? []);
+        setLoading(false);
+      } catch (err) {
+        setError('Gagal memuat data buku');
+        setLoading(false);
+      }
+    })();
+  }, []);
   return (
     <>
       <Header
@@ -16,24 +50,7 @@ export default function Page() {
           { text: 'Pengembalian', link: '/pengembalian' }
         ]}
       />
-      <StokHabis
-        items={[
-          {
-            img: '/image/images.jpeg',
-            judul: '69420',
-            genre: 'Anjay',
-            penulis: 'Samuel',
-            stok: 'Habis'
-          },
-          {
-            img: '/image/images.jpeg',
-            judul: 'Bumi Manusia',
-            genre: 'Fiksi',
-            penulis: 'Pramoedya Ananta Toer',
-            stok: 'Habis'
-          }
-        ]}
-      />
+      <StokHabis books={bukuState}/>
       <PeminjamanHariIni
         items={[
           {

@@ -1,67 +1,121 @@
 'use client';
 
-import { useState } from 'react';
-import { BASE_URL } from '@/lib/constant';
+import { useState, useEffect } from 'react';
+import { BASE_URL, TOKEN, WIHOPE_NAME } from '@/lib/constant';
 
-export default function AnggotaList( {members}: {members: any[]} ) {
-  // const [anggotaList, setAnggotaList] = useState([
-  //   { nama: 'Nama Anggota 1', id: '11111', email: 'anggota1@gmail.com' },
-  //   { nama: 'Nama Anggota 2', id: '222222', email: 'anggota2@gmail.com' },
-  //   { nama: 'Nama Anggota 3', id: '333333', email: 'anggota3@gmail.com' },
-  //   { nama: 'Nama Anggota 4', id: '444444', email: 'anggota4@gmail.com' },
-  //   { nama: 'Nama Anggota 5', id: '555555', email: 'anggota5@gmail.com' },
-  //   { nama: 'Nama Anggota 6', id: '666666', email: 'anggota6@gmail.com' }
-  // ]);
+export default function AnggotaList() {
+  const [anggotaList, setAnggotaList] = useState<any[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [showModal, setShowModal] = useState<'add' | 'edit' | 'delete' | null>(
+    null
+  );
+  const [formData, setFormData] = useState<{
+    name: string;
+    id_member: string;
+    email: string;
+    address: string;
+  }>({ name: '', id_member: '', email: '', address: '' });
+  const [loading, setLoading] = useState(false);
 
-  // const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  // const [showModal, setShowModal] = useState<'add' | 'edit' | 'delete' | null>(
-  //   null
-  // );
-  // const [formData, setFormData] = useState({ nama: '', id: '', email: '' });
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // jumlah item per halaman
 
-  // const openAddModal = () => {
-  //   setFormData({ nama: '', id: '', email: '' });
-  //   setShowModal('add');
-  // };
+  const fetchMembers = async () => {
+    try {
+      setLoading(true);
 
-  // const openEditModal = (index: number) => {
-  //   setSelectedIndex(index);
-  //   setFormData(anggotaList[index]);
-  //   setShowModal('edit');
-  // };
+      const res = await fetch(`${BASE_URL}/api/member/list`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: TOKEN,
+          'x-wihope-name': WIHOPE_NAME
+        },
+        cache: 'no-store'
+      });
+      if (!res.ok) throw new Error('Gagal mengambil data anggota');
+      const data = await res.json();
+      setAnggotaList(data?.data || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // const openDeleteModal = (index: number) => {
-  //   setSelectedIndex(index);
-  //   setShowModal('delete');
-  // };
+  useEffect(() => {
+    fetchMembers();
+  }, []);
 
-  // const closeModal = () => {
-  //   setShowModal(null);
-  //   setSelectedIndex(null);
-  // };
+  const openAddModal = () => {
+    setFormData({ name: '', id_member: '', email: '', address: '' });
+    setShowModal('add');
+  };
 
-  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value } = e.target;
-  //   setFormData((prev) => ({ ...prev, [name]: value }));
-  // };
+  const openEditModal = (index: number) => {
+    setSelectedIndex(index + (currentPage - 1) * itemsPerPage); // offset untuk pagination
+    setFormData(anggotaList[index + (currentPage - 1) * itemsPerPage]);
+    setShowModal('edit');
+  };
 
-  // const handleSave = () => {
-  //   if (showModal === 'edit' && selectedIndex !== null) {
-  //     const updated = [...anggotaList];
-  //     updated[selectedIndex] = formData;
-  //     setAnggotaList(updated);
-  //   } else if (showModal === 'add') {
-  //     setAnggotaList([...anggotaList, formData]);
-  //   }
-  //   closeModal();
-  // };
+  const openDeleteModal = (index: number) => {
+    setSelectedIndex(index + (currentPage - 1) * itemsPerPage);
+    setShowModal('delete');
+  };
 
-  // const handleDelete = () => {
-  //   if (selectedIndex !== null) {
-  //     setAnggotaList(anggotaList.filter((_, i) => i !== selectedIndex));
-  //   }
-  //   closeModal();
-  // };
+  const closeModal = () => {
+    setShowModal(null);
+    setSelectedIndex(null);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = async () => {
+    try {
+      if (showModal === 'edit' && selectedIndex !== null) {
+        await fetch(`${BASE_URL}/api/member/update`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+      } else if (showModal === 'add') {
+        await fetch(`${BASE_URL}/api/member/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+      }
+      await fetchMembers();
+      closeModal();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (selectedIndex === null) return;
+    try {
+      const anggota = anggotaList[selectedIndex];
+      await fetch(`${BASE_URL}/api/member/delete/${anggota.id}`, {
+        method: 'DELETE'
+      });
+      await fetchMembers();
+      closeModal();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Pagination logic
+  const totalPages = Math.ceil(anggotaList.length / itemsPerPage);
+  const paginatedData = anggotaList.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="m-4 text-[#DFD0B8]">
@@ -74,7 +128,7 @@ export default function AnggotaList( {members}: {members: any[]} ) {
             className="rounded-lg border border-[#393E46] bg-[#DFD0B8] px-4 py-2 text-black"
           />
           <button
-            // onClick={openAddModal}
+            onClick={openAddModal}
             className="rounded-lg bg-[#948979] px-5 py-2 text-white hover:bg-[#a69984]"
           >
             + Tambah
@@ -83,33 +137,71 @@ export default function AnggotaList( {members}: {members: any[]} ) {
       </div>
 
       <div className="mt-6 space-y-4">
-        {members.map((item) => (
-          <div
-            key={item.id}
-            className="rounded-xl bg-[#948979] p-4 text-[#DFD0B8] shadow-md"
-          >
-            <h3 className="text-lg font-semibold">{item.name}</h3>
-            <p>ID: {item.id}</p>
-            <p>Email: {item.email}</p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <button
-                // onClick={() => openEditModal(index)}
-                className="rounded bg-blue-500 px-4 py-1 text-sm hover:bg-blue-600"
-              >
-                Edit
-              </button>
-              <button
-                // onClick={() => openDeleteModal(index)}
-                className="rounded bg-red-500 px-4 py-1 text-sm hover:bg-red-600"
-              >
-                Hapus
-              </button>
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          paginatedData.map((item, idx) => (
+            <div
+              key={item.id}
+              className="rounded-xl bg-[#948979] p-4 text-[#DFD0B8] shadow-md"
+            >
+              <h3 className="text-lg font-semibold">{item.name}</h3>
+              <p>ID: {item.id_member}</p>
+              <p>Email: {item.email}</p>
+              <p>Alamat: {item.address}</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  onClick={() => openEditModal(idx)}
+                  className="rounded bg-blue-500 px-4 py-1 text-sm hover:bg-blue-600"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => openDeleteModal(idx)}
+                  className="rounded bg-red-500 px-4 py-1 text-sm hover:bg-red-600"
+                >
+                  Hapus
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
-      {/* {showModal && (
+      {/* Pagination Buttons */}
+      {!loading && anggotaList.length > itemsPerPage && (
+        <div className="mt-6 flex justify-center items-center gap-2">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1 bg-gray-600 rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`px-3 py-1 rounded ${
+                currentPage === i + 1
+                  ? 'bg-[#948979] text-white'
+                  : 'bg-gray-600'
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 bg-gray-600 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
           <div className="w-[90%] max-w-md rounded-lg bg-[#222831] p-6 text-[#DFD0B8]">
             {showModal === 'delete' ? (
@@ -119,7 +211,7 @@ export default function AnggotaList( {members}: {members: any[]} ) {
                 </h3>
                 <p>
                   Yakin ingin menghapus{' '}
-                  <b>{anggotaList[selectedIndex!]?.nama}</b>?
+                  <b>{anggotaList[selectedIndex!]?.name}</b>?
                 </p>
                 <div className="mt-4 flex justify-end gap-2">
                   <button
@@ -144,16 +236,16 @@ export default function AnggotaList( {members}: {members: any[]} ) {
                 <div className="space-y-3">
                   <input
                     type="text"
-                    name="nama"
-                    value={formData.nama}
+                    name="name"
+                    value={formData.name}
                     onChange={handleInputChange}
                     placeholder="Nama"
                     className="w-full rounded bg-[#393E46] px-3 py-2"
                   />
                   <input
                     type="text"
-                    name="id"
-                    value={formData.id}
+                    name="id_member"
+                    value={formData.id_member}
                     onChange={handleInputChange}
                     placeholder="ID"
                     className="w-full rounded bg-[#393E46] px-3 py-2"
@@ -164,6 +256,14 @@ export default function AnggotaList( {members}: {members: any[]} ) {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="Email"
+                    className="w-full rounded bg-[#393E46] px-3 py-2"
+                  />
+                  <input
+                    type="text"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    placeholder="Address"
                     className="w-full rounded bg-[#393E46] px-3 py-2"
                   />
                 </div>
@@ -185,7 +285,8 @@ export default function AnggotaList( {members}: {members: any[]} ) {
             )}
           </div>
         </div>
-      )} */}
+      )}
     </div>
   );
 }
+  

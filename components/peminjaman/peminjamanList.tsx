@@ -2,88 +2,53 @@
 
 import { useState } from 'react';
 
-export default function PeminjamanList({loans} : {loans:any[]} ) {
+export default function PeminjamanList({ loans }: { loans: any[] }) {
   const today = new Date();
+  const itemsPerPage = 5;
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // const [peminjaman, setPeminjaman] = useState([
-  //   {
-  //     judul: 'Judul Buku 1',
-  //     nama: 'Anggota A',
-  //     tanggalPinjam: '2025-07-17T08:00:00',
-  //     tanggalKembali: '2025-08-12',
-  //     sudahKembali: false,
-  //   },
-  //   {
-  //     judul: 'Judul Buku 2',
-  //     nama: 'Anggota B',
-  //     tanggalPinjam: '2025-07-10T08:00:00',
-  //     tanggalKembali: '2025-07-17',
-  //     sudahKembali: false,  
-  //   },
-  //   {
-  //     judul: 'Judul Buku 3',
-  //     nama: 'Anggota C',
-  //     tanggalPinjam: '2025-07-17T08:00:00',
-  //     tanggalKembali: '2025-07-24',
-  //     sudahKembali: false,
-  //   },
-  //   {
-  //     judul: 'Judul Buku 4',
-  //     nama: 'Anggota D',
-  //     tanggalPinjam: '2025-07-10T08:00:00',
-  //     tanggalKembali: '2025-07-17',
-  //     sudahKembali: false,
-  //   },
-  //   {
-  //     judul: 'Judul Buku 5',
-  //     nama: 'Anggota E',
-  //     tanggalPinjam: '2025-07-16T08:00:00',
-  //     tanggalKembali: '2025-07-23',
-  //     sudahKembali: false,
-  //   },
-  //   {
-  //     judul: 'Judul Buku 6',
-  //     nama: 'Anggota F',
-  //     tanggalPinjam: '2025-07-16T08:00:00',
-  //     tanggalKembali: '2025-07-17',
-  //     sudahKembali: false,
-  //   },
-  // ]);
+  const totalPages = Math.ceil(loans.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentLoans = loans.slice(startIndex, startIndex + itemsPerPage);
 
-  // const handleKembalikan = (index: number) => {
-  //   const updated = [...peminjaman];
-  //   updated[index].sudahKembali = true;
-  //   setPeminjaman(updated);
-  // };
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
 
   return (
-    <div className="m-8 text-[#DFD0B8]">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-semibold text-white">Peminjaman</h2>
-        <div className="flex flex-row gap-4">
+    <div className="m-4 text-[#DFD0B8] sm:m-8">
+      {/* Header */}
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="text-xl font-semibold text-white sm:text-2xl">
+          🏠 Peminjaman
+        </h2>
+        <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
           <input
             type="text"
             placeholder="Search..."
-            className="rounded-lg border border-[#393E46] bg-[#DFD0B8] px-4 py-2 text-black"
+            className="w-full rounded-lg border border-[#393E46] bg-[#DFD0B8] px-3 py-2 text-black sm:w-auto"
           />
-          <button className="rounded-lg bg-green-600 px-5 py-2 text-white hover:bg-green-700">
+          <button className="w-full rounded-lg bg-green-600 px-5 py-2 text-white hover:bg-green-700 sm:w-auto">
             TAMBAH
           </button>
         </div>
       </div>
 
+      {/* List Peminjaman */}
       <div className="space-y-4">
-        {loans.map((item) => {
-          const tanggalKembali = new Date(item.tanggalKembali);
+        {currentLoans.map((item) => {
+          const tanggalKembali = new Date(item.return_date);
           const terlambat = !item.sudahKembali && tanggalKembali < today;
 
           return (
             <div
               key={item.id}
-              className="relative rounded border border-[#393E46] p-4 text-black bg-[#DFD0B8]"
+              className="relative rounded border border-[#393E46] bg-[#DFD0B8] p-4 text-black"
             >
-              <h3 className="font-semibold text-lg">{item.title}</h3>
-              <p>Peminjam: {item.name}</p>
+              <h3 className="text-lg font-semibold">{item.title}</h3>
+              <p>Peminjam: {item.member?.name}</p>
               <p>
                 Peminjaman:{' '}
                 {new Date(item.loan_date).toLocaleString('id-ID', {
@@ -91,24 +56,21 @@ export default function PeminjamanList({loans} : {loans:any[]} ) {
                   month: 'long',
                   year: 'numeric',
                   hour: '2-digit',
-                  minute: '2-digit',
+                  minute: '2-digit'
                 })}
               </p>
               <p>
                 Pengembalian:{' '}
-                { new Date(item.return_date).toLocaleDateString('id-ID', {
+                {new Date(item.return_date).toLocaleDateString('id-ID', {
                   day: 'numeric',
                   month: 'long',
-                  year: 'numeric',
+                  year: 'numeric'
                 })}
               </p>
-              
+
               {!item.sudahKembali && (
                 <div className="mt-4">
-                  <button
-                    // onClick={() => handleKembalikan(index)}
-                    className="rounded bg-green-600 px-4 py-1 text-sm text-white hover:bg-green-700"
-                  >
+                  <button className="rounded bg-green-600 px-4 py-1 text-sm text-white hover:bg-green-700">
                     KEMBALIKAN
                   </button>
                 </div>
@@ -126,8 +88,45 @@ export default function PeminjamanList({loans} : {loans:any[]} ) {
         })}
       </div>
 
-      <div className="mt-6 text-center text-white">
-        &lt; <span className="underline">1</span> 2 3 … 20 &gt;
+      {/* Pagination Prev/Next */}
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-white">
+        <button
+          onClick={() => goToPage(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`rounded px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base ${
+            currentPage === 1
+              ? 'cursor-not-allowed bg-gray-600 text-gray-300'
+              : 'bg-[#393E46] hover:bg-[#4e545d]'
+          }`}
+        >
+          Prev
+        </button>
+
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          <button
+            key={page}
+            onClick={() => goToPage(page)}
+            className={`rounded px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base ${
+              currentPage === page
+                ? 'bg-[#DFD0B8] font-bold text-black'
+                : 'bg-[#948979] hover:bg-[#a89e8e]'
+            }`}
+          >
+            {page}
+          </button>
+        ))}
+
+        <button
+          onClick={() => goToPage(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`rounded px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base ${
+            currentPage === totalPages
+              ? 'cursor-not-allowed bg-gray-600 text-gray-300'
+              : 'bg-[#393E46] hover:bg-[#4e545d]'
+          }`}
+        >
+          Next
+        </button>
       </div>
     </div>
   );

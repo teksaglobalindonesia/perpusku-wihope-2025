@@ -7,36 +7,6 @@
   import { BASE_URL, WIHOPE_NAME, TOKEN } from '@/lib/constant';
 
   export default function Page() {
-    const [memberState, setMemberState] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-  (async () => {
-    try {
-      const res = await fetch(`${BASE_URL}/api/member/list`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: TOKEN,
-          'x-wihope-name': WIHOPE_NAME,
-        },
-        cache: 'no-store',
-      });
-      if (!res.ok) {
-        setError('Gagal memuat data buku');
-        setLoading(false);
-        return;
-      }
-      const json = await res.json();
-      setMemberState(json?.data ?? []);
-      setLoading(false);
-    } catch (err) {
-      setError('Gagal memuat data member');
-      setLoading(false);
-    }
-  })();
-}, []);
     return (
       <>
         <Header
@@ -48,7 +18,7 @@
             { text: 'Pengembalian', link: '/pengembalian' }
           ]}
         />
-        <AnggotaList members={memberState}/>
+        <AnggotaList/>
         <Footer
                 items={[
                   { text: 'Dashboard', link: '/' },
