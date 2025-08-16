@@ -73,6 +73,7 @@ module.exports = {
       },
       fontFamily: {
         roboto: 'var(--font-roboto), sans-serif',
+        playwrite: ['PlaywriteAUQLD', 'sans-serif'],
       },
       keyframes: {
         'accordion-down': {

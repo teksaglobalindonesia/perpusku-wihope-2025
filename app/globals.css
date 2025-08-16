@@ -78,8 +78,16 @@
   }
 }
 
+@font-face {
+  font-family: 'PlaywriteAUQLD';
+  src: url('/fonts/static/PlaywriteAUQLD-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
-  font-family: var(--font-roboto), sans-serif;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  background: #222831;
 }
 
 html {
