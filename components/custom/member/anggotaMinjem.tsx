@@ -6,6 +6,7 @@ import Pagination from '../pagination';
 import { BASE_URL, TOKEN, WIHOPE_NAME } from '@/lib/constant';
 
 type Lending = {
+  documentId: string;
   book: {
     title: string;
     id: number;
@@ -30,6 +31,37 @@ const Pinjam = () => {
   const searchParams = useSearchParams();
   const memberId = searchParams.get('memberId');
   const nameId = searchParams.get('nameId');
+
+  // Fungsi untuk mengembalikan buku
+  const handleReturn = async (loanId: string) => {
+    try {
+      const response = await fetch(`${BASE_URL}/api/return/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: TOKEN,
+          'x-wihope-name': WIHOPE_NAME
+        },
+        body: JSON.stringify({
+          data: {
+            loan: loanId,
+            actual_return_date: new Date().toISOString()
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Gagal mengembalikan buku');
+      }
+
+      // refresh list setelah pengembalian
+      setLending((prev) => prev.filter((loan) => loan.documentId !== loanId));
+      alert('✅ Buku berhasil dikembalikan!');
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || 'Terjadi kesalahan saat mengembalikan');
+    }
+  };
 
   // Fetch daftar pinjaman
   useEffect(() => {
@@ -130,7 +162,7 @@ const Pinjam = () => {
                 item.actual_return_date > item.return_date ? 'Terlambat' : '';
               return (
                 <div
-                  key={item.book.id}
+                  key={item.documentId}
                   className="flex items-center justify-between rounded border p-4"
                 >
                   <div className="mx-4 flex items-center gap-4">
@@ -146,7 +178,10 @@ const Pinjam = () => {
                       <p className="text-sm">
                         Tanggal Pengembalian: {item.actual_return_date}
                       </p>
-                      <button className="my-1 mr-1 rounded bg-yellow-500 px-5 py-2 text-sm font-bold text-white hover:bg-yellow-400">
+                      <button
+                        onClick={() => handleReturn(item.documentId)}
+                        className="my-1 mr-1 rounded bg-yellow-500 px-5 py-2 text-sm font-bold text-white hover:bg-yellow-400"
+                      >
                         Kembalikan
                       </button>
                     </div>

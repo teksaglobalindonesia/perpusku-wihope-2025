@@ -8,14 +8,17 @@ import Pagination from '../pagination';
 
 type BookCategory = {
   id: number;
+  documentId: string;
   name: string;
 };
 
 type Item = {
+  documentId: string;
   id: number;
   title: string;
   writer: string;
   stock: number;
+  published_year?: string;
   cover?: {
     url: string;
     name: string;
@@ -31,41 +34,196 @@ type BookProps = {
   filterOutOfStock?: boolean;
 };
 
+type EditFormData = {
+  title: string;
+  writer: string;
+  publisher: string;
+  published_year: string;
+  stock: number;
+  categories: string[];
+};
+
 const Book: React.FC<BookProps> = ({ filterOutOfStock = false }) => {
-  const [items, setItems] = useState<Item[]>([]);
+  const [allItems, setAllItems] = useState<Item[]>([]);
   const [categories, setCategories] = useState<BookCategory[]>([]);
   const [keyword, setKeyword] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [editingBook, setEditingBook] = useState<Item | null>(null);
+  const [editFormData, setEditFormData] = useState<EditFormData>({
+    title: '',
+    writer: '',
+    publisher: '',
+    published_year: '',
+    stock: 0,
+    categories: []
+  });
+  const [editCoverFile, setEditCoverFile] = useState<File | null>(null);
+  const [isEditLoading, setIsEditLoading] = useState(false);
   const itemsPerPage = 5;
 
+  const handleEdit = (book: Item) => {
+    setEditingBook(book);
+    setEditFormData({
+      title: book.title,
+      writer: book.writer,
+      publisher: book.publisher,
+      published_year: book.published_year || '',
+      stock: book.stock,
+      categories: book.categories?.map((cat) => cat.documentId) || []
+    });
+    setEditCoverFile(null);
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingBook) return;
+
+    setIsEditLoading(true);
+    try {
+      const formData = new FormData();
+
+      if (editCoverFile) {
+        formData.append('files.cover', editCoverFile);
+      }
+
+      formData.append('documentId', editingBook.documentId);
+      formData.append(
+        'data',
+        JSON.stringify({
+          title: editFormData.title,
+          writer: editFormData.writer,
+          publisher: editFormData.publisher,
+          published_year: editFormData.published_year,
+          stock: editFormData.stock,
+          categories:
+            editFormData.categories.length > 0
+              ? editFormData.categories
+              : undefined
+        })
+      );
+
+      const response = await fetch(`${BASE_URL}/api/book/edit`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: TOKEN,
+          'x-wihope-name': WIHOPE_NAME
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('Gagal mengupdate buku');
+      }
+
+      const updatedBook = await response.json();
+
+      // Update local state
+      setAllItems((prev) =>
+        prev.map((book) =>
+          book.documentId === editingBook.documentId
+            ? {
+                ...book,
+                ...editFormData,
+                categories: categories.filter((cat) =>
+                  editFormData.categories.includes(cat.documentId)
+                )
+              }
+            : book
+        )
+      );
+
+      setEditingBook(null);
+      alert('✅ Buku berhasil diupdate!');
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || 'Terjadi kesalahan saat mengupdate buku');
+    } finally {
+      setIsEditLoading(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingBook(null);
+    setEditFormData({
+      title: '',
+      writer: '',
+      publisher: '',
+      published_year: '',
+      stock: 0,
+      categories: []
+    });
+    setEditCoverFile(null);
+  };
+
+  const handleDelete = async (documentId: string) => {
+    try {
+      const response = await fetch(`${BASE_URL}/api/book/delete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: TOKEN,
+          'x-wihope-name': WIHOPE_NAME
+        },
+        body: JSON.stringify({
+          documentId: documentId
+        }),
+        cache: 'no-store'
+      });
+
+      if (!response.ok) {
+        throw new Error('Gagal menghapus buku');
+      }
+
+      setAllItems((prev) =>
+        prev.filter((buku) => buku.documentId !== documentId)
+      );
+
+      alert('✅ Buku berhasil dihapus!');
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || 'Terjadi kesalahan saat menghapus');
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchAllBooks = async () => {
       try {
         setLoading(true);
-        const [catRes, bookRes] = await Promise.all([
-          fetch(`${BASE_URL}/api/book-category/list`, {
-            headers: {
-              Authorization: TOKEN,
-              'Content-Type': 'application/json',
-              'x-wihope-name': WIHOPE_NAME
-            }
-          }),
-          fetch(`${BASE_URL}/api/book/list`, {
-            headers: {
-              Authorization: TOKEN,
-              'Content-Type': 'application/json',
-              'x-wihope-name': WIHOPE_NAME
-            }
-          })
-        ]);
 
+        const catRes = await fetch(`${BASE_URL}/api/book-category/list`, {
+          headers: {
+            Authorization: TOKEN,
+            'Content-Type': 'application/json',
+            'x-wihope-name': WIHOPE_NAME
+          }
+        });
         const catData = await catRes.json();
-        const bookData = await bookRes.json();
-
         setCategories(catData.data || []);
-        setItems(bookData.data || []);
+
+        let page = 1;
+        let books: Item[] = [];
+        let totalPages = 1;
+
+        do {
+          const bookRes = await fetch(
+            `${BASE_URL}/api/book/list?page=${page}`,
+            {
+              headers: {
+                Authorization: TOKEN,
+                'Content-Type': 'application/json',
+                'x-wihope-name': WIHOPE_NAME
+              }
+            }
+          );
+          const bookData = await bookRes.json();
+          books = books.concat(bookData.data || []);
+          totalPages = bookData.meta?.pagination?.page_count || 1;
+          page++;
+        } while (page <= totalPages);
+
+        setAllItems(books);
       } catch (err: any) {
         setError(err.message || 'Terjadi kesalahan saat memuat data');
       } finally {
@@ -73,7 +231,7 @@ const Book: React.FC<BookProps> = ({ filterOutOfStock = false }) => {
       }
     };
 
-    fetchData();
+    fetchAllBooks();
   }, []);
 
   const getCategoryName = (buku: Item) => {
@@ -81,13 +239,17 @@ const Book: React.FC<BookProps> = ({ filterOutOfStock = false }) => {
     return category?.name || 'Belum dikategorikan';
   };
 
-  const filteredItems = items.filter((buku) => {
+  const filteredItems = allItems.filter((buku) => {
     const q = keyword.toLowerCase();
     const matchesKeyword =
       buku.title.toLowerCase().includes(q) ||
       buku.writer.toLowerCase().includes(q) ||
+      buku.publisher.toLowerCase().includes(q) ||
+      buku.published_year?.includes(q) ||
       getCategoryName(buku).toLowerCase().includes(q);
+
     const matchesStock = filterOutOfStock ? buku.stock === 0 : true;
+
     return matchesKeyword && matchesStock;
   });
 
@@ -99,6 +261,168 @@ const Book: React.FC<BookProps> = ({ filterOutOfStock = false }) => {
 
   return (
     <div className="min-h-[540px] w-full">
+      {/* Edit Modal */}
+      {editingBook && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg bg-white p-6">
+            <h2 className="mb-4 text-xl font-bold">Edit Buku</h2>
+            <form onSubmit={handleEditSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Judul
+                </label>
+                <input
+                  type="text"
+                  value={editFormData.title}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      title: e.target.value
+                    }))
+                  }
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Penulis
+                </label>
+                <input
+                  type="text"
+                  value={editFormData.writer}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      writer: e.target.value
+                    }))
+                  }
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Penerbit
+                </label>
+                <input
+                  type="text"
+                  value={editFormData.publisher}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      publisher: e.target.value
+                    }))
+                  }
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Tahun Terbit
+                </label>
+                <input
+                  type="text"
+                  value={editFormData.published_year}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      published_year: e.target.value
+                    }))
+                  }
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Stok
+                </label>
+                <input
+                  type="number"
+                  value={editFormData.stock}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      stock: parseInt(e.target.value) || 0
+                    }))
+                  }
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                  min="0"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Kategori
+                </label>
+                <select
+                  multiple
+                  value={editFormData.categories}
+                  onChange={(e) => {
+                    const selectedOptions = Array.from(
+                      e.target.selectedOptions,
+                      (option) => option.value
+                    );
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      categories: selectedOptions
+                    }));
+                  }}
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                >
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.documentId}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1 text-xs text-gray-500">
+                  Tahan Ctrl/Cmd untuk memilih multiple kategori
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Cover Baru (opsional)
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setEditCoverFile(e.target.files?.[0] || null)
+                  }
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  className="rounded-md bg-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-400"
+                  disabled={isEditLoading}
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+                  disabled={isEditLoading}
+                >
+                  {isEditLoading ? 'Menyimpan...' : 'Simpan'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       <div className="mt-6 flex flex-row justify-between p-4 px-9 font-light">
         <div className="mr-14 flex justify-end">
           <input
@@ -134,12 +458,12 @@ const Book: React.FC<BookProps> = ({ filterOutOfStock = false }) => {
           </div>
         </div>
       ) : (
-        <div className="mx-8 mb-8 rounded-md p-4">
+        <div className="mx-8 mb-8 space-y-6 rounded-md p-4">
           {paginatedItems.length > 0 ? (
             <div className="space-y-4">
               {paginatedItems.map((buku) => (
                 <div
-                  key={buku.id}
+                  key={buku.documentId}
                   className="flex items-center justify-between rounded-lg border border-gray-200 p-4 shadow-sm transition-shadow hover:shadow-md"
                 >
                   <div className="flex items-center gap-4">
@@ -174,14 +498,24 @@ const Book: React.FC<BookProps> = ({ filterOutOfStock = false }) => {
                         <span className="font-medium">Penulis:</span>{' '}
                         {buku.writer}
                       </p>
-                      <p className="mb-3 text-sm text-gray-600">
+                      <p className="mb-1 text-sm text-gray-600">
                         <span className="font-medium">Penerbit:</span>{' '}
                         {buku.publisher}
                       </p>
-                      <button className="rounded-lg bg-blue-600 px-3 py-1 text-white">
-                        ✏️Edit
+                      <p className="mb-4 text-sm text-gray-600">
+                        <span className="font-medium">Tahun Terbit:</span>{' '}
+                        {buku.published_year}
+                      </p>
+                      <button
+                        onClick={() => handleEdit(buku)}
+                        className="rounded-lg bg-blue-600 px-3 py-1 text-white hover:bg-blue-700"
+                      >
+                        ✏️ Edit
                       </button>
-                      <button className="ml-2 rounded-lg bg-red-600 px-3 py-1 text-white">
+                      <button
+                        onClick={() => handleDelete(buku.documentId)}
+                        className="ml-2 rounded-lg bg-red-600 px-3 py-1 text-white hover:bg-red-700"
+                      >
                         🗑️Hapus
                       </button>
                     </div>
