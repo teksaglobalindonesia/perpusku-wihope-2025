@@ -17,52 +17,85 @@ export const Anggota = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [items, setItems] = useState<Member[]>([]);
     const [totalPages, setTotalPages] = useState(1);
+    const [selectedId, setSelectedId] = useState<string | null>(null);
     const itemsPerPage = 2;
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const searchQuery = encodeURIComponent(searchTerm);
-                const res = await fetch(
-                    `${BASE_URL}/api/member/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchQuery}`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: TOKEN,
-                            'x-wihope-name': WIHOPE_NAME,
-                        },
-                        cache: 'no-store',
-                    }
-                );
-
-                const memberData = await res.json();
-
-                setItems(memberData?.data || []);
-
-                const pagination = memberData?.meta?.pagination;
-
-                if (pagination?.page_count) {
-                    setTotalPages(pagination.page_count);
-                } else if (pagination?.total && pagination?.page_size) {
-                    setTotalPages(Math.ceil(pagination.total / pagination.page_size));
+    const fetchData = async () => {
+        try {
+            const searchQuery = encodeURIComponent(searchTerm);
+            const res = await fetch(
+                `${BASE_URL}/api/member/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchQuery}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: TOKEN,
+                        'x-wihope-name': WIHOPE_NAME,
+                    },
+                    cache: 'no-store',
                 }
+            );
 
-            } catch (error) {
-                console.error("Gagal mengambil data:", error);
+            const memberData = await res.json();
+            setItems(memberData?.data || []);
+
+            const pagination = memberData?.meta?.pagination;
+            if (pagination?.page_count) {
+                setTotalPages(pagination.page_count);
+            } else if (pagination?.total && pagination?.page_size) {
+                setTotalPages(Math.ceil(pagination.total / pagination.page_size));
             }
-        };
+        } catch (error) {
+            console.error("Gagal mengambil data:", error);
+        }
+    };
 
+    useEffect(() => {
         fetchData();
     }, [searchTerm, currentPage]);
 
-
-    const bukaModal = () => setShowModal(true);
-    const tutupModal = () => setShowModal(false);
-
-    const konfirmasiHapus = () => {
-        alert('Item dihapus!');
+    const bukaModal = (id: string) => {
+        setSelectedId(id);
+        setShowModal(true);
+    };
+    const tutupModal = () => {
         setShowModal(false);
+        setSelectedId(null);
+    };
+
+    const konfirmasiHapus = async () => {
+        if (!selectedId) return;
+
+        console.log("ID yang mau dihapus:", selectedId);
+
+        try {
+            const res = await fetch(
+                `${BASE_URL}/api/member/delete`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: TOKEN,
+                        'x-wihope-name': WIHOPE_NAME,
+                    },
+                    body: JSON.stringify({ documentId: selectedId }),
+                    cache: 'no-store',
+                }
+            );
+
+            const data = await res.json();
+            console.log("Respon hapus:", data);
+
+            if (!res.ok) {
+                alert(data.message || "Gagal menghapus anggota");
+                return;
+            }
+
+            tutupModal();
+            fetchData();
+        } catch (error) {
+            console.error("Error saat menghapus:", error);
+        }
     };
 
     const handlePageChange = (page: number) => {
@@ -141,13 +174,13 @@ export const Anggota = () => {
                                         Peminjaman
                                     </Link>
                                     <Link
-                                        href="/edit_anggota"
+                                        href={`/edit_anggota?id=${item.documentId}`}
                                         className="bg-[#7bbade] hover:bg-[#689cba] px-4 py-1 rounded-sm transition text-white"
                                     >
                                         Edit
                                     </Link>
                                     <button
-                                        onClick={bukaModal}
+                                        onClick={() => bukaModal(item.documentId!)}
                                         className="bg-[#F57373] hover:bg-[#c65d5d] px-4 py-1 rounded-sm transition text-white"
                                     >
                                         Hapus

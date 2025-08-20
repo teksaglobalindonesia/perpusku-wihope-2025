@@ -20,7 +20,7 @@ export const Tambah_buku = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch(`${BASE_URL}/api/book-category/list`, {
+                const res = await fetch(`${BASE_URL}/api/book-category/list?page_size=100`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
