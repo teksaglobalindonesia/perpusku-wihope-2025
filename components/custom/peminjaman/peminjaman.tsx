@@ -7,14 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
-
 export default function PeminjamanList() {
   const [peminjamanList, setPeminjamanList] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
 
-  const itemsPerPage = 4;
+  const itemsPerPage = 6;
 
   useEffect(() => {
     const fetchPeminjaman = async () => {
@@ -35,19 +34,32 @@ export default function PeminjamanList() {
         const json = await response.json();
         const fetchedData = json.data;
 
-        const formatted = fetchedData.map((item: any) => ({
-          id: item.id,
-          documentId: item.documentId ?? "Tanpa ID Dokumen",
-          peminjam: item.member?.name ?? "Tanpa Nama",
-          id_member: item.member?.id_member ?? "Tanpa ID Member",
-          judul: item.book?.title ?? "Tanpa Judul",
-          tanggal_pinjam: item.loan_date ?? "Tidak diketahui",
-          tanggal_kembali: item.return_date ?? "Tidak diketahui",
-          status_pinjam: item.status_pinjam ?? "Tidak diketahui",
-          image: item.book?.cover?.url
-            ? `https://cms-perpusku.widhimp.my.id${item.book.cover.url}`
-            : "/images/default.jpg",
-        }));
+        const formatted = fetchedData.map((item: any) => {
+          const returnDate = new Date(item.return_date);
+          const now = new Date();
+
+          let status = item.status_pinjam ?? "Tidak diketahui";
+          if (
+            status.toLowerCase() === "sedang_dipinjam" &&
+            now > returnDate
+          ) {
+            status = "terlambat";
+          }
+
+          return {
+            id: item.id,
+            documentId: item.documentId ?? "Tanpa ID Dokumen",
+            peminjam: item.member?.name ?? "Tanpa Nama",
+            id_member: item.member?.id_member ?? "Tanpa ID Member",
+            judul: item.book?.title ?? "Tanpa Judul",
+            tanggal_pinjam: item.loan_date ?? "Tidak diketahui",
+            tanggal_kembali: item.return_date ?? "Tidak diketahui",
+            status_pinjam: status,
+            image: item.book?.cover?.url
+              ? `https://cms-perpusku.widhimp.my.id${item.book.cover.url}`
+              : "/images/default.jpg",
+          };
+        });
 
         setPeminjamanList(formatted);
         if (json.meta?.pagination?.total) {
@@ -62,6 +74,38 @@ export default function PeminjamanList() {
 
     fetchPeminjaman();
   }, [searchTerm, currentPage]);
+
+  const handleReturn = async (loanId: string) => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/return/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: TOKEN,
+          "x-wihope-name": WIHOPE_NAME,
+        },
+        body: JSON.stringify({
+          data: {
+            loan: loanId,
+            actual_return_date: new Date().toISOString().split("T")[0],
+          },
+        }),
+        cache: "no-store",
+      });
+
+      if (!res.ok) {
+        throw new Error(`Gagal mengembalikan buku. Status: ${res.status}`);
+      }
+
+      alert("Buku berhasil dikembalikan!");
+      setPeminjamanList((prev) =>
+        prev.filter((item) => item.documentId !== loanId)
+      );
+    } catch (error) {
+      console.error(error);
+      alert("Terjadi kesalahan saat mengembalikan buku");
+    }
+  };
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -105,7 +149,10 @@ export default function PeminjamanList() {
               <p className="font-semibold text-sm">
                 Tanggal Kembali: {formatTanggal(item.tanggal_kembali)}
               </p>
-              <Button className="bg-navy text-white hover:bg-blue px-4 py-1 rounded mt-2">
+              <Button
+                className="bg-navy text-white hover:bg-blue px-4 py-1 rounded mt-2"
+                onClick={() => handleReturn(item.documentId)}
+              >
                 KEMBALIKAN
               </Button>
             </div>

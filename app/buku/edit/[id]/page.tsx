@@ -1,9 +1,5 @@
-import BukuEdit from "@/components/custom/buku/editbuku";
+import EditBuku from "@/components/custom/buku/editbuku";
 
-export default function BukuPage() {
-  return (
-    <>
-    <BukuEdit/>
-    </>
-  );
+export default function BukuEditPage() {
+  return <EditBuku />;
 }

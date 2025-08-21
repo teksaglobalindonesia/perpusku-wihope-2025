@@ -1,29 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
 export default function PilihBuku({
   onSelect,
 }: {
-  onSelect: (buku: { id: number; title: string }) => void;
+  onSelect: (buku: { id: string; title: string }) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [bukuList, setBukuList] = useState<any[]>([]);
 
-  const dummyBuku = [
-    { id: 1, title: "Pesta Bunuh Diri", genre: "Horor", author: "Daniel Ahmad", stock: 2 },
-    { id: 2, title: "Indigo Tapi Penakut", genre: "Fiksi Remaja", author: "Angeline Stevanie", stock: 1 },
-    { id: 3, title: "Cantik itu Luka", genre: "Historical", author: "Eka Kurniawan", stock: 0 },
-    { id: 4, title: "Magma", genre: "Romantis", author: "Geladis Afira", stock: 2 },
-    { id: 5, title: "7 Prajurit Bapak", genre: "Fiksi Remaja", author: "Wulan Nuramalia", stock: 1 },
-    { id: 6, title: "Laut Bercerita", genre: "Persahabatan", author: "Leila S. Chudori", stock: 0 },
-    { id: 7, title: "Re: dan peRempuan", genre: "Kisah Nyata", author: "Maman Suherman", stock: 1 },
-  ];
+  useEffect(() => {
+    const fetchBuku = async () => {
+      try {
+        const res = await fetch(`${BASE_URL}/api/book/list`, {
+          headers: {
+            Authorization: TOKEN,
+            "x-wihope-name": WIHOPE_NAME,
+          },
+          cache: "no-store",
+        });
+        const data = await res.json();
+        setBukuList(data.data || []);
+      } catch (err) {
+        console.error("Gagal ambil buku:", err);
+      }
+    };
+    fetchBuku();
+  }, []);
 
-  const bukuTersedia = dummyBuku.filter((buku) => buku.stock > 0);
+  const bukuTersedia = bukuList.filter((b: any) => b.stock > 0);
 
-  const handleSelect = (buku: { id: number; title: string }) => {
+  const handleSelect = (buku: { id: string; title: string }) => {
     onSelect(buku);
     setOpen(false);
   };
@@ -40,21 +51,21 @@ export default function PilihBuku({
         {bukuTersedia.length === 0 ? (
           <p className="text-sm text-gray-500">Tidak ada buku yang tersedia.</p>
         ) : (
-          bukuTersedia.map((buku) => (
+          bukuTersedia.map((buku: any) => (
             <div
-              key={buku.id}
+              key={buku.documentId}
               className="flex justify-between items-center border p-2 rounded shadow-sm"
             >
               <div>
                 <p className="font-semibold">{buku.title}</p>
                 <p className="text-sm text-gray-600">
-                  {buku.genre} - {buku.author}
+                  {buku.kategorises?.map((k: any) => k.name).join(", ")} - {buku.author}
                 </p>
                 <p className="text-sm">Stok: {buku.stock}</p>
               </div>
               <Button
                 className="bg-green-500 text-white"
-                onClick={() => handleSelect({ id: buku.id, title: buku.title })}
+                onClick={() => handleSelect({ id: buku.documentId, title: buku.title })}
               >
                 PILIH
               </Button>

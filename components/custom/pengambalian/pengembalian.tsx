@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
-
 export default function PengembalianList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -12,57 +11,66 @@ export default function PengembalianList() {
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
 
-  const itemsPerPage = 4;
+  const itemsPerPage = 6;
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${BASE_URL}/api/return/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchTerm}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: TOKEN,
+            "x-wihope-name": WIHOPE_NAME,
+          },
+          cache: "no-store",
+        }
+      );
+
+      const data = await response.json();
+
+      const transformed = data.data.map((item: any) => {
+        const book = item.book;
+        const member = item.member;
+        const returnData = item.return;
+
+        const loanDate = new Date(item.loan_date);
+        const returnDate = new Date(item.return_date);
+        const actualReturnDate = returnData?.actual_return_date
+          ? new Date(returnData.actual_return_date)
+          : null;
+
+        return {
+          id: item.id,
+          loanId: item.documentId,
+          judul: book?.title || "-",
+          peminjam: member?.name || "-",
+          tanggalPinjam: formatDateTime(loanDate),
+          tanggalKembali: formatDate(returnDate),
+          dikembalikan: actualReturnDate ? formatDate(actualReturnDate) : "-",
+          terlambat: actualReturnDate
+            ? actualReturnDate.getTime() > returnDate.getTime()
+            : false,
+          sudahDikembalikan: !!actualReturnDate,
+        };
+      });
+
+      setPengembalian(transformed);
+
+
+      const totalItems =
+        data.meta?.pagination?.total || data.pagination?.total || 0;
+      setTotalPages(Math.ceil(totalItems / itemsPerPage));
+    } catch (error) {
+      console.error("Gagal mengambil data pengembalian:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `${BASE_URL}/api/return/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchTerm}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: TOKEN,
-              "x-wihope-name": WIHOPE_NAME,
-            },
-            cache: "no-store",
-          }
-        );
-
-        const data = await response.json();
-
-        const transformed = data.data.map((item: any) => {
-          const book = item.book;
-          const member = item.member;
-          const returnData = item.return;
-
-          const loanDate = new Date(item.loan_date);
-          const returnDate = new Date(item.return_date);
-          const actualReturnDate = new Date(returnData?.actual_return_date);
-
-          return {
-            id: item.id,
-            judul: book?.title || "-",
-            peminjam: member?.name || "-",
-            tanggalPinjam: formatDateTime(loanDate),
-            tanggalKembali: formatDate(returnDate),
-            dikembalikan: formatDate(actualReturnDate),
-            terlambat: actualReturnDate > returnDate,
-          };
-        });
-
-        setPengembalian(transformed);
-        const pageCount = data.pagination?.pageCount || 1;
-        setTotalPages(pageCount);
-      } catch (error) {
-        console.error("Gagal mengambil data pengembalian:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, [searchTerm, currentPage]);
 
@@ -81,6 +89,39 @@ export default function PengembalianList() {
       hour: "2-digit",
       minute: "2-digit",
     });
+
+  const handleReturn = async (loanId: string) => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/return/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: TOKEN,
+          "x-wihope-name": WIHOPE_NAME,
+        },
+        body: JSON.stringify({
+          data: {
+            loan: loanId,
+            actual_return_date: new Date().toISOString().split("T")[0],
+          },
+        }),
+        cache: "no-store",
+      });
+
+      if (!res.ok) {
+        throw new Error(`Gagal mengembalikan buku. Status: ${res.status}`);
+      }
+
+      alert("Buku berhasil dikembalikan!");
+
+      window.dispatchEvent(new Event("books-updated"));
+
+      fetchData();
+    } catch (error) {
+      console.error(error);
+      alert("Terjadi kesalahan saat mengembalikan buku");
+    }
+  };
 
   return (
     <div className="font-sans text-sm space-y-3">
@@ -114,11 +155,26 @@ export default function PengembalianList() {
                 <p className="text-sm">Pengembalian: {item.tanggalKembali}</p>
                 <p className="text-sm">Dikembalikan: {item.dikembalikan}</p>
               </div>
-              {item.terlambat && (
-                <span className="bg-red-500 text-white text-xs px-3 py-1 rounded-b-lg h-fit">
-                  TERLAMBAT
-                </span>
-              )}
+              <div className="flex flex-col gap-2 items-end">
+                {item.sudahDikembalikan ? (
+                  item.terlambat ? (
+                    <span className="bg-red-500 text-white text-xs px-3 py-1 rounded-b-lg h-fit">
+                      TERLAMBAT
+                    </span>
+                  ) : (
+                    <span className="bg-green-500 text-white text-xs px-3 py-1 rounded-b-lg h-fit">
+                      DIKEMBALIKAN
+                    </span>
+                  )
+                ) : (
+                  <Button
+                    className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded"
+                    onClick={() => handleReturn(item.loanId)}
+                  >
+                    Kembalikan
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         ))
@@ -154,9 +210,9 @@ export default function PengembalianList() {
 
         <button
           onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-          disabled={currentPage === totalPages}
+          disabled={currentPage === totalPages || pengembalian.length === 0}
           className={`px-3 py-1 rounded ${
-            currentPage === totalPages
+            currentPage === totalPages || pengembalian.length === 0
               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
               : "bg-navy text-white hover:bg-blue-700"
           }`}

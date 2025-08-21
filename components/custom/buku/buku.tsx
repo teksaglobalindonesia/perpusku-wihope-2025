@@ -3,63 +3,70 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import HapusDialog from "@/components/custom/buku/hapuusbuku";
+import HapusBukuDialog from "@/components/custom/buku/hapuusbuku";
 import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
 const itemsPerPage = 6;
 
-export default function BukuPage({ data }: {data: any[]}) {
+export default function BukuPage({ data }: { data: any[] }) {
   const [books, setBooks] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const response = await fetch(
-          `${BASE_URL}/api/book/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchTerm}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: TOKEN,
-              "x-wihope-name": WIHOPE_NAME,
-            },
-            cache: "no-store",
-          }
-        );
-
-        const json = await response.json();
-        const fetchedData = json.data;
-
-        const formatted = fetchedData.map((item: any) => ({
-          id: item.id,
-          title: item.title ?? "Tanpa Judul",
-          genre:
-            item.categories?.length > 0
-              ? item.categories.map((cat: { name: any }) => cat.name).join(", ")
-              : "Tanpa Kategori",
-          author: item.writer ?? "Tanpa Penulis",
-          stock: item.stock ?? 0,
-          image: item.cover?.url
-            ? `https://cms-perpusku.widhimp.my.id${item.cover.url}`
-            : "/images/default.jpg",
-        }));
-
-        setBooks(formatted);
-
-        if (json.meta?.pagination?.total) {
-          setTotalPages(Math.ceil(json.meta.pagination.total / itemsPerPage));
+  const fetchBooks = async () => {
+    try {
+      const response = await fetch(
+        `${BASE_URL}/api/book/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchTerm}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: TOKEN,
+            "x-wihope-name": WIHOPE_NAME,
+          },
+          cache: "no-store",
         }
-      } catch (error) {
-        console.error("Gagal mengambil data buku:", error);
-      }
-    };
+      );
 
+      const json = await response.json();
+      const fetchedData = json.data;
+
+      const formatted = fetchedData.map((item: any) => ({
+        id: item.id,
+        documentId: item.documentId, // ⬅️ simpan documentId untuk hapus/edit
+        title: item.title ?? "Tanpa Judul",
+        genre:
+          item.categories?.length > 0
+            ? item.categories.map((cat: { name: any }) => cat.name).join(", ")
+            : "Tanpa Kategori",
+        author: item.writer ?? "Tanpa Penulis",
+        stock: item.stock ?? 0,
+        image: item.cover?.url
+          ? `https://cms-perpusku.widhimp.my.id${item.cover.url}`
+          : "/images/default.jpg",
+      }));
+
+      setBooks(formatted);
+
+      if (json.meta?.pagination?.total) {
+        setTotalPages(Math.ceil(json.meta.pagination.total / itemsPerPage));
+      }
+    } catch (error) {
+      console.error("Gagal mengambil data buku:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchBooks();
   }, [searchTerm, currentPage]);
+
+  useEffect(() => {
+    const handler = () => fetchBooks();
+    window.addEventListener("books-updated", handler);
+    return () => window.removeEventListener("books-updated", handler);
+  }, []);
 
   return (
     <div className="p-6 space-y-6">
@@ -105,14 +112,18 @@ export default function BukuPage({ data }: {data: any[]}) {
               <div className="flex gap-2 mt-2">
                 <Button
                   className="bg-yellow-300 text-black hover:bg-yellow-400"
-                  onClick={() => router.push(`/buku/edit/${book.id}`)}
+                  onClick={() => router.push(`/buku/edit/${book.documentId}`)}
                 >
                   EDIT
                 </Button>
-                <HapusDialog
+                <HapusBukuDialog
+                  documentId={book.documentId}
                   onConfirm={() => {
-                    const updated = books.filter((b) => b.id !== book.id);
+                    const updated = books.filter(
+                      (b) => b.documentId !== book.documentId
+                    );
                     setBooks(updated);
+                    window.dispatchEvent(new Event("books-updated"));
                   }}
                 />
               </div>
@@ -161,7 +172,9 @@ export default function BukuPage({ data }: {data: any[]}) {
         ))}
 
         <button
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
           className={`px-3 py-1 rounded ${
             currentPage === totalPages
               ? "bg-gray-300 text-gray-600 cursor-not-allowed"

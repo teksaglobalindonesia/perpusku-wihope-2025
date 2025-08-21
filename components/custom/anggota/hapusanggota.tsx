@@ -9,17 +9,49 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
 interface HapusAnggotaDialogProps {
+  documentId: string;
   onConfirm: () => void;
 }
 
-export default function HapusAnggotaDialog({ onConfirm }: HapusAnggotaDialogProps) {
+export default function HapusAnggotaDialog({
+  documentId,
+  onConfirm,
+}: HapusAnggotaDialogProps) {
   const [open, setOpen] = useState(false);
 
-  const handleDelete = () => {
-    onConfirm(); // menjalankan fungsi penghapusan dari parent
-    setOpen(false); // tutup modal
+  const handleDelete = async () => {
+    try {
+      console.log("🔹 Kirim request hapus anggota dengan documentId:", documentId);
+
+      const res = await fetch(`${BASE_URL}/api/member/delete`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: TOKEN,
+          "x-wihope-name": WIHOPE_NAME,
+        },
+        body: JSON.stringify({ documentId }),
+      });
+
+      const text = await res.text();
+      console.log("📩 Response API:", text);
+
+      if (!res.ok) {
+        throw new Error(
+          `Gagal hapus anggota. Status: ${res.status}. Response: ${text}`
+        );
+      }
+
+      onConfirm();
+      alert("✔️ Anggota berhasil dihapus!");
+    } catch (err) {
+      console.error("❌Error delete anggota:", err);
+      alert("Terjadi kesalahan saat menghapus anggota. Cek console untuk detail‼️");
+    }
+    setOpen(false);
   };
 
   return (

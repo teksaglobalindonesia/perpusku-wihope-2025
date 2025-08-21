@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import HapusAnggotaDialog from "@/components/custom/anggota/hapusanggota";
 import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
+import { usePathname } from "next/navigation";
 
 export default function Anggota() {
   const [anggotaList, setAnggotaList] = useState<any[]>([]);
@@ -12,6 +13,7 @@ export default function Anggota() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
 
+  const pathname = usePathname();
   const itemsPerPage = 6;
 
   const fetchAnggota = async () => {
@@ -23,28 +25,32 @@ export default function Anggota() {
           headers: {
             "Content-Type": "application/json",
             Authorization: TOKEN,
-             "x-wihope-name": WIHOPE_NAME,
+            "x-wihope-name": WIHOPE_NAME,
           },
           cache: "no-store",
+          next: { revalidate: 0 },
         }
       );
 
       const json = await response.json();
-      const fetchedData = json.data;
+      const fetchedData = json.data || [];
 
       const formatted = fetchedData.map((item: any) => ({
         id: item.id,
+        documentId: item.documentId,
         name: item.name ?? "Tanpa Nama",
         address: item.address ?? "-",
         email: item.email ?? "-",
         nomor: item.id_member ?? "-",
       }));
 
+      console.log("📩 Data anggota terbaru:", formatted);
+
       setAnggotaList(formatted);
 
       if (json.meta?.pagination?.total) {
         setTotalItems(json.meta.pagination.total);
-      } else if (typeof json.total === 'number') {
+      } else if (typeof json.total === "number") {
         setTotalItems(json.total);
       }
     } catch (error) {
@@ -52,9 +58,10 @@ export default function Anggota() {
     }
   };
 
+  // refetch setiap kali search, pagination, atau setelah balik dari edit/hapus
   useEffect(() => {
     fetchAnggota();
-  }, [searchTerm, currentPage]);
+  }, [searchTerm, currentPage, pathname]);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -107,13 +114,18 @@ export default function Anggota() {
                 </Button>
               </Link>
 
-              <Link href={`/anggota/edit/${anggota.id}`}>
+              <Link
+                href={`/anggota/edit/${anggota.documentId}?id_member=${anggota.nomor}&name=${anggota.name}&email=${anggota.email}&address=${anggota.address}`}
+              >
                 <Button className="bg-yellow-300 text-black hover:bg-yellow-400">
                   EDIT
                 </Button>
               </Link>
 
-              <HapusAnggotaDialog onConfirm={() => handleDelete(anggota.id)} />
+              <HapusAnggotaDialog
+                documentId={anggota.documentId}
+                onConfirm={() => handleDelete(anggota.id)}
+              />
             </div>
           </div>
         ))}
