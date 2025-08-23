@@ -111,24 +111,29 @@ export default function PeminjamanList() {
 
   return (
     <div className="space-y-4 font-sans text-sm">
-      {/* Search dan Button Tambah */}
-      <div className="flex items-center justify-end gap-4">
-        <input
-          type="text"
-          placeholder="cari id dokumen..."
-          className="border px-3 py-2 rounded text-gray-700 w-64"
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setCurrentPage(1);
-          }}
-        />
-        <Link href="/peminjaman/tambah">
-          <Button className="bg-navy text-white hover:bg-blue px-6 py-2 rounded">
-            + TAMBAH
-          </Button>
-        </Link>
-      </div>
+      {/* Header */}
+<div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+  <h1 className="font-sans font-bold text-navy text-2xl">Peminjaman</h1>
+
+  <div className="flex gap-2 w-full md:w-auto">
+    <input
+      type="text"
+      placeholder="Cari id dokumen..."
+      className="border border-gray-300 rounded px-3 py-2 w-full md:w-64"
+      value={searchTerm}
+      onChange={(e) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(1);
+      }}
+    />
+    <Link href="/peminjaman/tambah" className="w-full md:w-auto">
+      <Button className="bg-navy text-white hover:bg-blue font-sans font-semibold px-4 py-2 rounded-lg w-full md:w-auto">
+        + TAMBAH
+      </Button>
+    </Link>
+  </div>
+</div>
+
 
       {/* Daftar Peminjaman */}
       {peminjamanList.map((item) => (

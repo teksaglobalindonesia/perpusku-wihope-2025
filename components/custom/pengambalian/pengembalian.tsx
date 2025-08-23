@@ -125,19 +125,23 @@ export default function PengembalianList() {
 
   return (
     <div className="font-sans text-sm space-y-3">
-      <div className="flex items-center justify-between">
-        <h1 className="font-bold text-navy text-2xl">Pengembalian</h1>
-        <input
-          type="text"
-          placeholder="Cari judul buku..."
-          className="border border-navy px-3 py-2 rounded text-gray-500 w-64"
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setCurrentPage(1);
-          }}
-        />
-      </div>
+      {/* Header */}
+<div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+  <h1 className="font-sans font-bold text-navy text-2xl">Pengembalian</h1>
+
+  <div className="flex gap-2 w-full md:w-auto">
+    <input
+      type="text"
+      placeholder="Cari judul buku..."
+      className="border border-gray-300 rounded px-3 py-2 w-full md:w-64"
+      value={searchTerm}
+      onChange={(e) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(1);
+      }}
+    />
+  </div>
+</div>
 
       {loading ? (
         <p>Memuat data...</p>

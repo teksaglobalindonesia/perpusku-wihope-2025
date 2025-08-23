@@ -35,7 +35,7 @@ export default function BukuPage({ data }: { data: any[] }) {
 
       const formatted = fetchedData.map((item: any) => ({
         id: item.id,
-        documentId: item.documentId, // ⬅️ simpan documentId untuk hapus/edit
+        documentId: item.documentId,
         title: item.title ?? "Tanpa Judul",
         genre:
           item.categories?.length > 0
@@ -69,47 +69,52 @@ export default function BukuPage({ data }: { data: any[] }) {
   }, []);
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Buku</h1>
-        <div className="flex gap-3 items-center">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="border px-3 py-2 rounded text-gray-700 w-48"
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-            }}
-          />
-          <Button
-            className="bg-navy hover:bg-blue text-white px-4"
-            onClick={() => router.push("/buku/tambah")}
-          >
-            + TAMBAH
-          </Button>
-        </div>
-      </div>
+    <div className="p-4 md:p-6 space-y-6">
+     {/* Header */}
+<div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+  <h1 className="font-sans font-bold text-navy text-2xl">Buku</h1>
+
+  <div className="flex gap-2 w-full md:w-auto">
+    <input
+      type="text"
+      placeholder="Cari judul buku..."
+      className="border border-gray-300 rounded px-3 py-2 w-full md:w-64"
+      value={searchTerm}
+      onChange={(e) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(1);
+      }}
+    />
+    <Button
+      className="bg-navy text-white hover:bg-blue font-sans font-semibold px-4 py-2 rounded-lg w-full md:w-auto"
+      onClick={() => router.push("/buku/tambah")}
+    >
+      + TAMBAH
+    </Button>
+  </div>
+</div>
+
 
       {/* List Buku */}
       <div className="space-y-4">
         {books.map((book) => (
           <div
             key={book.id}
-            className="flex items-center justify-between border rounded p-4 bg-white shadow-sm"
+            className="flex flex-col sm:flex-row sm:items-center sm:justify-between border rounded p-4 bg-white shadow-sm gap-4"
           >
+            {/* Gambar */}
             <img
               src={book.image}
               alt={book.title}
-              className="w-16 h-20 object-cover rounded mr-4"
+              className="w-24 h-32 object-cover rounded mx-auto sm:mx-0"
             />
-            <div className="flex-1 space-y-1">
+
+            {/* Detail */}
+            <div className="flex-1 space-y-1 text-center sm:text-left">
               <p className="font-bold">{book.title}</p>
               <p className="text-sm text-gray-600">Genre: {book.genre}</p>
               <p className="text-sm text-gray-600">By: {book.author}</p>
-              <div className="flex gap-2 mt-2">
+              <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-2">
                 <Button
                   className="bg-yellow-300 text-black hover:bg-yellow-400"
                   onClick={() => router.push(`/buku/edit/${book.documentId}`)}
@@ -128,13 +133,15 @@ export default function BukuPage({ data }: { data: any[] }) {
                 />
               </div>
             </div>
-            <div className="ml-4 text-right w-20">
+
+            {/* Stok */}
+            <div className="text-center sm:text-right w-full sm:w-24">
               {book.stock > 0 ? (
                 <span className="text-gray-800 font-semibold">
                   Stok: {book.stock}
                 </span>
               ) : (
-                <span className="bg-red-500 text-white px-2 py-1 rounded-r-lg text-sm font-bold">
+                <span className="bg-red-500 text-white px-2 py-1 rounded text-sm font-bold">
                   HABIS
                 </span>
               )}

@@ -44,8 +44,6 @@ export default function Anggota() {
         nomor: item.id_member ?? "-",
       }));
 
-      console.log("📩 Data anggota terbaru:", formatted);
-
       setAnggotaList(formatted);
 
       if (json.meta?.pagination?.total) {
@@ -58,7 +56,6 @@ export default function Anggota() {
     }
   };
 
-  // refetch setiap kali search, pagination, atau setelah balik dari edit/hapus
   useEffect(() => {
     fetchAnggota();
   }, [searchTerm, currentPage, pathname]);
@@ -87,10 +84,10 @@ export default function Anggota() {
               setCurrentPage(1);
             }}
           />
-          <Link href="/anggota/tambah">
-            <button className="bg-navy text-white hover:bg-blue font-sans font-semibold px-4 py-2 rounded-lg">
+          <Link href="/anggota/tambah" className="w-full md:w-auto">
+            <Button className="bg-navy text-white hover:bg-blue font-sans font-semibold px-4 py-2 rounded-lg w-full md:w-auto">
               + TAMBAH
-            </button>
+            </Button>
           </Link>
         </div>
       </div>
@@ -133,18 +130,6 @@ export default function Anggota() {
 
       {/* Pagination */}
       <div className="flex justify-center items-center gap-2 mt-6 flex-wrap">
-        <button
-          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-          disabled={currentPage === 1}
-          className={`px-3 py-1 rounded ${
-            currentPage === 1
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-navy text-white hover:bg-blue-700"
-          }`}
-        >
-          Prev
-        </button>
-
         {Array.from({ length: totalPages }).map((_, i) => (
           <button
             key={i}
@@ -158,18 +143,6 @@ export default function Anggota() {
             {i + 1}
           </button>
         ))}
-
-        <button
-          onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-          disabled={currentPage === totalPages}
-          className={`px-3 py-1 rounded ${
-            currentPage === totalPages
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-navy text-white hover:bg-blue-700"
-          }`}
-        >
-          Next
-        </button>
       </div>
     </main>
   );
