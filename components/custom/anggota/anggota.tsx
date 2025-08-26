@@ -129,20 +129,47 @@ export default function Anggota() {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-center items-center gap-2 mt-6 flex-wrap">
-        {Array.from({ length: totalPages }).map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrentPage(i + 1)}
-            className={`px-3 py-1 rounded ${
-              currentPage === i + 1
-                ? "bg-navy text-white"
-                : "bg-white text-navy border border-navy hover:bg-blue-100"
-            }`}
-          >
-            {i + 1}
-          </button>
-        ))}
+        <div className="flex justify-center items-center gap-2 mt-6 flex-wrap">
+  {/* Prev */}
+  <button
+    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+    disabled={currentPage === 1}
+    className={`px-3 py-1 rounded ${
+      currentPage === 1
+        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+        : "bg-navy text-white hover:bg-blue-700"
+    }`}
+  >
+    Prev
+  </button>
+
+  {/* page nomor */}
+  {Array.from({ length: totalPages }).map((_, i) => (
+    <button
+      key={i}
+      onClick={() => setCurrentPage(i + 1)}
+      className={`px-3 py-1 rounded ${
+        currentPage === i + 1
+          ? "bg-navy text-white"
+          : "bg-white text-navy border border-navy hover:bg-blue-100"
+      }`}
+    >
+      {i + 1}
+    </button>
+  ))}
+
+  {/* Next */}
+  <button
+    onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+    disabled={currentPage === totalPages}
+    className={`px-3 py-1 rounded ${
+      currentPage === totalPages
+        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+        : "bg-navy text-white hover:bg-blue-700"
+    }`}
+  >
+    Next
+  </button>
       </div>
     </main>
   );
