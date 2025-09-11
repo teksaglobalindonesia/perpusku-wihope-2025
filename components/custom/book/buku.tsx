@@ -478,7 +478,7 @@ const Book: React.FC<BookProps> = ({ filterOutOfStock = false }) => {
                       )}
                     </div>
                     <div className="flex-1">
-                      <h3 className="mb-2 text-lg font-semibold text-gray-800">
+                      <h3 className="mb-2 text-lg font-semibold">
                         {buku.title}
                       </h3>
                       <div className="mb-2 flex flex-wrap gap-1">
@@ -494,15 +494,15 @@ const Book: React.FC<BookProps> = ({ filterOutOfStock = false }) => {
                             ) : null
                         )}
                       </div>
-                      <p className="mb-1 text-sm text-gray-600">
+                      <p className="mb-1 text-sm">
                         <span className="font-medium">Penulis:</span>{' '}
                         {buku.writer}
                       </p>
-                      <p className="mb-1 text-sm text-gray-600">
+                      <p className="mb-1 text-sm ">
                         <span className="font-medium">Penerbit:</span>{' '}
                         {buku.publisher}
                       </p>
-                      <p className="mb-4 text-sm text-gray-600">
+                      <p className="mb-4 text-sm">
                         <span className="font-medium">Tahun Terbit:</span>{' '}
                         {buku.published_year}
                       </p>

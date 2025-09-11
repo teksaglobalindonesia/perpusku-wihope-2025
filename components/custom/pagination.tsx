@@ -58,11 +58,11 @@ const Pagination = ({
   };
 
   return (
-    <div className="mt-6 flex justify-center space-x-2 text-sm text-gray-700">
+    <div className="mt-6 flex justify-center space-x-2 text-sm">
       {/* Tombol sebelumnya */}
       <button
         onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
-        className="rounded-md border px-3 py-1 hover:bg-gray-200"
+        className="rounded-md border px-3 py-1 hover:bg-gray-200 dark:border-white"
         disabled={currentPage === 1}
       >
         {'<'}
@@ -73,7 +73,7 @@ const Pagination = ({
         <button
           key={index}
           onClick={() => handleClick(item)}
-          className={`rounded-md border px-3 py-1 ${
+          className={`rounded-md border px-3 py-1 dark:border-white ${
             item === currentPage
               ? 'bg-blue-500 text-white'
               : 'hover:bg-gray-200'
@@ -89,7 +89,7 @@ const Pagination = ({
         onClick={() =>
           currentPage < totalPages && onPageChange(currentPage + 1)
         }
-        className="rounded-md border px-3 py-1 hover:bg-gray-200"
+        className="rounded-md border px-3 py-1 hover:bg-gray-200 dark:border-white"
         disabled={currentPage === totalPages}
       >
         {'>'}

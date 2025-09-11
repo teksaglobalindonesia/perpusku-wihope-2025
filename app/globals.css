@@ -2,9 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =========================
+   Base Layer & Variables
+   ========================= */
 @layer base {
   :root {
-    --background: rgba(255, 255, 255, 1);
+    --background: 0 0% 100%;           /* putih */
     --foreground: 34 5% 0%;
     --card: 34 50% 90%;
     --card-foreground: 34 5% 10%;
@@ -25,8 +28,9 @@
     --ring: 34 100% 63.7%;
     --radius: 0.5rem;
   }
+
   .dark {
-    --background: 34 50% 5%;
+    --background: 34 50% 5%;           /* gelap */
     --foreground: 34 5% 90%;
     --card: 34 50% 0%;
     --card-foreground: 34 5% 90%;
@@ -47,17 +51,21 @@
     --ring: 34 100% 63.7%;
     --radius: 0.5rem;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply box-border bg-background text-foreground;
+    font-family: var(--font-roboto), sans-serif;
   }
 }
 
+
+/* =========================
+   Utilities Layer
+   ========================= */
 @layer utilities {
   .min-h-screen {
     min-height: 100vh; /* Fallback */
@@ -69,19 +77,201 @@
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
+/* =========================
+   Transitions & Reset
+   ========================= */
 
-body {
-  font-family: var(--font-roboto), sans-serif;
-}
-
+/* Prevent flash of unstyled content */
 html {
+  transition: none !important;
   scroll-behavior: smooth;
+}
+
+html.transitioning {
+  transition: all 0.7s ease-in-out !important;
+}
+
+/* Reset */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  @apply transition-all duration-700 ease-in-out;
+}
+
+/* Smooth transitions for all elements */
+* {
+  transition: background-color 0.7s ease-in-out, 
+              color 0.7s ease-in-out, 
+              border-color 0.7s ease-in-out,
+              box-shadow 0.7s ease-in-out,
+              opacity 0.7s ease-in-out,
+              transform 0.7s ease-in-out;
+}
+
+/* =========================
+   Animated Gradient Background
+   ========================= */
+.animated-gradient-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: linear-gradient(-45deg, #e0f2fe, #bae6fd, #7dd3fc, #38bdf8, #0ea5e9, #0284c7, #0369a1);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  transition: background 0.7s ease-in-out;
+}
+
+.dark .animated-gradient-bg {
+  background: linear-gradient(-45deg, #0f172a, #1e293b, #334155, #475569, #1e40af, #1e3a8a);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  transition: background 0.7s ease-in-out;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Additional light mode effects */
+.animated-gradient-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+              radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+  pointer-events: none;
+  transition: opacity 0.7s ease-in-out;
+}
+
+.dark .animated-gradient-bg::before {
+  opacity: 0;
+}
+
+/* =========================
+   Background Patterns
+   ========================= */
+.bg-pattern {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+.dark .bg-pattern {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+/* =========================
+   Glass Morphism Cards
+   ========================= */
+.glass-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.7s ease-in-out;
+  width: 100%;
+  max-width: none;
+}
+
+.dark .glass-card {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.7s ease-in-out;
+}
+
+/* Variasi ukuran glass-card */
+.glass-card-sm {
+  max-width: 24rem;
+}
+.glass-card-md {
+  max-width: 42rem;
+}
+.glass-card-lg {
+  max-width: 72rem;
+}
+.glass-card-full {
+  max-width: none;
+  width: 100%;
+}
+
+/* Positioning options untuk glass-card */
+.glass-card-right { margin-left: auto; margin-right: 0; }
+.glass-card-left { margin-left: 0; margin-right: auto; }
+.glass-card-center { margin-left: auto; margin-right: auto; }
+
+.glass-card-right-sm { margin-left: auto; margin-right: 1rem; }
+.glass-card-right-md { margin-left: auto; margin-right: 2rem; }
+.glass-card-right-lg { margin-left: auto; margin-right: 4rem; }
+.glass-card-left-sm { margin-right: auto; margin-left: 1rem; }
+.glass-card-left-md { margin-right: auto; margin-left: 2rem; }
+.glass-card-left-lg { margin-right: auto; margin-left: 4rem; }
+
+/* =========================
+   Enhanced Text & Effects
+   ========================= */
+.light-text {
+  color: #040508;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  transition: all 0.7s ease-in-out;
+}
+.dark .light-text {
+  color: #f1f5f9;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  transition: all 0.7s ease-in-out;
+}
+
+/* Smooth theme toggle button */
+.theme-toggle-btn {
+  transition: all 0.5s ease-in-out;
+  transform: scale(1);
+}
+.theme-toggle-btn:hover { transform: scale(1.1); }
+.theme-toggle-btn:active { transform: scale(0.95); }
+
+/* Smooth icon transition */
+.theme-icon {
+  transition: all 0.5s ease-in-out;
+  transform: rotate(0deg);
+}
+.dark .theme-icon { transform: rotate(180deg); }
+
+/* Prevent content flash during theme switch */
+.transitioning * {
+  transition: all 0.7s ease-in-out !important;
+}
+
+/* Custom cursor styling for ReactTyped */
+.typed-container .typed-cursor {
+  color: var(--cursor-color, #eab308) !important;
+  transition: color 0.7s ease-in-out !important;
+}
+
+/* Custom text sizes di antara 4xl dan 5xl */
+.text-4xl-5xl {
+  font-size: 2.625rem; /* 42px */
+  line-height: 1.2;
+}
+.text-4xl-5xl-alt {
+  font-size: 2.5rem; /* 40px */
+  line-height: 1.25;
+}
+.text-4xl-5xl-alt2 {
+  font-size: 2.75rem; /* 44px */
+  line-height: 1.15;
 }

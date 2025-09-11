@@ -6,6 +6,8 @@ import 'animate.css/animate.compat.css';
 import { ReactQueryClientProvider } from '@/providers/ReactQueryClientProvider';
 import Navbar from '@/components/custom/navbar';
 import Footer from '@/components/custom/footer';
+import ModeToggle from '@/components/custom/mode';
+import { NavbarProvider } from '@/components/custom/function/HidNav';
 
 const robotoFont = Roboto({
   subsets: ['latin'],
@@ -22,13 +24,16 @@ export default async function RootLayout({
     <ReactQueryClientProvider>
       <html
         lang="en"
-        className={`${robotoFont.variable}`}
+        className={`${robotoFont.variable} scroll-smooth bg-background text-foreground`}
         suppressHydrationWarning={true}
       >
         <body>
           <NextTopLoader showSpinner={false} height={4} />
           <Toaster />
-          <Navbar />
+          <NavbarProvider>
+            <Navbar />
+            <ModeToggle />
+          </NavbarProvider>
           {children}
           <Footer />
         </body>

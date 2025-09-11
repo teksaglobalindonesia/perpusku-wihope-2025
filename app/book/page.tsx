@@ -8,6 +8,7 @@ export default function Page() {
 
   return (
     <>
+      <div className="mt-10 text-white dark:text-black">.</div>
       <h1 className="ml-10 mt-10  text-3xl">
         {' '}
         <span className="rounded-lg bg-blue-300 px-5 py-3 font-normal text-blue-950 underline">

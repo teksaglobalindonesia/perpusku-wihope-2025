@@ -3,10 +3,12 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useNavbar } from './function/HidNav';
 
 const Navbar = () => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const { visible, toggleNavbar } = useNavbar();
 
   const navItems = [
     { label: 'Dashboard', path: '/' },
@@ -16,10 +18,15 @@ const Navbar = () => {
     { label: 'Pengembalian', path: '/pengembalian' }
   ];
 
-  return (
-    <div className="relative flex h-[80px] w-full flex-row items-center justify-between bg-blue-900 px-6">
-      <h1 className="text-3xl font-normal text-white underline">Perpusku</h1>
+  if (!visible) return null; // kalau navbar disembunyikan → jangan render sama sekali
 
+  return (
+    <nav className="fixed top-0 z-[9999] flex h-[80px] w-full flex-row items-center justify-between bg-black px-6 dark:bg-white">
+      <h1 className="text-3xl font-normal text-white underline dark:text-black">
+        Perpusku
+      </h1>
+
+      {/* Tombol toggle mobile menu */}
       <button
         className="rounded-lg bg-white px-2 text-4xl text-blue-700 md:hidden"
         onClick={() => setIsOpen(!isOpen)}
@@ -27,6 +34,7 @@ const Navbar = () => {
         =
       </button>
 
+      {/* Menu desktop */}
       <div className="hidden flex-row gap-4 md:flex">
         {navItems.map((item) => (
           <Link key={item.path} href={item.path}>
@@ -35,7 +43,7 @@ const Navbar = () => {
                 ${
                   pathname === item.path
                     ? 'bg-yellow-500 text-white'
-                    : 'bg-white text-blue-800 hover:bg-blue-100'
+                    : 'text-white hover:bg-blue-100 dark:text-black'
                 }`}
             >
               {item.label}
@@ -44,6 +52,7 @@ const Navbar = () => {
         ))}
       </div>
 
+      {/* Menu mobile */}
       {isOpen && (
         <div className="absolute left-0 top-[80px] z-10 flex w-full flex-col items-start bg-blue-900 px-6 py-4 md:hidden">
           {navItems.map((item) => (
@@ -66,7 +75,7 @@ const Navbar = () => {
           ))}
         </div>
       )}
-    </div>
+    </nav>
   );
 };
 

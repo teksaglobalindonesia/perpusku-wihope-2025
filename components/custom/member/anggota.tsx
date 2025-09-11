@@ -425,10 +425,10 @@ const Anggota = () => {
               ) : (
                 <div
                   key={anggota.documentId}
-                  className="flex items-center justify-between rounded border p-4 hover:bg-gray-50"
+                  className="flex items-center justify-between rounded border border-gray-500 p-4 hover:border-4 hover:border-black"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="flex h-24 w-24 items-center justify-center rounded border border-blue-950 bg-blue-100 p-2">
+                    <div className="flex h-24 w-24 items-center justify-center rounded border border-blue-700 bg-blue-100 p-2">
                       <div className="text-2xl">👤</div>
                     </div>
                     <div>
