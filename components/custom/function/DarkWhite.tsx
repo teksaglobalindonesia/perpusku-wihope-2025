@@ -2,45 +2,63 @@
 import { useEffect, useState } from 'react';
 
 export function useDarkMode() {
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState<boolean>(false); // Default ke light mode
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
+  // Set client flag
   useEffect(() => {
-    // cek preferensi awal user
-    if (
-      localStorage.theme === 'dark' ||
-      (!('theme' in localStorage) &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches)
-    ) {
-      document.documentElement.classList.add('dark');
-      setDark(true);
-    } else {
-      document.documentElement.classList.remove('dark');
-      setDark(false);
-    }
+    setIsClient(true);
   }, []);
 
+  // Cek preferensi awal user
+  useEffect(() => {
+    if (!isClient) return;
+    
+    const saved = localStorage.getItem('theme');
+    if (saved) {
+      const isDark = saved === 'dark';
+      setDark(isDark);
+      document.documentElement.classList.toggle('dark', isDark);
+      // Broadcast initial theme to listeners
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent('theme-change', { detail: { dark: isDark } })
+        );
+      }
+    } else {
+      const prefersDark = window.matchMedia(
+        '(prefers-color-scheme: dark)'
+      ).matches;
+      setDark(prefersDark);
+      document.documentElement.classList.toggle('dark', prefersDark);
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent('theme-change', { detail: { dark: prefersDark } })
+        );
+      }
+    }
+  }, [isClient]);
+
   const toggleDark = () => {
-    if (isTransitioning) return; // Prevent multiple clicks during transition
+    if (isTransitioning || !isClient) return;
 
     setIsTransitioning(true);
+    const newDark = !dark;
+    
+    setDark(newDark);
+    localStorage.setItem('theme', newDark ? 'dark' : 'light');
+    document.documentElement.classList.toggle('dark', newDark);
 
-    // Add transition class to html element
-    document.documentElement.classList.add('transitioning');
-
-    if (dark) {
-      document.documentElement.classList.remove('dark');
-      localStorage.theme = 'light';
-      setDark(false);
-    } else {
-      document.documentElement.classList.add('dark');
-      localStorage.theme = 'dark';
-      setDark(true);
+    // Notify all listeners in this tab immediately
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('theme-change', { detail: { dark: newDark } })
+      );
     }
 
-    // Remove transition class after animation completes
+    // Delay buat animasi transisi
     setTimeout(() => {
-      document.documentElement.classList.remove('transitioning');
       setIsTransitioning(false);
     }, 700);
   };

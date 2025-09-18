@@ -18,6 +18,12 @@ module.exports = {
       }
     },
    extend: {
+   backgroundImage: {
+        'animated-gradient-light': 
+          'linear-gradient(-45deg, #e0f2fe, #bae6fd, )',
+        'animated-gradient-dark': 
+          'linear-gradient(-45deg, #c084fc, #a855f7, #8b5cf6, #7c3aed, #6b21a8, #4c1d95, #2d1b69, #1a0b2e, #000000)',
+      },
   colors: {
     border: 'hsl(var(--border))',
     input: 'hsl(var(--input))',
@@ -98,5 +104,5 @@ module.exports = {
       }
     }
   },
-  plugins: [require('tailwindcss-animate'), require('@tailwindcss/line-clamp')]
+  plugins: [require('tailwindcss-animate')]
 };

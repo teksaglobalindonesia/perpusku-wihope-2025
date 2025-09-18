@@ -1,3 +1,6 @@
+
+'use client';
+
 import { Toaster } from '@/components/ui/sonner';
 import { Roboto } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
@@ -8,6 +11,7 @@ import Navbar from '@/components/custom/navbar';
 import Footer from '@/components/custom/footer';
 import ModeToggle from '@/components/custom/mode';
 import { NavbarProvider } from '@/components/custom/function/HidNav';
+import AnimatedBackground from '@/components/custom/function/AnimatedBackground';
 
 const robotoFont = Roboto({
   subsets: ['latin'],
@@ -15,7 +19,7 @@ const robotoFont = Roboto({
   variable: '--font-roboto'
 });
 
-export default async function RootLayout({
+export default function RootLayout({
   children
 }: {
   children: React.ReactNode;
@@ -24,10 +28,29 @@ export default async function RootLayout({
     <ReactQueryClientProvider>
       <html
         lang="en"
-        className={`${robotoFont.variable} scroll-smooth bg-background text-foreground`}
+        className={`${robotoFont.variable} scroll-smooth text-foreground`}
         suppressHydrationWarning={true}
       >
-        <body>
+        <head>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function() {
+                  try {
+                    const theme = localStorage.getItem('theme');
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    const isDark = theme === 'dark' || (!theme && prefersDark);
+                    if (isDark) {
+                      document.documentElement.classList.add('dark');
+                    }
+                  } catch (e) {}
+                })();
+              `,
+            }}
+          />
+        </head>
+        <body className="transition-colors duration-700">
+          <AnimatedBackground />
           <NextTopLoader showSpinner={false} height={4} />
           <Toaster />
           <NavbarProvider>

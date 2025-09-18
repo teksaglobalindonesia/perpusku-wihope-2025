@@ -1,6 +1,7 @@
 'use client';
 import { useEffect } from 'react';
 import { gsap } from 'gsap';
+import '../globals.css';
 
 export default function Hero() {
   useEffect(() => {
@@ -20,11 +21,14 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="flex h-screen flex-col items-center justify-center bg-black text-white">
-      <h1 className="hero-title text-5xl font-extrabold tracking-wide">
+    <section className="bg-pattern flex h-screen flex-col items-center justify-center text-foreground">
+      <h1 className="hero-title text-5xl font-extrabold tracking-wide text-foreground">
         Halo Dunia
       </h1>
-      <div className="hero-line mt-5 h-1.5 bg-white" style={{ width: 0 }}></div>
+      <div
+        className="hero-line bg-foreground mt-5 h-1.5"
+        style={{ width: 0 }}
+      ></div>
     </section>
   );
 }

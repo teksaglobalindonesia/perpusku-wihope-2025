@@ -35,7 +35,7 @@ const Hero = () => {
     tl.fromTo(
       '.hero-line',
       { width: 0 },
-      { width: 470, duration: 2, ease: 'power3.inOut' },
+      { width: 470, duration: 2, ease: 'power3.Out' },
       '+=0.2'
     );
 
@@ -101,9 +101,9 @@ const Hero = () => {
 
       {/* Kanan */}
       <div className="flex w-1/2 justify-center pr-6">
-        <div className="rounded-lg bg-black p-2 dark:bg-white">
-          <div className="bg-white p-2">
-            <div className="bg-white p-4">
+        <div className="rounded-lg bg-white p-2 transition-colors duration-700 dark:bg-black">
+          <div className="bg-white p-2 transition-colors duration-700 dark:bg-gray-800">
+            <div className="bg-white p-4 transition-colors duration-700">
               <video
                 autoPlay
                 loop

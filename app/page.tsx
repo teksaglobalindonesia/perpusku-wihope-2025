@@ -9,9 +9,9 @@ export default async function Page() {
     <>
       <Hero />
       <HeroTest />
-      <h1 className="ml-10 mt-10 pl-6 text-3xl">
+      <h1 className="ml-10 mt-10 pl-6 text-3xl text-foreground">
         {' '}
-        <span className="rounded-lg bg-red-300 px-5 py-3 font-normal text-red-950 underline">
+        <span className="rounded-lg bg-red-300 dark:bg-red-800 px-5 py-3 font-normal text-red-950 dark:text-red-200 underline">
           ❌ List Buku Habis
         </span>
       </h1>

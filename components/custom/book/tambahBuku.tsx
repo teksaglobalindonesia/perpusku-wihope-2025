@@ -109,7 +109,7 @@ const TambahBuku = () => {
 
   return (
     <div className="flex min-h-[550px] w-full flex-col items-center">
-      <h1 className="mb-6 mt-12 rounded-lg bg-yellow-500 px-3 py-2 text-center text-4xl font-normal text-white underline">
+      <h1 className="mb-6 mt-24 rounded-lg bg-yellow-500 px-3 py-2 text-center text-4xl font-normal text-white underline">
         Tambahkan Buku
       </h1>
 
@@ -117,7 +117,7 @@ const TambahBuku = () => {
       {success && <p className="text-green-500">{success}</p>}
 
       <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <div className="mb-6 grid grid-cols-2 items-center justify-center gap-y-8 rounded-lg border-2 border-black py-3 pb-8 pr-8 pt-8">
+        <div className="mb-12 grid grid-cols-2 items-center justify-center gap-y-8 rounded-lg border-2 border-black py-3 pb-8 pr-8 pt-8">
           <div className="text-center">
             <label>Judul Buku</label>
           </div>
@@ -127,7 +127,8 @@ const TambahBuku = () => {
             value={form.title}
             onChange={handleChange}
             placeholder="Judul Buku"
-            className="rounded-md bg-slate-300 px-5 py-2"
+            className="rounded-md bg-slate-300 px-5 py-2  text-black
+            placeholder:text-black"
           />
 
           <div className="text-center">
@@ -139,7 +140,8 @@ const TambahBuku = () => {
             value={form.writer}
             onChange={handleChange}
             placeholder="Penulis"
-            className="rounded-md bg-slate-300 px-5 py-2"
+            className="rounded-md bg-slate-300 px-5 py-2 text-black
+            placeholder:text-black"
           />
 
           <div className="text-center">
@@ -151,7 +153,8 @@ const TambahBuku = () => {
             value={form.publisher}
             onChange={handleChange}
             placeholder="Penerbit"
-            className="rounded-md bg-slate-300 px-5 py-2"
+            className="rounded-md bg-slate-300 px-5 py-2  text-black
+            placeholder:text-black"
           />
 
           <div className="text-center">
@@ -167,7 +170,8 @@ const TambahBuku = () => {
             name="category"
             value={form.category}
             onChange={handleChange}
-            className="rounded-md bg-slate-300 px-5 py-2"
+            className="rounded-md bg-slate-300 px-5 py-2  text-black
+            placeholder:text-black"
           >
             <option value="" disabled>
               Pilih kategori
@@ -188,7 +192,8 @@ const TambahBuku = () => {
             value={form.published_year}
             onChange={handleChange}
             placeholder="Tahun"
-            className="rounded-md bg-slate-300 px-5 py-2"
+            className="rounded-md bg-slate-300 px-5 py-2 text-black
+            placeholder:text-black"
           />
 
           <div className="text-center">
@@ -200,7 +205,8 @@ const TambahBuku = () => {
             value={form.stock}
             onChange={handleChange}
             placeholder="Stock"
-            className="rounded-md bg-slate-300 px-5 py-2"
+            className="rounded-md bg-slate-300 px-5 py-2 text-black
+            placeholder:text-black"
           />
 
           <div className="text-center">
@@ -211,7 +217,8 @@ const TambahBuku = () => {
             name="cover"
             accept="image/*"
             onChange={handleFileChange}
-            className="items-center rounded-md bg-slate-300 px-5 py-2"
+            className="items-center rounded-md bg-slate-300 px-5 py-2  text-black
+            placeholder:text-black"
           />
 
           <div className="bg-white"></div>

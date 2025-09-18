@@ -62,7 +62,7 @@ const TambahAnggota = () => {
 
   return (
     <div className="flex min-h-[550px] w-full flex-col items-center">
-      <h1 className="mb-6 mt-12 rounded-lg bg-yellow-500 px-3 py-2 text-center text-4xl font-normal text-white underline">
+      <h1 className="mb-6 mt-28 rounded-lg bg-yellow-500 px-3 py-2 text-center text-4xl font-normal text-white underline">
         Tambahkan Anggota
       </h1>
 
@@ -70,7 +70,7 @@ const TambahAnggota = () => {
       {success && <p className="text-green-500">{success}</p>}
 
       <form onSubmit={handleSubmit}>
-        <div className="mb-6 grid grid-cols-2 items-center justify-center gap-y-8 rounded-lg border-2 border-black py-3 pb-8 pr-8 pt-8">
+        <div className="mb-12 mt-4 grid grid-cols-2 items-center justify-center gap-y-8 rounded-lg border-2 border-black py-3 pb-8 pr-8 pt-8">
           <div className="text-center">
             <label>Nomor Anggota</label>
           </div>
@@ -80,7 +80,8 @@ const TambahAnggota = () => {
             value={form.id_member}
             onChange={handleChange}
             placeholder="Nomor Anggota"
-            className="items-center rounded-md bg-slate-300 px-5 py-2"
+            className="items-center rounded-md bg-slate-300 px-5 py-2 text-black
+            placeholder:text-black"
           />
 
           <div className="text-center">
@@ -92,7 +93,8 @@ const TambahAnggota = () => {
             value={form.name}
             onChange={handleChange}
             placeholder="Nama Anggota"
-            className="rounded-md bg-slate-300 px-5 py-2"
+            className="rounded-md bg-slate-300 px-5 py-2 text-black
+            placeholder:text-black"
           />
 
           <div className="text-center">
@@ -104,7 +106,8 @@ const TambahAnggota = () => {
             value={form.email}
             onChange={handleChange}
             placeholder="Email"
-            className="rounded-md bg-slate-300 px-5 py-2"
+            className="rounded-md bg-slate-300 px-5 py-2 text-black
+            placeholder:text-black"
           />
 
           <div className="text-center">
@@ -116,7 +119,8 @@ const TambahAnggota = () => {
             value={form.address}
             onChange={handleChange}
             placeholder="Alamat"
-            className="rounded-md bg-slate-300 px-5 py-2"
+            className="rounded-md bg-slate-300 px-5 py-2 text-black
+            placeholder:text-black"
           />
 
           <div className="bg-white"></div>

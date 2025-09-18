@@ -342,7 +342,7 @@ const Anggota = () => {
               editingId === anggota.documentId ? (
                 <div
                   key={anggota.documentId}
-                  className="rounded border bg-gray-50 p-4"
+                  className="rounded border bg-gray-50 p-4 text-gray-600"
                 >
                   <h3 className="mb-3 font-semibold text-gray-700">
                     Edit Anggota
@@ -433,14 +433,10 @@ const Anggota = () => {
                     </div>
                     <div>
                       <p className="text-lg font-semibold">{anggota.name}</p>
-                      <p className="text-sm text-gray-600">
-                        ID: {anggota.id_member}
-                      </p>
-                      <p className="text-sm text-gray-600">{anggota.email}</p>
+                      <p className="text-sm ">ID: {anggota.id_member}</p>
+                      <p className="text-sm ">{anggota.email}</p>
                       {anggota.address && (
-                        <p className="mt-1 text-sm text-gray-500">
-                          {anggota.address}
-                        </p>
+                        <p className="mt-1 text-sm ">{anggota.address}</p>
                       )}
 
                       <div className="mt-3 flex gap-2">

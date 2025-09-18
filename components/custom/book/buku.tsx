@@ -263,9 +263,9 @@ const Book: React.FC<BookProps> = ({ filterOutOfStock = false }) => {
     <div className="min-h-[540px] w-full">
       {/* Edit Modal */}
       {editingBook && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 text-gray-600">
           <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg bg-white p-6">
-            <h2 className="mb-4 text-xl font-bold">Edit Buku</h2>
+            <h2 className="mb-4 mt-12 text-xl font-bold">Edit Buku</h2>
             <form onSubmit={handleEditSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
