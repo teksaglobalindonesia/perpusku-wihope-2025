@@ -3,15 +3,17 @@ import Hero from '@/components/custom/hero';
 import Pinjam from '@/components/custom/lending/pinjam';
 import Kembali from '@/components/custom/retur/pengembalian';
 import HeroTest from './pengembalian/test';
+import About from '@/components/custom/about/about';
 
 export default async function Page() {
   return (
     <>
       <Hero />
-      <HeroTest />
+      {/* <HeroTest /> */}
+      <About />
       <h1 className="ml-10 mt-10 pl-6 text-3xl text-foreground">
         {' '}
-        <span className="rounded-lg bg-red-300 dark:bg-red-800 px-5 py-3 font-normal text-red-950 dark:text-red-200 underline">
+        <span className="rounded-lg bg-red-300 px-5 py-3 font-normal text-red-950 underline dark:bg-red-800 dark:text-red-200">
           ❌ List Buku Habis
         </span>
       </h1>
