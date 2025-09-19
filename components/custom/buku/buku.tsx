@@ -45,7 +45,7 @@ export default function BukuPage({ data }: { data: any[] }) {
         stock: item.stock ?? 0,
         image: item.cover?.url
           ? `https://cms-perpusku.widhimp.my.id${item.cover.url}`
-          : "/images/default.jpg",
+          : "",
       }));
 
       setBooks(formatted);
@@ -70,81 +70,101 @@ export default function BukuPage({ data }: { data: any[] }) {
 
   return (
     <div className="p-4 md:p-6 space-y-6">
-     {/* Header */}
-<div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-  <h1 className="font-sans font-bold text-navy text-2xl">Buku</h1>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+        <h1 className="font-sans font-bold text-navy text-2xl">Buku</h1>
 
-  <div className="flex gap-2 w-full md:w-auto">
-    <input
-      type="text"
-      placeholder="Cari judul buku..."
-      className="border border-gray-300 rounded px-3 py-2 w-full md:w-64"
-      value={searchTerm}
-      onChange={(e) => {
-        setSearchTerm(e.target.value);
-        setCurrentPage(1);
-      }}
-    />
-    <Button
-      className="bg-navy text-white hover:bg-blue font-sans font-semibold px-4 py-2 rounded-lg w-full md:w-auto"
-      onClick={() => router.push("/buku/tambah")}
-    >
-      + TAMBAH
-    </Button>
-  </div>
-</div>
+        <div className="flex gap-2 w-full md:w-auto">
+          <input
+            type="text"
+            placeholder="Cari judul buku..."
+            className="border border-gray-300 rounded px-3 py-2 w-full md:w-64"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+          />
+          <Button
+            className="bg-navy text-white hover:bg-blue font-sans font-semibold px-4 py-2 rounded-lg w-full md:w-auto"
+            onClick={() => router.push("/buku/tambah")}
+          >
+            + TAMBAH
+          </Button>
+        </div>
+      </div>
 
-
-      {/* List Buku */}
-      <div className="space-y-4">
+      {/* Grid Buku */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {books.map((book) => (
           <div
             key={book.id}
-            className="flex flex-col sm:flex-row sm:items-center sm:justify-between border rounded p-4 bg-white shadow-sm gap-4"
+            className="border rounded-lg shadow-sm bg-white p-3 flex flex-col transition hover:shadow-md hover:scale-[1.01]"
           >
-            {/* Gambar */}
-            <img
-              src={book.image}
-              alt={book.title}
-              className="w-24 h-32 object-cover rounded mx-auto sm:mx-0"
-            />
+            {/* Gambar lebih kecil */}
+            {book.image ? (
+              <img
+                src={book.image}
+                alt={book.title}
+                className="w-full h-40 object-cover rounded-md shadow-sm transition-transform duration-200 hover:scale-105"
+              />
+            ) : (
+              <div className="w-full h-40 flex items-center justify-center bg-gray-200 rounded-md text-gray-500 text-xs">
+                No Cover
+              </div>
+            )}
 
             {/* Detail */}
-            <div className="flex-1 space-y-1 text-center sm:text-left">
-              <p className="font-bold">{book.title}</p>
-              <p className="text-sm text-gray-600">Genre: {book.genre}</p>
-              <p className="text-sm text-gray-600">By: {book.author}</p>
-              <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-2">
-                <Button
-                  className="bg-yellow-300 text-black hover:bg-yellow-400"
-                  onClick={() => router.push(`/buku/edit/${book.documentId}`)}
-                >
-                  EDIT
-                </Button>
-                <HapusBukuDialog
-                  documentId={book.documentId}
-                  onConfirm={() => {
-                    const updated = books.filter(
-                      (b) => b.documentId !== book.documentId
-                    );
-                    setBooks(updated);
-                    window.dispatchEvent(new Event("books-updated"));
-                  }}
-                />
-              </div>
+            <h2 className="font-semibold text-navy text-base truncate mt-2">{book.title}</h2>
+            <p className="text-xs text-gray-600">By: {book.author}</p>
+
+            {/* Genre */}
+            <div className="flex flex-wrap gap-1 mt-1">
+              {book.genre !== "Tanpa Kategori" ? (
+                book.genre.split(", ").map((g: string, idx: number) => (
+                  <span
+                    key={idx}
+                    className="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded"
+                  >
+                    {g}
+                  </span>
+                ))
+              ) : (
+                <span className="text-[10px] text-gray-500">Tanpa Kategori</span>
+              )}
             </div>
 
             {/* Stok */}
-            <div className="text-center sm:text-right w-full sm:w-24">
+            <div className="mt-1">
               {book.stock > 0 ? (
-                <span className="text-gray-800 font-semibold">
+                <span className="text-xs font-semibold text-gray-800">
                   Stok: {book.stock}
                 </span>
               ) : (
-                <span className="bg-red-500 text-white px-2 py-1 rounded text-sm font-bold">
+                <span className="bg-red-500 text-white px-1.5 py-0.5 rounded text-[10px] font-bold">
                   HABIS
                 </span>
               )}
+            </div>
+
+            {/* Aksi */}
+            <div className="flex gap-2 mt-2">
+              <Button
+                className="bg-yellow-300 text-black hover:bg-yellow-400 text-xs px-2 py-1"
+                onClick={() => router.push(`/buku/edit/${book.documentId}`)}
+              >
+                EDIT
+              </Button>
+              <HapusBukuDialog
+                documentId={book.documentId}
+                onConfirm={() => {
+                  const updated = books.filter(
+                    (b) => b.documentId !== book.documentId
+                  );
+                  setBooks(updated);
+                  window.dispatchEvent(new Event("books-updated"));
+                }}
+              />
             </div>
           </div>
         ))}

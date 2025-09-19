@@ -1,234 +1,294 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
 export default function Dashboard() {
   const [bookPage, setBookPage] = useState(1);
   const [peminjamanPage, setPeminjamanPage] = useState(1);
   const [pengembalianPage, setPengembalianPage] = useState(1);
 
+  const [bookTotalPages, setBookTotalPages] = useState(1);
+  const [peminjamanTotalPages, setPeminjamanTotalPages] = useState(1);
+  const [pengembalianTotalPages, setPengembalianTotalPages] = useState(1);
+
+  const [books, setBooks] = useState<any[]>([]);
+  const [peminjaman, setPeminjaman] = useState<any[]>([]);
+  const [pengembalian, setPengembalian] = useState<any[]>([]);
+
   const itemsPerPage = 2;
+  const today = new Date().toISOString().split("T")[0]; //tanggal
 
-  const books = [
-    {
-      title: "Cantik Itu Luka",
-      genre: "Historical",
-      author: "Eka Kurniawan",
-      img: "/images/Cantik Itu Luka.jpg",
-    },
-    {
-      title: "Laut Bercerita",
-      genre: "Persahabatan",
-      author: "Leila Salikha Chudori",
-      img: "/images/laut bercerita.jpg",
-    },
-  ];
+  // 📕 Fetch stok buku habis
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const res = await fetch(
+          `${BASE_URL}/api/book/list?page=${bookPage}&page_size=${itemsPerPage}&search=`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: TOKEN,
+              "x-wihope-name": WIHOPE_NAME,
+            },
+            cache: "no-store",
+          }
+        );
+        const result = await res.json();
+        console.log("Books meta:", result.meta?.pagination);
 
-  const peminjaman = [
-    {
-      title: "Pesta Bunuh Diri",
-      peminjam: "Leka",
-      pinjam: "17 Juli 2025, 08.00",
-      kembali: "24 Juli 2025",
-    },
-    {
-      title: "Laut Bercerita",
-      peminjam: "Agis",
-      pinjam: "17 Juli 2025, 08.00",
-      kembali: "24 Juli 2025",
-    },
-  ];
+        const fetchedData = result.data || result.items || [];
+        const formatted = fetchedData
+          .map((item: any) => ({
+            id: item.id,
+            title: item.title ?? "Tanpa Judul",
+            genre:
+              item.categories?.length > 0
+                ? item.categories.map((cat: { name: any }) => cat.name).join(", ")
+                : "Tanpa Kategori",
+            author: item.writer ?? "Tanpa Penulis",
+            stock: item.stock ?? 0,
+            img: item.cover?.url
+              ? `https://cms-perpusku.widhimp.my.id${item.cover.url}`
+              : "/images/default.jpg",
+          }))
+          .filter((b: any) => b.stock === 0); // hanya menampilkan stok buku yang habis
 
-  const pengembalian = [
-    {
-      title: "Indigo Tapi Penakut",
-      peminjam: "Tika",
-      pinjam: "10 Juli 2025, 08.00",
-      kembali: "17 Juli 2025",
-    },
-    {
-      title: "Magma",
-      peminjam: "Ana",
-      pinjam: "10 Juli 2025, 08.00",
-      kembali: "17 Juli 2025",
-    },
-  ];
+        //  Pagination manual setelah filter
+        const start = (bookPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const paginated = formatted.slice(start, end);
 
-  const paginate = (data: any[], page: number) =>
-    data.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+        setBooks(paginated);
+        setBookTotalPages(Math.ceil(formatted.length / itemsPerPage) || 1);
+      } catch (err) {
+        console.error("Gagal fetch books:", err);
+      }
+    };
+    fetchBooks();
+  }, [bookPage]);
+
+  // Fetch peminjaman hari ini
+  useEffect(() => {
+    const fetchPeminjaman = async () => {
+      try {
+        const res = await fetch(
+          `${BASE_URL}/api/loan/list?page=${peminjamanPage}&page_size=${itemsPerPage}&search=`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: TOKEN,
+              "x-wihope-name": WIHOPE_NAME,
+            },
+            cache: "no-store",
+          }
+        );
+        const result = await res.json();
+        console.log("Peminjaman meta:", result.meta?.pagination);
+
+        const fetchedData = result.data || result.items || [];
+        const formatted = fetchedData
+          .map((item: any) => ({
+            id: item.id,
+            peminjam: item.member?.name ?? "Tanpa Nama",
+            judul: item.book?.title ?? "Tanpa Judul",
+            tanggal_pinjam: item.loan_date ?? "",
+            tanggal_kembali: item.return_date ?? "",
+            image: item.book?.cover?.url
+              ? `https://cms-perpusku.widhimp.my.id${item.book.cover.url}`
+              : "/images/default.jpg",
+          }))
+          .filter((p: any) => p.tanggal_pinjam?.startsWith(today));
+
+        setPeminjaman(formatted);
+        setPeminjamanTotalPages(result.meta?.pagination?.pageCount || 1);
+      } catch (err) {
+        console.error("Gagal fetch peminjaman:", err);
+      }
+    };
+    fetchPeminjaman();
+  }, [peminjamanPage]);
+
+  // Fetch pengembalian hari ini
+  useEffect(() => {
+    const fetchPengembalian = async () => {
+      try {
+        const res = await fetch(
+          `${BASE_URL}/api/return/list?page=${pengembalianPage}&page_size=${itemsPerPage}&search=`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: TOKEN,
+              "x-wihope-name": WIHOPE_NAME,
+            },
+            cache: "no-store",
+          }
+        );
+        const result = await res.json();
+        console.log("Pengembalian meta:", result.meta?.pagination);
+
+        const fetchedData = result.data || result.items || [];
+        const formatted = fetchedData
+          .map((item: any) => {
+            const loanDate = new Date(item.loan_date);
+            const returnDate = new Date(item.return_date);
+            const actualReturnDate = item.actual_return_date
+              ? new Date(item.actual_return_date)
+              : null;
+            return {
+              id: item.id,
+              judul: item.book?.title || "-",
+              peminjam: item.member?.name || "-",
+              tanggalPinjam: loanDate.toLocaleDateString("id-ID"),
+              tanggalKembali: returnDate.toLocaleDateString("id-ID"),
+              dikembalikan: actualReturnDate
+                ? actualReturnDate.toISOString().split("T")[0]
+                : null,
+            };
+          })
+          .filter((r: any) => r.dikembalikan === today);
+
+        setPengembalian(formatted);
+        setPengembalianTotalPages(result.meta?.pagination?.pageCount || 1);
+      } catch (err) {
+        console.error("Gagal fetch pengembalian:", err);
+      }
+    };
+    fetchPengembalian();
+  }, [pengembalianPage]);
+
+  // Pagination Component
+  const Pagination = ({
+    currentPage,
+    totalPages,
+    setPage,
+  }: {
+    currentPage: number;
+    totalPages: number;
+    setPage: React.Dispatch<React.SetStateAction<number>>;
+  }) => (
+    <div className="flex justify-center items-center gap-2 mt-6 flex-wrap">
+      <button
+        onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+        disabled={currentPage === 1}
+        className={`px-3 py-1 rounded ${
+          currentPage === 1
+            ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+            : "bg-navy text-white"
+        }`}
+      >
+        Prev
+      </button>
+      {Array.from({ length: totalPages }, (_, i) => (
+        <button
+          key={i + 1}
+          onClick={() => setPage(i + 1)}
+          className={`px-3 py-1 rounded ${
+            currentPage === i + 1
+              ? "bg-navy text-white"
+              : "bg-gray-200 text-gray-800"
+          }`}
+        >
+          {i + 1}
+        </button>
+      ))}
+      <button
+        onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+        disabled={currentPage === totalPages}
+        className={`px-3 py-1 rounded ${
+          currentPage === totalPages
+            ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+            : "bg-navy text-white"
+        }`}
+      >
+        Next
+      </button>
+    </div>
+  );
 
   return (
-    <main className="px-4 sm:px-8 py-6 space-y-8 bg-white text-navy min-h-screen">
-      <h1 className="text-2xl font-bold text-navy">Dashboard</h1>
+    <main className="px-4 sm:px-8 py-6 space-y-10 bg-white text-navy min-h-screen">
+      <h1 className="text-3xl font-bold text-navy">Dashboard</h1>
 
-      {/* stok */}
-      <section className="border border-[#B0B3B8] rounded-xl p-6 shadow-md">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <h2 className="text-xl font-semibold text-navy">📕 Buku Stok Habis</h2>
-          <input
-            type="text"
-            placeholder="Cari buku..."
-            className="border border-[#B0B3B8] px-3 py-2 rounded-lg w-full sm:w-60 focus:outline-none"
-          />
-        </div>
-
-        <div className="space-y-4">
-          {paginate(books, bookPage).map((book, i) => (
+      {/* buku habis */}
+      <section className="border border-gray-200 rounded-2xl p-6 shadow-md bg-white">
+        <h2 className="text-xl font-semibold text-navy mb-6">📕 Stok Buku Habis</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {books.map((book) => (
             <div
-              key={i}
-              className="flex items-center justify-between border border-[#B0B3B8] p-4 rounded-lg shadow-sm flex-col sm:flex-row gap-4"
+              key={book.id}
+              className="flex items-center justify-between border border-gray-200 p-4 rounded-xl shadow-sm hover:shadow-lg transition bg-white"
             >
               <div className="flex items-center gap-4">
-                <img src={book.img} alt={`Cover ${book.title}`} className="w-12 h-12" />
+                <img
+                  src={book.img}
+                  alt={`Cover ${book.title}`}
+                  className="w-14 h-14 rounded-lg object-cover"
+                />
                 <div>
-                  <p className="font-bold font-sans">{book.title}</p>
-                  <p className="text-sm text-[#B0B3B8] font-semibold">{book.genre}</p>
-                  <p className="text-sm text-[#B0B3B8]">By: {book.author}</p>
+                  <p className="font-bold">{book.title}</p>
+                  <p className="text-sm text-gray-500 font-semibold">{book.genre}</p>
+                  <p className="text-sm text-gray-400">By: {book.author}</p>
                 </div>
               </div>
-              <span className="bg-[#FF4D4D] text-white px-4 py-1 rounded-b-lg text-sm font-semibold">
+              <span className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
                 HABIS
               </span>
             </div>
           ))}
         </div>
-
-        <div className="flex justify-center items-center gap-2 mt-6 flex-wrap">
-          <button
-            onClick={() => setBookPage((p) => Math.max(p - 1, 1))}
-            disabled={bookPage === 1}
-            className={`px-3 py-1 rounded ${
-              bookPage === 1
-                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                : "bg-navy text-white hover:bg-blue-700"
-            }`}
-          >
-            Prev
-          </button>
-          <button className="px-3 py-1 rounded bg-navy text-white">{bookPage}</button>
-          <button
-            onClick={() => setBookPage((p) => Math.min(p + 1, Math.ceil(books.length / itemsPerPage)))}
-            disabled={bookPage === Math.ceil(books.length / itemsPerPage)}
-            className={`px-3 py-1 rounded ${
-              bookPage === Math.ceil(books.length / itemsPerPage)
-                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                : "bg-navy text-white hover:bg-blue-700"
-            }`}
-          >
-            Next
-          </button>
-        </div>
+        <Pagination
+          currentPage={bookPage}
+          totalPages={bookTotalPages}
+          setPage={setBookPage}
+        />
       </section>
 
       {/* peminjaman */}
-      <section className="bg-blue border border-navy rounded-xl p-6 shadow-md">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <h2 className="text-xl font-semibold text-white">📚 Peminjaman Hari Ini</h2>
-          <input
-            type="text"
-            placeholder="Cari peminjam..."
-            className="border border-[#B0B3B8] px-3 py-2 rounded-lg w-full sm:w-60 focus:outline-none"
-          />
-        </div>
-
-        <div className="space-y-4">
-          {paginate(peminjaman, peminjamanPage).map((b, i) => (
-            <div key={i} className="bg-white border border-[#B0B3B8] p-4 rounded-lg shadow-sm">
-              <p className="font-bold">{b.title}</p>
-              <p className="text-sm">Peminjam: {b.peminjam}</p>
-              <p className="text-sm">Peminjaman: {b.pinjam}</p>
-              <p className="text-sm">Pengembalian: {b.kembali}</p>
+      <section className="border border-gray-200 rounded-2xl p-6 shadow-md bg-white">
+        <h2 className="text-xl font-semibold text-navy mb-6">📚 Peminjaman Hari Ini</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {peminjaman.map((b) => (
+            <div
+              key={b.id}
+              className="bg-white border border-gray-200 p-4 rounded-xl shadow-sm hover:shadow-lg transition flex flex-col gap-2"
+            >
+              <p className="font-bold">{b.judul}</p>
+              <p className="text-sm text-gray-600">Peminjam: {b.peminjam}</p>
+              <p className="text-sm text-gray-600">Peminjaman: {b.tanggal_pinjam}</p>
+              <p className="text-sm text-gray-600">Pengembalian: {b.tanggal_kembali}</p>
             </div>
           ))}
         </div>
-
-        <div className="flex justify-center items-center gap-2 mt-6 flex-wrap">
-          <button
-            onClick={() => setPeminjamanPage((p) => Math.max(p - 1, 1))}
-            disabled={peminjamanPage === 1}
-            className={`px-3 py-1 rounded ${
-              peminjamanPage === 1
-                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                : "bg-navy text-white hover:bg-blue-700"
-            }`}
-          >
-            Prev
-          </button>
-          <button className="px-3 py-1 rounded bg-navy text-white">{peminjamanPage}</button>
-          <button
-            onClick={() =>
-              setPeminjamanPage((p) => Math.min(p + 1, Math.ceil(peminjaman.length / itemsPerPage)))
-            }
-            disabled={peminjamanPage === Math.ceil(peminjaman.length / itemsPerPage)}
-            className={`px-3 py-1 rounded ${
-              peminjamanPage === Math.ceil(peminjaman.length / itemsPerPage)
-                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                : "bg-navy text-white hover:bg-blue-700"
-            }`}
-          >
-            Next
-          </button>
-        </div>
+        <Pagination
+          currentPage={peminjamanPage}
+          totalPages={peminjamanTotalPages}
+          setPage={setPeminjamanPage}
+        />
       </section>
 
       {/* pengembalian */}
-      <section className="border border-[#B0B3B8] rounded-xl p-6 shadow-md">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <h2 className="text-xl font-semibold text-navy">📦 Pengembalian Hari Ini</h2>
-          <input
-            type="text"
-            placeholder="Cari pengembali..."
-            className="border border-[#B0B3B8] px-3 py-2 rounded-lg w-full sm:w-60 focus:outline-none"
-          />
-        </div>
-
-        <div className="space-y-4">
-          {paginate(pengembalian, pengembalianPage).map((b, i) => (
+      <section className="border border-gray-200 rounded-2xl p-6 shadow-md bg-white">
+        <h2 className="text-xl font-semibold text-navy mb-6">📦 Pengembalian Hari Ini</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {pengembalian.map((b) => (
             <div
-              key={i}
-              className="border border-[#B0B3B8] p-4 rounded-lg shadow-sm flex flex-col sm:flex-row justify-between items-start gap-4"
+              key={b.id}
+              className="border border-gray-200 p-4 rounded-xl shadow-sm hover:shadow-lg transition flex flex-col gap-2 bg-white"
             >
-              <div>
-                <p className="font-bold">{b.title}</p>
-                <p className="text-sm">Peminjam: {b.peminjam}</p>
-                <p className="text-sm">Peminjaman: {b.pinjam}</p>
-                <p className="text-sm">Pengembalian: {b.kembali}</p>
-              </div>
-              <button className="bg-navy hover:bg-blue text-white font-semibold px-4 py-2 rounded-lg shadow transition duration-200">
-                KEMBALIKAN
-              </button>
+              <p className="font-bold">{b.judul}</p>
+              <p className="text-sm text-gray-600">Peminjam: {b.peminjam}</p>
+              <p className="text-sm text-gray-600">Peminjaman: {b.tanggalPinjam}</p>
+              <p className="text-sm text-gray-600">
+                Pengembalian: {b.tanggalKembali}
+              </p>
             </div>
           ))}
         </div>
-
-        <div className="flex justify-center items-center gap-2 mt-6 flex-wrap">
-          <button
-            onClick={() => setPengembalianPage((p) => Math.max(p - 1, 1))}
-            disabled={pengembalianPage === 1}
-            className={`px-3 py-1 rounded ${
-              pengembalianPage === 1
-                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                : "bg-navy text-white hover:bg-blue-700"
-            }`}
-          >
-            Prev
-          </button>
-          <button className="px-3 py-1 rounded bg-navy text-white">{pengembalianPage}</button>
-          <button
-            onClick={() =>
-              setPengembalianPage((p) =>
-                Math.min(p + 1, Math.ceil(pengembalian.length / itemsPerPage))
-              )
-            }
-            disabled={pengembalianPage === Math.ceil(pengembalian.length / itemsPerPage)}
-            className={`px-3 py-1 rounded ${
-              pengembalianPage === Math.ceil(pengembalian.length / itemsPerPage)
-                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                : "bg-navy text-white hover:bg-blue-700"
-            }`}
-          >
-            Next
-          </button>
-        </div>
+        <Pagination
+          currentPage={pengembalianPage}
+          totalPages={pengembalianTotalPages}
+          setPage={setPengembalianPage}
+        />
       </section>
     </main>
   );

@@ -59,7 +59,6 @@ export default function PengembalianList() {
 
       setPengembalian(transformed);
 
-
       const totalItems =
         data.meta?.pagination?.total || data.pagination?.total || 0;
       setTotalPages(Math.ceil(totalItems / itemsPerPage));
@@ -124,64 +123,85 @@ export default function PengembalianList() {
   };
 
   return (
-    <div className="font-sans text-sm space-y-3">
+    <div className="font-sans text-sm space-y-6">
       {/* Header */}
-<div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-  <h1 className="font-sans font-bold text-navy text-2xl">Pengembalian</h1>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+        <h1 className="font-sans font-bold text-navy text-2xl">Pengembalian</h1>
 
-  <div className="flex gap-2 w-full md:w-auto">
-    <input
-      type="text"
-      placeholder="Cari judul buku..."
-      className="border border-gray-300 rounded px-3 py-2 w-full md:w-64"
-      value={searchTerm}
-      onChange={(e) => {
-        setSearchTerm(e.target.value);
-        setCurrentPage(1);
-      }}
-    />
-  </div>
-</div>
+        <div className="flex gap-2 w-full md:w-auto">
+          <input
+            type="text"
+            placeholder="Cari judul buku..."
+            className="border border-gray-300 rounded px-3 py-2 w-full md:w-64"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+          />
+        </div>
+      </div>
 
+      {/* Grid Pengembalian */}
       {loading ? (
         <p>Memuat data...</p>
       ) : (
-        pengembalian.map((item) => (
-          <div
-            key={item.id}
-            className="border rounded p-4 shadow-sm flex flex-col gap-1"
-          >
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="font-bold">{item.judul}</p>
-                <p className="text-sm font-bold">Peminjam: {item.peminjam}</p>
-                <p className="text-sm">Peminjaman: {item.tanggalPinjam}</p>
-                <p className="text-sm">Pengembalian: {item.tanggalKembali}</p>
-                <p className="text-sm">Dikembalikan: {item.dikembalikan}</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {pengembalian.map((item) => (
+            <div
+              key={item.id}
+              className="border rounded-lg shadow-sm bg-white flex flex-col overflow-hidden"
+            >
+              {/* Strip Status */}
+              <div
+                className={`h-2 ${
+                  item.sudahDikembalikan
+                    ? item.terlambat
+                      ? "bg-red-500"
+                      : "bg-green-500"
+                    : "bg-yellow-500"
+                }`}
+              />
+
+              {/* Isi Card */}
+              <div className="p-4 flex-1">
+                <p className="font-bold text-navy">{item.judul}</p>
+                <p className="text-xs text-gray-600">
+                  Peminjam: {item.peminjam}
+                </p>
+                <p className="text-xs text-gray-600">
+                  Peminjaman: {item.tanggalPinjam}
+                </p>
+                <p className="text-xs text-gray-600">
+                  Pengembalian: {item.tanggalKembali}
+                </p>
+                <p className="text-xs text-gray-600">
+                  Dikembalikan: {item.dikembalikan}
+                </p>
               </div>
-              <div className="flex flex-col gap-2 items-end">
+
+              {/* Action Bar */}
+              <div className="border-t bg-gray-50 p-2">
                 {item.sudahDikembalikan ? (
-                  item.terlambat ? (
-                    <span className="bg-red-500 text-white text-xs px-3 py-1 rounded-b-lg h-fit">
-                      TERLAMBAT
-                    </span>
-                  ) : (
-                    <span className="bg-green-500 text-white text-xs px-3 py-1 rounded-b-lg h-fit">
-                      DIKEMBALIKAN
-                    </span>
-                  )
+                  <span
+                    className={`block text-center text-white text-sm px-3 py-2 rounded ${
+                      item.terlambat ? "bg-red-500" : "bg-green-500"
+                    }`}
+                  >
+                    {item.terlambat ? "TERLAMBAT" : "DIKEMBALIKAN"}
+                  </span>
                 ) : (
                   <Button
-                    className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded"
+                    className="bg-navy text-white hover:bg-blue w-full"
                     onClick={() => handleReturn(item.loanId)}
                   >
-                    Kembalikan
+                    KEMBALIKAN
                   </Button>
                 )}
               </div>
             </div>
-          </div>
-        ))
+          ))}
+        </div>
       )}
 
       {/* Pagination */}
@@ -226,4 +246,22 @@ export default function PengembalianList() {
       </div>
     </div>
   );
+}
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function formatDateTime(date: Date) {
+  return date.toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }

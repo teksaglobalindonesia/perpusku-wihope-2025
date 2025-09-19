@@ -57,7 +57,10 @@ export default function Anggota() {
   };
 
   useEffect(() => {
-    fetchAnggota();
+    const timeout = setTimeout(() => {
+      fetchAnggota();
+    }, 500);
+    return () => clearTimeout(timeout);
   }, [searchTerm, currentPage, pathname]);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -84,8 +87,9 @@ export default function Anggota() {
               setCurrentPage(1);
             }}
           />
-          <Link href="/anggota/tambah" className="w-full md:w-auto">
-            <Button className="bg-navy text-white hover:bg-blue font-sans font-semibold px-4 py-2 rounded-lg w-full md:w-auto">
+          {/* Tombol tambah di header hanay muncul di dekstop*/}
+          <Link href="/anggota/tambah" className="hidden md:block">
+            <Button className="bg-navy text-white hover:bg-blue font-sans font-semibold px-4 py-2 rounded-lg">
               + TAMBAH
             </Button>
           </Link>
@@ -97,16 +101,16 @@ export default function Anggota() {
         {anggotaList.map((anggota) => (
           <div
             key={anggota.id}
-            className="border border-navy rounded-lg p-4 shadow-sm bg-white"
+            className="border border-navy rounded-lg p-4 shadow-sm bg-white transition duration-200 hover:shadow-md hover:scale-[1.01]"
           >
             <h2 className="text-lg font-semibold text-navy">{anggota.name}</h2>
-            <p className="text-sm text-[#B0B3B8]">ID: {anggota.nomor}</p>
-            <p className="text-sm text-[#B0B3B8]">Address: {anggota.address}</p>
-            <p className="text-sm text-[#B0B3B8]">Email: {anggota.email}</p>
+            <p className="text-sm text-gray-500">ID: {anggota.nomor}</p>
+            <p className="text-sm text-gray-500">Email: {anggota.email}</p>
+            <p className="text-sm text-gray-500">Alamat: {anggota.address}</p>
 
             <div className="flex flex-wrap gap-2 mt-4">
               <Link href={`/anggota/peminjaman/${anggota.id}`}>
-                <Button className="bg-[#2ECC40] text-white hover:bg-[#29b136]">
+                <Button className="bg-[#2ECC40] text-white hover:bg-[#29b136] text-sm px-3">
                   PEMINJAMAN
                 </Button>
               </Link>
@@ -114,7 +118,7 @@ export default function Anggota() {
               <Link
                 href={`/anggota/edit/${anggota.documentId}?id_member=${anggota.nomor}&name=${anggota.name}&email=${anggota.email}&address=${anggota.address}`}
               >
-                <Button className="bg-yellow-300 text-black hover:bg-yellow-400">
+                <Button className="bg-yellow-300 text-black hover:bg-yellow-400 text-sm px-3">
                   EDIT
                 </Button>
               </Link>
@@ -129,48 +133,55 @@ export default function Anggota() {
       </div>
 
       {/* Pagination */}
-        <div className="flex justify-center items-center gap-2 mt-6 flex-wrap">
-  {/* Prev */}
-  <button
-    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-    disabled={currentPage === 1}
-    className={`px-3 py-1 rounded ${
-      currentPage === 1
-        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-        : "bg-navy text-white hover:bg-blue-700"
-    }`}
-  >
-    Prev
-  </button>
+      <div className="flex justify-center items-center gap-2 mt-6 flex-wrap">
+        {/* Prev */}
+        <button
+          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+          disabled={currentPage === 1}
+          className={`px-3 py-1 rounded ${
+            currentPage === 1
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-navy text-white hover:bg-blue-700"
+          }`}
+        >
+          Prev
+        </button>
 
-  {/* page nomor */}
-  {Array.from({ length: totalPages }).map((_, i) => (
-    <button
-      key={i}
-      onClick={() => setCurrentPage(i + 1)}
-      className={`px-3 py-1 rounded ${
-        currentPage === i + 1
-          ? "bg-navy text-white"
-          : "bg-white text-navy border border-navy hover:bg-blue-100"
-      }`}
-    >
-      {i + 1}
-    </button>
-  ))}
+        {/* page nomor */}
+        {Array.from({ length: totalPages }).map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrentPage(i + 1)}
+            className={`px-3 py-1 rounded ${
+              currentPage === i + 1
+                ? "bg-navy text-white"
+                : "bg-white text-navy border border-navy hover:bg-blue-100"
+            }`}
+          >
+            {i + 1}
+          </button>
+        ))}
 
-  {/* Next */}
-  <button
-    onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-    disabled={currentPage === totalPages}
-    className={`px-3 py-1 rounded ${
-      currentPage === totalPages
-        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-        : "bg-navy text-white hover:bg-blue-700"
-    }`}
-  >
-    Next
-  </button>
+        {/* Next */}
+        <button
+          onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+          disabled={currentPage === totalPages}
+          className={`px-3 py-1 rounded ${
+            currentPage === totalPages
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-navy text-white hover:bg-blue-700"
+          }`}
+        >
+          Next
+        </button>
       </div>
+
+      {/* Floating Action Button hanya muncul di mobile */}
+      <Link href="/anggota/tambah" className="md:hidden">
+        <Button className="fixed bottom-6 right-6 rounded-full w-14 h-14 flex items-center justify-center bg-navy text-white shadow-lg hover:bg-blue-700 text-2xl">
+          +
+        </Button>
+      </Link>
     </main>
   );
 }

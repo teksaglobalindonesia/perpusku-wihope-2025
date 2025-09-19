@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 
@@ -39,10 +38,7 @@ export default function PeminjamanList() {
           const now = new Date();
 
           let status = item.status_pinjam ?? "Tidak diketahui";
-          if (
-            status.toLowerCase() === "sedang_dipinjam" &&
-            now > returnDate
-          ) {
+          if (status.toLowerCase() === "sedang_dipinjam" && now > returnDate) {
             status = "terlambat";
           }
 
@@ -55,9 +51,6 @@ export default function PeminjamanList() {
             tanggal_pinjam: item.loan_date ?? "Tidak diketahui",
             tanggal_kembali: item.return_date ?? "Tidak diketahui",
             status_pinjam: status,
-            image: item.book?.cover?.url
-              ? `https://cms-perpusku.widhimp.my.id${item.book.cover.url}`
-              : "/images/default.jpg",
           };
         });
 
@@ -110,61 +103,87 @@ export default function PeminjamanList() {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   return (
-    <div className="space-y-4 font-sans text-sm">
+    <div className="space-y-6 font-sans text-sm">
       {/* Header */}
-<div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-  <h1 className="font-sans font-bold text-navy text-2xl">Peminjaman</h1>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+        <h1 className="font-sans font-bold text-navy text-2xl">Peminjaman</h1>
 
-  <div className="flex gap-2 w-full md:w-auto">
-    <input
-      type="text"
-      placeholder="Cari id dokumen..."
-      className="border border-gray-300 rounded px-3 py-2 w-full md:w-64"
-      value={searchTerm}
-      onChange={(e) => {
-        setSearchTerm(e.target.value);
-        setCurrentPage(1);
-      }}
-    />
-    <Link href="/peminjaman/tambah" className="w-full md:w-auto">
-      <Button className="bg-navy text-white hover:bg-blue font-sans font-semibold px-4 py-2 rounded-lg w-full md:w-auto">
-        + TAMBAH
-      </Button>
-    </Link>
-  </div>
-</div>
+        <div className="flex gap-2 w-full md:w-auto">
+          <input
+            type="text"
+            placeholder="Cari id dokumen..."
+            className="border border-gray-300 rounded px-3 py-2 w-full md:w-64"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+          />
+          <Link href="/peminjaman/tambah" className="w-full md:w-auto">
+            <Button className="bg-navy text-white hover:bg-blue font-sans font-semibold px-4 py-2 rounded-lg w-full md:w-auto">
+              + TAMBAH
+            </Button>
+          </Link>
+        </div>
+      </div>
 
+      {/* Grid Peminjaman */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {peminjamanList.map((item) => (
+          <div
+            key={item.id}
+            className="border rounded-lg shadow-sm bg-white flex flex-col overflow-hidden"
+          >
+            {/* Strip Status */}
+            <div
+              className={`h-2 ${
+                item.status_pinjam.toLowerCase() === "dikembalikan"
+                  ? "bg-green-500"
+                  : item.status_pinjam.toLowerCase() === "terlambat"
+                  ? "bg-red-500"
+                  : item.status_pinjam.toLowerCase() === "sedang_dipinjam"
+                  ? "bg-yellow-500"
+                  : "bg-gray-300"
+              }`}
+            />
 
-      {/* Daftar Peminjaman */}
-      {peminjamanList.map((item) => (
-        <div
-          key={item.id}
-          className="border rounded p-4 shadow-sm flex flex-col gap-1"
-        >
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="font-bold">ID Dokumen: {item.documentId || "-"}</p>
-              <p className="font-semibold text-sm">Judul: {item.judul}</p>
-              <p className="font-semibold text-sm">
-                Peminjam: {item.peminjam} ({item.id_member})
-              </p>
-              <p className="font-semibold text-sm">
-                Tanggal Pinjam: {formatTanggal(item.tanggal_pinjam)}
-              </p>
-              <p className="font-semibold text-sm">
-                Tanggal Kembali: {formatTanggal(item.tanggal_kembali)}
-              </p>
+            {/* Isi Card */}
+            <div className="p-4 flex-1 flex flex-col justify-between">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {/* Info Peminjam */}
+                <div>
+                  <p className="font-bold text-navy">{item.peminjam}</p>
+                  <p className="text-xs text-gray-500">
+                    ID Member: {item.id_member}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    ID Dokumen: {item.documentId}
+                  </p>
+                </div>
+
+                {/* Info Buku */}
+                <div>
+                  <p className="font-semibold">{item.judul}</p>
+                  <p className="text-xs text-gray-600">
+                    Pinjam: {formatTanggal(item.tanggal_pinjam)}
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    Kembali: {formatTanggal(item.tanggal_kembali)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Button */}
               <Button
-                className="bg-navy text-white hover:bg-blue px-4 py-1 rounded mt-2"
+                className="bg-navy text-white hover:bg-blue w-full mt-4"
                 onClick={() => handleReturn(item.documentId)}
               >
                 KEMBALIKAN
               </Button>
             </div>
-            {getStatusBadge(item.status_pinjam)}
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
       {/* Pagination */}
       <div className="flex justify-center items-center gap-2 mt-6 flex-wrap">
@@ -214,23 +233,4 @@ function formatTanggal(input: string) {
   if (!input) return "-";
   const date = new Date(input);
   return format(date, "dd MMMM yyyy, HH:mm", { locale: undefined });
-}
-
-function getStatusBadge(status: string | undefined) {
-  const value = status?.toLowerCase();
-
-  switch (value) {
-    case "dikembalikan":
-      return (
-        <Badge className="bg-green-500 hover:bg-green-600">Dikembalikan</Badge>
-      );
-    case "terlambat":
-      return <Badge variant="destructive">Terlambat</Badge>;
-    case "sedang_dipinjam":
-      return (
-        <Badge className="bg-yellow-500 hover:bg-yellow-600">Dipinjam</Badge>
-      );
-    default:
-      return <Badge className="bg-gray-300 text-black">Tidak Diketahui</Badge>;
-  }
 }
