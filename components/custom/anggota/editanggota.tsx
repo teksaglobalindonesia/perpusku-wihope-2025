@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 import { useRouter } from "next/navigation";
 
@@ -82,13 +83,11 @@ export default function EditAnggota({ id }: { id: string }) {
       }
 
       alert("✅ Data anggota berhasil diperbarui!");
-      router.push("/anggota"); 
+      router.push("/anggota");
       router.refresh();
     } catch (err) {
       console.error("❌ Error update anggota:", err);
-      alert(
-        "❌ Terjadi kesalahan saat update anggota. Lihat console untuk detail."
-      );
+      alert("❌ Terjadi kesalahan saat update anggota. Lihat console untuk detail.");
     }
   };
 
@@ -96,61 +95,87 @@ export default function EditAnggota({ id }: { id: string }) {
     return <p className="text-center mt-6">⏳ Loading data anggota...</p>;
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded shadow mt-8">
-      <h1 className="text-xl font-bold mb-4 text-center">
-        Edit Anggota (DocumentId: {id})
-      </h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Nomor
-          </label>
-          <Input
-            value={nomor}
-            onChange={(e) => setNomor(e.target.value)}
-            placeholder="Nomor"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Nama
-          </label>
-          <Input
-            value={nama}
-            onChange={(e) => setNama(e.target.value)}
-            placeholder="Nama"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Email
-          </label>
-          <Input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            type="email"
-            placeholder="Email"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Alamat
-          </label>
-          <Input
-            value={alamat}
-            onChange={(e) => setAlamat(e.target.value)}
-            placeholder="Alamat"
-          />
-        </div>
-        <div className="flex gap-4">
-          <Button
-            type="submit"
-            className="w-full bg-green-600 text-white hover:bg-green-500"
-          >
-            Simpan Anggota
-          </Button>
-        </div>
-      </form>
-    </div>
+    <main className="min-h-screen flex items-center justify-center px-4 py-10 bg-gray-50">
+      <Card className="w-full max-w-md bg-white shadow-lg rounded-2xl">
+        <CardContent className="p-6">
+          <h1 className="text-2xl font-bold text-navy mb-6 text-center">
+            ✏️ Edit Anggota
+          </h1>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Nomor */}
+            <div>
+              <label className="block text-sm font-semibold mb-1 text-navy">
+                Nomor Anggota
+              </label>
+              <Input
+                value={nomor}
+                onChange={(e) => setNomor(e.target.value)}
+                placeholder="Nomor"
+                className="rounded-lg border-navy focus:ring-2 focus:ring-navy/50"
+              />
+            </div>
+
+            {/* Nama */}
+            <div>
+              <label className="block text-sm font-semibold mb-1 text-navy">
+                Nama
+              </label>
+              <Input
+                value={nama}
+                onChange={(e) => setNama(e.target.value)}
+                placeholder="Nama"
+                className="rounded-lg border-navy focus:ring-2 focus:ring-navy/50"
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-semibold mb-1 text-navy">
+                Email
+              </label>
+              <Input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                type="email"
+                placeholder="Email"
+                className="rounded-lg border-navy focus:ring-2 focus:ring-navy/50"
+              />
+            </div>
+
+            {/* Alamat */}
+            <div>
+              <label className="block text-sm font-semibold mb-1 text-navy">
+                Alamat
+              </label>
+              <Input
+                value={alamat}
+                onChange={(e) => setAlamat(e.target.value)}
+                placeholder="Alamat"
+                className="rounded-lg border-navy focus:ring-2 focus:ring-navy/50"
+              />
+            </div>
+
+            {/* Tombol */}
+            <div className="flex gap-4 pt-4">
+              <Button
+                type="submit"
+                className="w-full bg-navy text-white hover:bg-blue"
+              >
+                Simpan Perubahan
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={() => router.push("/anggota")}
+              >
+                Batal
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </main>
   );
 }
