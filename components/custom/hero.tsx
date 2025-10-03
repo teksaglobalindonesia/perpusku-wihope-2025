@@ -35,7 +35,7 @@ const Hero = () => {
     tl.fromTo(
       '.hero-line',
       { width: 0 },
-      { width: 470, duration: 2, ease: 'power3.Out' },
+      { width: '100%', duration: 2, ease: 'power3.Out' },
       '+=0.2'
     );
 
@@ -83,24 +83,24 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className="mt-[230px] flex min-h-[500px] w-full items-start justify-between px-8">
+    <section className="mt-20 flex min-h-[500px] w-full flex-col items-center justify-between px-4 md:mt-[230px] md:flex-row md:items-start md:px-8">
       {/* Kiri */}
-      <div className="flex w-1/2 flex-col text-left md:ml-20">
-        <h1 className="hero-title mb-2 ml-36 mt-10 font-light text-foreground md:text-7xl">
+      <div className="flex w-full flex-col text-center md:ml-20 md:w-1/2 md:text-left">
+        <h1 className="hero-title mb-2 mt-10 text-3xl font-light text-foreground md:ml-36 md:text-7xl">
           Perpusku
         </h1>
         <div
           className="hero-line mb-1 mt-5 h-1 bg-black dark:bg-white"
           style={{ width: 0 }}
         />
-        <p className="hero-sub opacity-1 ml-20 text-lg text-foreground md:text-2xl">
+        <p className="hero-sub opacity-1 text-lg text-foreground md:ml-20 md:text-2xl">
           your <span ref={textRef} className="font-semibold"></span>
           <span className="blinking-cursor">|</span>
         </p>
       </div>
 
       {/* Kanan */}
-      <div className="flex w-1/2 justify-center pr-6">
+      <div className="mt-6 flex w-full justify-center md:mt-0 md:w-1/2 md:justify-end md:pr-6">
         <div className="rounded-lg bg-white p-2 transition-colors duration-700 dark:bg-black">
           <div className="bg-white p-2 transition-colors duration-700 dark:bg-gray-800">
             <div className="bg-white p-4 transition-colors duration-700">
@@ -109,7 +109,7 @@ const Hero = () => {
                 loop
                 muted
                 playsInline
-                className="h-auto w-48 rounded-xl shadow-lg md:w-60"
+                className="h-auto w-40 rounded-xl shadow-lg md:w-60"
               >
                 <source src="/literatureVideo.mp4" type="video/mp4" />
               </video>
@@ -117,20 +117,6 @@ const Hero = () => {
           </div>
         </div>
       </div>
-
-      {/* Blinking cursor style */}
-      <style jsx>{`
-        .blinking-cursor {
-          display: inline-block;
-          margin-left: 2px;
-          animation: blink 1s step-start infinite;
-        }
-        @keyframes blink {
-          50% {
-            opacity: 0;
-          }
-        }
-      `}</style>
     </section>
   );
 };

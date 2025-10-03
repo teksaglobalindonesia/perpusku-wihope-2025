@@ -22,7 +22,7 @@ const Navbar = () => {
   if (!visible) return null; // kalau navbar disembunyikan → jangan render sama sekali
 
   return (
-    <nav className="fixed top-0 z-[9999] flex h-[80px] w-full flex-row items-center justify-between bg-white px-6 text-black transition-colors duration-700 dark:bg-black dark:text-white">
+    <nav className="fixed top-0 z-[9999] flex h-[80px] w-screen flex-row items-center justify-between bg-white px-6 text-black transition-colors duration-700 dark:bg-black dark:text-white">
       <h1 className="text-3xl font-normal underline transition-colors duration-700">
         Perpusku
       </h1>

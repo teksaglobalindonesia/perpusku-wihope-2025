@@ -45,7 +45,7 @@ export default function About() {
   return (
     <section
       ref={containerRef}
-      className="mt-32 flex min-h-screen flex-col items-start justify-center px-6 md:flex-row md:px-20"
+      className="mt-32 flex min-h-screen w-screen flex-col items-center justify-center px-6 md:flex-row md:items-start md:px-20"
     >
       {/* Foto */}
       <div className="about-image mb-8 h-48 w-48 flex-shrink-0 md:mb-0 md:mr-12 md:h-72 md:w-72">

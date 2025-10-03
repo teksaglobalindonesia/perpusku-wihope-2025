@@ -42,7 +42,7 @@ export default function HistoryRight() {
   return (
     <section
       ref={containerRef}
-      className="flex min-h-[640px] items-center justify-center px-8"
+      className="flex min-h-[640px] w-screen items-center justify-center px-8"
     >
       <div className="grid max-w-6xl grid-cols-1 items-center gap-8 md:grid-cols-2">
         {/* Text */}

@@ -45,7 +45,7 @@ export default function About() {
   return (
     <section
       ref={containerRef}
-      className="flex min-h-screen flex-col items-center justify-center px-6 py-12 md:px-20"
+      className="flex min-h-screen w-screen flex-col items-center justify-center px-6 py-12 md:px-20"
     >
       {/* Foto di atas */}
       <div className="about-image mb-8 h-48 w-48 md:h-72 md:w-72">

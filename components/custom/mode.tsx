@@ -10,7 +10,7 @@ const ModeToggle = () => {
   const { toggleNavbar } = useNavbar();
 
   return (
-    <div className={`transition-all duration-700 ease-in-out`}>
+    <div className={`w-screen transition-all duration-700 ease-in-out`}>
       {/* Floating Button */}
       <button
         onClick={() => setOpen(!open)}
