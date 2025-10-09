@@ -4,6 +4,7 @@ import NextTopLoader from 'nextjs-toploader';
 import './globals.css';
 import 'animate.css/animate.compat.css';
 import { ReactQueryClientProvider } from '@/providers/ReactQueryClientProvider';
+import Header from "@/components/custom/header";
 
 const robotoFont = Roboto({
   subsets: ['latin'],
@@ -25,6 +26,7 @@ export default async function RootLayout({
       >
         <body>
           <NextTopLoader showSpinner={false} height={4} />
+          <Header/>
           <Toaster />
           {children}
         </body>
