@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import HapusAnggotaDialog from "@/components/custom/anggota/hapusanggota";
 import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
 import { usePathname } from "next/navigation";
+import gsap from "gsap";
 
 export default function Anggota() {
   const [anggotaList, setAnggotaList] = useState<any[]>([]);
@@ -15,6 +16,8 @@ export default function Anggota() {
 
   const pathname = usePathname();
   const itemsPerPage = 6;
+
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const fetchAnggota = async () => {
     try {
@@ -63,6 +66,46 @@ export default function Anggota() {
     return () => clearTimeout(timeout);
   }, [searchTerm, currentPage, pathname]);
 
+  // Animasi GSAP
+  useEffect(() => {
+    if (anggotaList.length > 0 && containerRef.current) {
+      const ctx = gsap.context(() => {
+        gsap.fromTo(
+          ".anggota-card",
+          { opacity: 0, y: 20, scale: 0.98 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 1.2,
+            ease: "power4.out",
+            stagger: 0.15,
+          }
+        );
+
+        const cards = document.querySelectorAll(".anggota-card");
+        cards.forEach((card) => {
+          card.addEventListener("mouseenter", () => {
+            gsap.to(card, {
+              scale: 1.04,
+              duration: 0.3,
+              ease: "power2.out",
+            });
+          });
+          card.addEventListener("mouseleave", () => {
+            gsap.to(card, {
+              scale: 1,
+              duration: 0.3,
+              ease: "power2.out",
+            });
+          });
+        });
+      }, containerRef);
+
+      return () => ctx.revert();
+    }
+  }, [anggotaList]);
+
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const handleDelete = (id: number) => {
@@ -97,11 +140,14 @@ export default function Anggota() {
       </div>
 
       {/* Card Anggota */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div
+        ref={containerRef}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+      >
         {anggotaList.map((anggota) => (
           <div
             key={anggota.id}
-            className="border border-navy rounded-lg p-4 shadow-sm bg-white transition duration-200 hover:shadow-md hover:scale-[1.01]"
+            className="anggota-card border border-navy rounded-lg p-4 shadow-sm bg-white"
           >
             <h2 className="text-lg font-semibold text-navy">{anggota.name}</h2>
             <p className="text-sm text-gray-500">ID: {anggota.nomor}</p>

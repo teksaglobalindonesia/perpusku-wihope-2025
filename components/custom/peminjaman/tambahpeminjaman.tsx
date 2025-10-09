@@ -1,16 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import PilihBuku from "@/components/custom/peminjaman/pilihbuku";
 import PilihAnggota from "@/components/custom/peminjaman/pilihanggota";
 import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
+import gsap from "gsap";
 
 export default function TambahPeminjaman() {
   const [selectedBuku, setSelectedBuku] = useState<{ id: string; title: string } | null>(null);
   const [selectedAnggota, setSelectedAnggota] = useState<{ id: string; name: string } | null>(null);
   const [tanggal, setTanggal] = useState("");
   const [durasi, setDurasi] = useState("1 minggu");
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      gsap.fromTo(
+        containerRef.current,
+        { y: 50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1, ease: "power3.out" }
+      );
+    }
+
+    if (buttonRef.current) {
+      gsap.fromTo(
+        buttonRef.current,
+        { scale: 0.9, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 1, delay: 0.5, ease: "elastic.out(1, 0.5)" }
+      );
+    }
+  }, []);
 
   const hitungReturnDate = (loanDate: string, durasi: string) => {
     const d = new Date(loanDate);
@@ -66,7 +88,7 @@ export default function TambahPeminjaman() {
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-lg bg-white shadow-md rounded-xl p-6">
+      <div ref={containerRef} className="w-full max-w-lg bg-white shadow-md rounded-xl p-6">
         <h1 className="text-2xl font-bold mb-6 text-center text-navy">
           Tambah Peminjaman
         </h1>
@@ -143,6 +165,7 @@ export default function TambahPeminjaman() {
 
           {/* Submit */}
           <Button
+            ref={buttonRef}
             type="submit"
             className="w-full bg-green-600 text-white font-semibold py-2 rounded-lg hover:bg-green-700 transition"
           >

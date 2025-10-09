@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CheckCircle } from "lucide-react";
 import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import gsap from "gsap";
 
 export default function TambahAnggotaForm() {
   const [nomor, setNomor] = useState("");
@@ -15,6 +16,31 @@ export default function TambahAnggotaForm() {
   const [alamat, setAlamat] = useState("");
   const [responseData, setResponseData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+
+  const formRef = useRef(null);
+  const alertRef = useRef(null);
+
+  useEffect(() => {
+    // Animasi pertama kali form muncul
+    if (formRef.current) {
+      gsap.fromTo(
+        formRef.current,
+        { opacity: 0, y: 40 },
+        { opacity: 1, y: 0, duration: 1, ease: "power3.out" }
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    // Animasi alert sukses
+    if (responseData && alertRef.current) {
+      gsap.fromTo(
+        alertRef.current,
+        { opacity: 0, scale: 0.8 },
+        { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(1.7)" }
+      );
+    }
+  }, [responseData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,7 +83,10 @@ export default function TambahAnggotaForm() {
 
   return (
     <main className="min-h-screen flex items-center justify-center px-4 py-10 bg-gray-50">
-      <Card className="w-full max-w-md bg-white shadow-lg rounded-2xl">
+      <Card
+        ref={formRef}
+        className="w-full max-w-md bg-white shadow-lg rounded-2xl"
+      >
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-navy text-center">
             Tambah Anggota
@@ -131,7 +160,10 @@ export default function TambahAnggotaForm() {
 
           {/* Alert sukses */}
           {responseData && (
-            <Alert className="mt-6 border-green-600 bg-green-50">
+            <Alert
+              ref={alertRef}
+              className="mt-6 border-green-600 bg-green-50"
+            >
               <CheckCircle className="h-5 w-5 text-green-600" />
               <AlertTitle className="text-green-700 font-semibold">
                 Berhasil

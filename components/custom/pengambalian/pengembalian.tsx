@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
+import gsap from "gsap";
 
 export default function PengembalianList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -72,6 +73,23 @@ export default function PengembalianList() {
   useEffect(() => {
     fetchData();
   }, [searchTerm, currentPage]);
+
+  // Animasi GSAP untuk card pengembalian
+  useEffect(() => {
+    if (!loading && pengembalian.length > 0) {
+      gsap.fromTo(
+        ".return-card",
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.15,
+          ease: "power3.out",
+        }
+      );
+    }
+  }, [pengembalian, loading]);
 
   const formatDate = (date: Date) =>
     date.toLocaleDateString("id-ID", {
@@ -150,7 +168,7 @@ export default function PengembalianList() {
           {pengembalian.map((item) => (
             <div
               key={item.id}
-              className="border rounded-lg shadow-sm bg-white flex flex-col overflow-hidden"
+              className="return-card border rounded-lg shadow-sm bg-white flex flex-col overflow-hidden"
             >
               {/* Strip Status */}
               <div

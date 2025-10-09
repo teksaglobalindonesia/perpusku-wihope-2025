@@ -3,8 +3,9 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
+import gsap from "gsap";
 
 export default function TambahBukuPage() {
   const router = useRouter();
@@ -21,6 +22,40 @@ export default function TambahBukuPage() {
   const [penulis, setPenulis] = useState("");
   const [tahun, setTahun] = useState("");
   const [stok, setStok] = useState(1);
+
+  // 🔹 Ref untuk animasi
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const formRef = useRef<HTMLFormElement | null>(null);
+  const previewRef = useRef<HTMLImageElement | null>(null);
+
+  // 🔹 Animasi saat page pertama kali muncul
+  useEffect(() => {
+    gsap.from(cardRef.current, {
+      opacity: 0,
+      y: 40,
+      duration: 1,
+      ease: "power3.out",
+    });
+
+    gsap.from(formRef.current, {
+      opacity: 0,
+      y: 20,
+      delay: 0.4,
+      duration: 0.8,
+      ease: "power2.out",
+    });
+  }, []);
+
+  // 🔹 Animasi untuk preview cover
+  useEffect(() => {
+    if (previewImage && previewRef.current) {
+      gsap.fromTo(
+        previewRef.current,
+        { opacity: 0, scale: 0.8 },
+        { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(1.7)" }
+      );
+    }
+  }, [previewImage]);
 
   // kategori fetch
   useEffect(() => {
@@ -118,14 +153,13 @@ export default function TambahBukuPage() {
 
   return (
     <main className="px-6 py-8 flex justify-center">
-      {/* Card putih */}
-      <Card className="w-full max-w-3xl shadow-lg rounded-2xl bg-white">
+      <Card ref={cardRef} className="w-full max-w-3xl shadow-lg rounded-2xl bg-white">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-navy">Tambah Buku</CardTitle>
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
             {/* Judul */}
             <div>
               <label className="block text-sm font-medium mb-1 text-navy">Judul Buku</label>
@@ -249,6 +283,7 @@ export default function TambahBukuPage() {
 
               {previewImage && (
                 <img
+                  ref={previewRef}
                   src={previewImage}
                   alt="Preview cover"
                   className="w-32 h-44 object-cover rounded-lg border"

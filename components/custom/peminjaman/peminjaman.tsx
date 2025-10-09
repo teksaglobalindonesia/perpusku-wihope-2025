@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { format } from "date-fns";
 import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
+import gsap from "gsap";
 
 export default function PeminjamanList() {
   const [peminjamanList, setPeminjamanList] = useState<any[]>([]);
@@ -13,6 +14,7 @@ export default function PeminjamanList() {
   const [totalItems, setTotalItems] = useState(0);
 
   const itemsPerPage = 6;
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchPeminjaman = async () => {
@@ -67,6 +69,46 @@ export default function PeminjamanList() {
 
     fetchPeminjaman();
   }, [searchTerm, currentPage]);
+
+  // Animasi GSAP
+  useEffect(() => {
+    if (peminjamanList.length > 0 && containerRef.current) {
+      const ctx = gsap.context(() => {
+        gsap.fromTo(
+          ".peminjaman-card",
+          { opacity: 0, y: 20, scale: 0.98 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 1.2,
+            ease: "power4.out",
+            stagger: 0.15,
+          }
+        );
+
+        const cards = document.querySelectorAll(".peminjaman-card");
+        cards.forEach((card) => {
+          card.addEventListener("mouseenter", () => {
+            gsap.to(card, {
+              scale: 1.03,
+              duration: 0.3,
+              ease: "power2.out",
+            });
+          });
+          card.addEventListener("mouseleave", () => {
+            gsap.to(card, {
+              scale: 1,
+              duration: 0.3,
+              ease: "power2.out",
+            });
+          });
+        });
+      }, containerRef);
+
+      return () => ctx.revert();
+    }
+  }, [peminjamanList]);
 
   const handleReturn = async (loanId: string) => {
     try {
@@ -128,11 +170,14 @@ export default function PeminjamanList() {
       </div>
 
       {/* Grid Peminjaman */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div
+        ref={containerRef}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+      >
         {peminjamanList.map((item) => (
           <div
             key={item.id}
-            className="border rounded-lg shadow-sm bg-white flex flex-col overflow-hidden"
+            className="peminjaman-card border rounded-lg shadow-sm bg-white flex flex-col overflow-hidden"
           >
             {/* Strip Status */}
             <div

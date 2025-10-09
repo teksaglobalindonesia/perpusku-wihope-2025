@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import HapusBukuDialog from "@/components/custom/buku/hapuusbuku";
 import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
+import gsap from "gsap";
 
 const itemsPerPage = 6;
 
@@ -17,6 +18,15 @@ export default function BukuPage({ data }: { data: any[] }) {
 
   const fetchBooks = async () => {
     try {
+      // Fade out sebelum ambil data baru
+      await gsap.to(".book-card", {
+        opacity: 0,
+        y: 10,
+        duration: 0.3,
+        ease: "power2.out",
+        stagger: 0.05,
+      });
+
       const response = await fetch(
         `${BASE_URL}/api/book/list?page=${currentPage}&page_size=${itemsPerPage}&search=${searchTerm}`,
         {
@@ -68,6 +78,24 @@ export default function BukuPage({ data }: { data: any[] }) {
     return () => window.removeEventListener("books-updated", handler);
   }, []);
 
+  // Animasi masuk setelah data di-set
+  useEffect(() => {
+    if (books.length > 0) {
+      gsap.fromTo(
+        ".book-card",
+        { opacity: 0, y: 20, scale: 0.97 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.6,
+          ease: "power3.out",
+          stagger: 0.1,
+        }
+      );
+    }
+  }, [books]);
+
   return (
     <div className="p-4 md:p-6 space-y-6">
       {/* Header */}
@@ -99,9 +127,9 @@ export default function BukuPage({ data }: { data: any[] }) {
         {books.map((book) => (
           <div
             key={book.id}
-            className="border rounded-lg shadow-sm bg-white p-3 flex flex-col transition hover:shadow-md hover:scale-[1.01]"
+            className="book-card border rounded-lg shadow-sm bg-white p-3 flex flex-col transition hover:shadow-md hover:scale-[1.01]"
           >
-            {/* Gambar lebih kecil */}
+            {/* Gambar */}
             {book.image ? (
               <img
                 src={book.image}
@@ -115,7 +143,9 @@ export default function BukuPage({ data }: { data: any[] }) {
             )}
 
             {/* Detail */}
-            <h2 className="font-semibold text-navy text-base truncate mt-2">{book.title}</h2>
+            <h2 className="font-semibold text-navy text-base truncate mt-2">
+              {book.title}
+            </h2>
             <p className="text-xs text-gray-600">By: {book.author}</p>
 
             {/* Genre */}

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { BASE_URL, TOKEN, WIHOPE_NAME } from "@/lib/constant";
+import gsap from "gsap";
 
 export default function Dashboard() {
   const [bookPage, setBookPage] = useState(1);
@@ -18,7 +19,38 @@ export default function Dashboard() {
   const itemsPerPage = 2;
   const today = new Date().toISOString().split("T")[0]; //tanggal
 
-  // 📕 Fetch stok buku habis
+  // Animasi GSAP
+  useEffect(() => {
+    if (books.length > 0) {
+      gsap.fromTo(
+        ".book-card",
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 1.2, ease: "power3.out", stagger: 0.15 }
+      );
+    }
+  }, [books]);
+
+  useEffect(() => {
+    if (peminjaman.length > 0) {
+      gsap.fromTo(
+        ".peminjaman-card",
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 1.2, ease: "power3.out", stagger: 0.15 }
+      );
+    }
+  }, [peminjaman]);
+
+  useEffect(() => {
+    if (pengembalian.length > 0) {
+      gsap.fromTo(
+        ".pengembalian-card",
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 1.2, ease: "power3.out", stagger: 0.15 }
+      );
+    }
+  }, [pengembalian]);
+
+  // Fetch stok buku habis
   useEffect(() => {
     const fetchBooks = async () => {
       try {
@@ -51,9 +83,9 @@ export default function Dashboard() {
               ? `https://cms-perpusku.widhimp.my.id${item.cover.url}`
               : "/images/default.jpg",
           }))
-          .filter((b: any) => b.stock === 0); // hanya menampilkan stok buku yang habis
+          .filter((b: any) => b.stock === 0);
 
-        //  Pagination manual setelah filter
+        // Pagination manual setelah filter
         const start = (bookPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
         const paginated = formatted.slice(start, end);
@@ -156,7 +188,7 @@ export default function Dashboard() {
     fetchPengembalian();
   }, [pengembalianPage]);
 
-  // Pagination Component
+  // 📌 Pagination Component
   const Pagination = ({
     currentPage,
     totalPages,
@@ -216,7 +248,7 @@ export default function Dashboard() {
           {books.map((book) => (
             <div
               key={book.id}
-              className="flex items-center justify-between border border-gray-200 p-4 rounded-xl shadow-sm hover:shadow-lg transition bg-white"
+              className="book-card flex items-center justify-between border border-gray-200 p-4 rounded-xl shadow-sm hover:shadow-lg transition bg-white"
             >
               <div className="flex items-center gap-4">
                 <img
@@ -250,7 +282,7 @@ export default function Dashboard() {
           {peminjaman.map((b) => (
             <div
               key={b.id}
-              className="bg-white border border-gray-200 p-4 rounded-xl shadow-sm hover:shadow-lg transition flex flex-col gap-2"
+              className="peminjaman-card bg-white border border-gray-200 p-4 rounded-xl shadow-sm hover:shadow-lg transition flex flex-col gap-2"
             >
               <p className="font-bold">{b.judul}</p>
               <p className="text-sm text-gray-600">Peminjam: {b.peminjam}</p>
@@ -273,7 +305,7 @@ export default function Dashboard() {
           {pengembalian.map((b) => (
             <div
               key={b.id}
-              className="border border-gray-200 p-4 rounded-xl shadow-sm hover:shadow-lg transition flex flex-col gap-2 bg-white"
+              className="pengembalian-card border border-gray-200 p-4 rounded-xl shadow-sm hover:shadow-lg transition flex flex-col gap-2 bg-white"
             >
               <p className="font-bold">{b.judul}</p>
               <p className="text-sm text-gray-600">Peminjam: {b.peminjam}</p>
