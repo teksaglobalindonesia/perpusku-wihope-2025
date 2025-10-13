@@ -15,10 +15,11 @@ const Hero = () => {
 
     // Kata-kata yang ditampilkan bergantian
     const words = [
-      'Selamat Datang',
+      'Knowledge Hub',
       'Perpustakaan Digital',
       'Tempat Ilmu Bertemu',
-      'Alvin Ganteng and thats facts'
+      'Jendela Dunia',
+      'Sumber Inspirasi'
     ];
 
     // Timeline utama
@@ -44,7 +45,7 @@ const Hero = () => {
       '.hero-sub',
       { opacity: 0, y: 20 },
       { opacity: 1, y: 0, duration: 0.2, ease: 'power2.out' },
-      '+=0.3'
+      '+=0.1'
     );
 
     // Timeline teks berjalan
@@ -90,10 +91,10 @@ const Hero = () => {
           Perpusku
         </h1>
         <div
-          className="hero-line mb-1 mt-5 h-1 bg-black dark:bg-white"
+          className="hero-line mb-1 mt-5 h-1 bg-black md:hidden dark:bg-white"
           style={{ width: 0 }}
         />
-        <p className="hero-sub opacity-1 text-lg text-foreground md:ml-20 md:text-2xl">
+        <p className="hero-sub opacity-1 text-lg text-foreground md:ml-20 md:mt-4 md:text-2xl">
           your <span ref={textRef} className="font-semibold"></span>
           <span className="blinking-cursor">|</span>
         </p>

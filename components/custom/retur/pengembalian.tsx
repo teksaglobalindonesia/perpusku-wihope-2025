@@ -90,8 +90,8 @@ const Kembali = () => {
 
   return (
     <div className="min-h-[540px] w-full">
-      <div className="mt-6 flex flex-row justify-between p-4 px-9 font-light">
-        <h1 className="ml-12 rounded-lg bg-teal-400 px-3 py-1 text-3xl">
+      <div className="mt-6 flex flex-col justify-between p-4 px-9 font-light md:flex-row md:items-center">
+        <h1 className="mb-4 ml-12 rounded-lg bg-teal-400 px-3 py-1 text-3xl">
           ✨
           <span className="font-normal text-teal-900 underline">
             List Pengembalian
@@ -101,7 +101,7 @@ const Kembali = () => {
           <input
             type="text"
             placeholder="Search by title, name, or date"
-            className="mb-3 w-64 rounded border px-3 py-1"
+            className="mb-3 w-64 rounded border px-3 py-1 text-black"
             onChange={(e) => setKeyword(e.target.value)}
           />
         </div>

@@ -423,7 +423,7 @@ const Book: React.FC<BookProps> = ({ filterOutOfStock = false }) => {
         </div>
       )}
 
-      <div className="mt-6 flex flex-row justify-between p-4 px-9 font-light">
+      <div className="mt-6 flex flex-col justify-between p-4 px-9 font-light md:flex-row ">
         <div className="mr-14 flex justify-end">
           <input
             type="text"

@@ -146,7 +146,8 @@ const TambahPinjam = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-6">
+    <div className="flex min-h-36 flex-col items-center justify-center p-6 pb-32">
+      <div className="mb-15 p-6 text-white dark:text-black">.</div>
       <h1 className="mb-6 rounded bg-purple-700 px-6 py-2 text-3xl font-bold text-white underline">
         Tambahkan Peminjaman
       </h1>
@@ -169,19 +170,17 @@ const TambahPinjam = () => {
                 setBookDocumentId(e.target.value);
                 sessionStorage.setItem('bookDocumentId', e.target.value);
               }}
-              className="flex-1 rounded bg-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="focus: w-20 flex-1 rounded bg-gray-200 px-1 py-2 text-black ring-2 focus:outline-none focus:ring-blue-400"
             />
             <Link
               href={`/peminjaman/bukuTest?${buildQueryParams()}`}
-              className="rounded bg-blue-500 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-blue-600"
+              className="rounded bg-blue-500 px-2 py-2 text-sm font-bold text-white transition-colors hover:bg-blue-600"
             >
               Pilih
             </Link>
           </div>
           {bookTitle && (
-            <p className="col-span-3 text-right text-sm text-gray-600">
-              Judul: {bookTitle}
-            </p>
+            <p className="col-span-3 text-right text-sm">Judul: {bookTitle}</p>
           )}
 
           {/* Peminjam */}
@@ -197,19 +196,17 @@ const TambahPinjam = () => {
                 setMemberDocumentId(e.target.value);
                 sessionStorage.setItem('memberDocumentId', e.target.value);
               }}
-              className="flex-1 rounded bg-gray-200 p-2"
+              className="w-20 flex-1 rounded bg-gray-200 p-2 text-black"
             />
             <Link
               href={`/peminjaman/anggotaTest?${buildQueryParams()}`}
-              className="rounded bg-blue-500 px-3 py-1 text-sm font-bold text-white hover:bg-blue-600"
+              className="rounded bg-blue-500 px-2 py-2 text-sm font-bold text-white hover:bg-blue-600"
             >
               Pilih
             </Link>
           </div>
           {memberName && (
-            <p className="col-span-3 text-right text-sm text-gray-600">
-              Nama: {memberName}
-            </p>
+            <p className="col-span-3 text-right text-sm ">Nama: {memberName}</p>
           )}
 
           {/* Tanggal Pinjam */}
@@ -218,7 +215,7 @@ const TambahPinjam = () => {
             type="date"
             value={loanDate}
             onChange={(e) => setLoanDate(e.target.value)}
-            className="col-span-2 rounded bg-gray-200 p-2"
+            className="col-span-2 rounded bg-gray-200 p-2 text-black"
           />
 
           {/* Tanggal Kembali */}
@@ -227,7 +224,7 @@ const TambahPinjam = () => {
             type="date"
             value={returnDate}
             onChange={(e) => setReturnDate(e.target.value)}
-            className="col-span-2 rounded bg-gray-200 p-2"
+            className="col-span-2 rounded bg-gray-200 p-2 text-black"
           />
         </div>
 

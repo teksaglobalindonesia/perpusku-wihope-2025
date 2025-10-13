@@ -140,7 +140,7 @@ const Pinjam = () => {
         </div>
       </div>
       <h2 className="ml-8">
-        <span className="rounded-lg bg-yellow-200 px-3 py-1 text-xl">
+        <span className="rounded-lg bg-yellow-200 px-3 py-1 text-xl text-black">
           Anggota: {memberName}
         </span>
       </h2>
@@ -148,13 +148,11 @@ const Pinjam = () => {
       {/* Tabel daftar pinjaman */}
       <div className="mx-8 mb-8 rounded-md p-4">
         {loading ? (
-          <p className="text-center text-gray-500">Loading data pinjaman...</p>
+          <p className="text-center">Loading data pinjaman...</p>
         ) : error ? (
           <p className="text-center text-red-500">{error}</p>
         ) : paginatedItems.length === 0 ? (
-          <p className="text-center text-gray-500">
-            Tidak ada pinjaman yang ditemukan
-          </p>
+          <p className="text-center">Tidak ada pinjaman yang ditemukan</p>
         ) : (
           <div className="space-y-4">
             {paginatedItems.map((item) => {

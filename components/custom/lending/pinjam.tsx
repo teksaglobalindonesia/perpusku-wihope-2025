@@ -130,11 +130,11 @@ const Pinjam = () => {
         </span>
       </h1>
 
-      <div className="mt-6 flex flex-row items-center justify-between p-4 px-9 font-light">
+      <div className="mt-6 flex flex-col items-center justify-between p-4 px-9 font-light md:flex-row">
         <input
           type="text"
           placeholder="Search by title, name, or date"
-          className="w-64 rounded border px-3 py-1"
+          className="w-64 rounded border px-3 py-1 text-black"
           onChange={(e) => setKeyword(e.target.value)}
         />
         <Link href="/peminjaman/add">

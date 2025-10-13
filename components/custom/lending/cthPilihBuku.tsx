@@ -53,7 +53,8 @@ export default function CthPilihBuku() {
 
   return (
     <div className="p-6">
-      <h1 className="mb-4 text-xl font-bold">Pilih Buku</h1>
+      <div className="p-6">.</div>
+      <h1 className="mb-4 mt-2 text-xl font-bold">Pilih Buku</h1>
       <div className="grid gap-4">
         {books.map((book) => {
           const isOutOfStock = book.stock === 0;
@@ -61,7 +62,7 @@ export default function CthPilihBuku() {
           return (
             <div
               key={book.documentId}
-              className="flex items-center justify-between rounded bg-gray-100 p-4 shadow"
+              className="flex items-center justify-between rounded bg-gray-100 p-4 shadow dark:bg-slate-800"
             >
               <div>
                 <p className="font-semibold">{book.title}</p>

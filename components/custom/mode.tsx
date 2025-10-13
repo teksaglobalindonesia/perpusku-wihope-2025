@@ -14,7 +14,7 @@ const ModeToggle = () => {
       {/* Floating Button */}
       <button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-8 right-10 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-blue-700 text-2xl font-bold text-white shadow-lg transition-all duration-300 hover:scale-110 hover:bg-blue-500 lg:bottom-24 lg:right-24"
+        className="fixed bottom-8 left-3/4 z-50 flex h-14 w-14 -translate-x-1/2 items-center justify-center rounded-full bg-blue-700 text-2xl font-bold text-white shadow-lg transition-all duration-300 hover:scale-110 hover:bg-blue-500"
       >
         {open ? '-' : '≡'}
       </button>

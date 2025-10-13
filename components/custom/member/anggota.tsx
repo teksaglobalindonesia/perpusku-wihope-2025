@@ -302,7 +302,7 @@ const Anggota = () => {
   return (
     <div className="min-h-[540px] w-full">
       <h1 className="ml-10 mt-10 text-3xl">
-        <span className="rounded-lg bg-yellow-300 px-5 py-3 font-normal text-yellow-700 underline">
+        <span className="rounded-lg bg-yellow-300 px-5 py-3 text-2xl font-normal text-yellow-700 underline">
           🫂 List Anggota Perpusku
         </span>
       </h1>
@@ -311,12 +311,12 @@ const Anggota = () => {
         <input
           type="text"
           placeholder="Search by name, email, or id"
-          className="w-64 rounded border px-3 py-1"
+          className="w-64 rounded border px-3 py-1 text-black"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
         />
         <Link href={`/anggota/add`}>
-          <button className="text-normal rounded bg-yellow-500 px-3 py-1 font-medium text-white hover:bg-blue-600">
+          <button className="text-normal ml-3 rounded bg-yellow-500 px-3 py-1 font-medium text-white hover:bg-blue-600">
             Tambahkan Anggota
           </button>
         </Link>
@@ -443,20 +443,20 @@ const Anggota = () => {
                         <Link
                           href={`/anggota/anggotaPinjam?memberId=${anggota.id_member}`}
                         >
-                          <button className="rounded bg-blue-500 px-3 py-1 text-sm font-medium text-white hover:bg-blue-600">
+                          <button className="rounded bg-blue-500 px-1 py-1 text-sm font-medium text-white hover:bg-blue-600">
                             📚 Peminjaman
                           </button>
                         </Link>
 
                         <button
-                          className="rounded bg-yellow-500 px-3 py-1 text-sm font-medium text-white hover:bg-yellow-600"
+                          className="rounded bg-yellow-500 px-1 py-1 text-sm font-medium text-white hover:bg-yellow-600"
                           onClick={() => handleEditClick(anggota)}
                         >
                           ✏️ Edit
                         </button>
 
                         <button
-                          className="rounded bg-red-500 px-3 py-1 text-sm font-medium text-white hover:bg-red-600"
+                          className="rounded bg-red-500 px-1 py-1 text-sm font-medium text-white hover:bg-red-600"
                           onClick={() => handleDelete(anggota.documentId)}
                         >
                           🗑️ Hapus
