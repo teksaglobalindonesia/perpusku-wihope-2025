@@ -61,7 +61,21 @@ module.exports = {
           'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))'
-        }
+        },
+        // custom colors
+        'brand-primary': 'var(--brand-primary)',
+        'neutral-black': 'var(--neutral-black)',
+        'neutral-dgray': 'var(--neutral-dgray)',
+        'neutral-gray': 'var(--neutral-gray)',
+        'neutral-lgrey': 'var(--neutral-lgrey)',
+        'neutral-grey-blue': 'var(--neutral-grey-blue)',
+        'neutral-silver': 'var(--neutral-silver)',
+        'neutral-white': 'var(--neutral-white)',
+        //
+        'brand-blue': 'var(--brand-blue)',
+        'action-yellow': 'var(--brand-yellow)',
+        'action-error': 'var(--brand-error)',
+        'action-green': 'var(--brand-green)'
       },
       fontSize: {
         '2xs': ['10px', '16px']
@@ -72,7 +86,7 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)'
       },
       fontFamily: {
-        roboto: 'var(--font-roboto), sans-serif',
+        roboto: 'var(--font-roboto), sans-serif'
       },
       keyframes: {
         'accordion-down': {

@@ -1,0 +1,9 @@
+query search filter: filters[judul][$contains]=kalkulus
+
+$eq	=>Sama dengan
+$ne	=> Tidak sama dengan
+$gt	=> Lebih dari
+$gte =>	Lebih dari atau sama dengan
+$lt	=> Kurang dari
+$lte =>	Kurang dari atau sama dengan
+
