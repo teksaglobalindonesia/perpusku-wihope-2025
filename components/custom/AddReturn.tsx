@@ -1,5 +1,5 @@
 'use client';
-import {Card} from '@/components/custom/card';
+import { Card } from '@/components/custom/card';
 import { useState, useEffect } from 'react';
 import {
   Dialog,
@@ -133,9 +133,11 @@ export const AddReturnForm = () => {
               <Input
                 type="text"
                 value={
-                  selectedLoan
-                    ? `${selectedLoan.book.title} - ${selectedLoan.member.name}`
-                    : ''
+                  selectedLoan && selectedLoan.book && selectedLoan.member
+                    ? `${selectedLoan.book.title || 'Buku tidak ditemukan'} - ${
+                        selectedLoan.member.name || 'Anggota tidak dikenal'
+                      }`
+                    : 'Pilih peminjaman..'
                 }
                 readOnly
                 placeholder={
@@ -153,15 +155,15 @@ export const AddReturnForm = () => {
               <div className="mt-4">
                 <Card
                   cardItems={loanData.map((loan) => ({
-                    title: loan.book.title,
-                    peminjam: loan.member.name,
+                    title: loan.book?.title || 'Buku tidak ditemukan',
+                    peminjam: loan.member?.name || 'Anggota tidak ditemukan',
                     peminjaman: new Date(loan.loan_date).toLocaleDateString(
                       'id-ID'
                     ),
                     pengembalian: new Date(loan.return_date).toLocaleDateString(
                       'id-ID'
                     ),
-                    label: 'dipinjam', // asumsi semua belum dikembalikan
+                    label: 'dipinjam',
                     showButton: false
                   }))}
                   selectMode={true}

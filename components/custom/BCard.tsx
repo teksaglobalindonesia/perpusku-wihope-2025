@@ -151,7 +151,7 @@ const handleDelete = async (index: number) => {
                 cardItems={books.map((bookData: any) => ({
                   documentId: bookData?.documentId,
                   imageSrc: `${BASE_URL}${bookData?.cover?.url}`,
-                  title: bookData?.title,
+                  title: bookData?.title || 'Judul tidak tersedia',
                   genre: bookData?.categories
                     ?.map((c: any) => c.name)
                     .join(', '),

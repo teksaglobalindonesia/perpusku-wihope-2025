@@ -85,13 +85,13 @@ export const MembersCard = ({ ...props }: MCardProps) => {
 
             {/* Tombol Aksi */}
             {items.buttons && items.buttons.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-2 border-t border-beige-300 pt-3">
+              <div className="mt-3 grid grid-cols-2 gap-2 border-t border-beige-300 pt-3 sm:flex sm:flex-wrap">
                 {/* Peminjaman */}
                 {items.buttons.includes('peminjaman') && (
                   <Link href={`/peminjaman/${items.documentId}`}>
                     <button
                       onClick={() => props.onPeminjaman?.(index)}
-                      className="flex min-w-0 flex-1 items-center gap-1 rounded-md border border-vintage-sage bg-vintage-sage/90 px-3 py-1.5 text-sm text-beige-100 shadow-inner transition-colors hover:bg-vintage-sage sm:flex-initial"
+                      className="flex w-full items-center justify-center gap-1 rounded-md border border-vintage-sage bg-vintage-sage/90 px-3 py-1.5 text-sm text-beige-100 shadow-inner transition-colors hover:bg-vintage-sage sm:w-auto sm:flex-initial"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -111,7 +111,7 @@ export const MembersCard = ({ ...props }: MCardProps) => {
                   <Link href={`/members/editMember/${items.documentId}`}>
                     <button
                       onClick={() => props.onEdit?.(index)}
-                      className="flex min-w-0 flex-1 items-center gap-1 rounded-md border border-beige-400 bg-beige-200 px-3 py-1.5 text-sm text-beige-800 shadow-inner transition-colors hover:bg-beige-300 sm:flex-initial"
+                      className="flex w-full items-center justify-center gap-1 rounded-md border border-beige-400 bg-beige-200 px-3 py-1.5 text-sm text-beige-800 shadow-inner transition-colors hover:bg-beige-300 sm:w-auto sm:flex-initial"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -130,7 +130,7 @@ export const MembersCard = ({ ...props }: MCardProps) => {
                 {items.buttons.includes('delete') && (
                   <Dialog>
                     <DialogTrigger asChild>
-                      <button className="flex  flex-1 items-center justify-center gap-1 rounded-md border border-vintage-terracotta bg-vintage-terracotta/90 px-3 py-1.5 text-sm font-medium text-beige-100 shadow-inner transition-colors hover:bg-vintage-terracotta focus:outline-none focus:ring-2 focus:ring-vintage-terracotta/50 sm:flex-initial">
+                      <button className="col-span-2 flex w-full items-center justify-center gap-1 rounded-md border border-vintage-terracotta bg-vintage-terracotta/90 px-3 py-1.5 text-sm font-medium text-beige-100 shadow-inner transition-colors hover:bg-vintage-terracotta focus:outline-none focus:ring-2 focus:ring-vintage-terracotta/50 sm:col-span-1 sm:w-auto">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="h-4 w-4 shrink-0"

@@ -1,351 +1,360 @@
 'use client';
 
 import { BASE_URL, TOKEN, WIHOPE_NAME } from '@/lib/constant';
-import { useState, useEffect } from 'react';
-
-interface Category {
-  id: number;
-  documentId: string;
-  name: string;
-}
-
-interface FormData {
-  judul: string;
-  penulis: string;
-  penerbit: string;
-  tahunTerbit: string;
-  stok: number;
-}
+import { useEffect, useState, useRef } from 'react';
 
 export const BForm = () => {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState({
     judul: '',
     penulis: '',
     penerbit: '',
     tahunTerbit: '',
-    stok: 0
+    stok: ''
   });
-  const [cover, setCover] = useState<File | null>(null);
   const [kategori, setKategori] = useState<string[]>([]);
-  const [categoriesList, setCategoriesList] = useState<Category[]>([]);
-  const [showAddCategory, setShowAddCategory] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [categoriesList, setCategoriesList] = useState<{ documentId: string; name: string }[]>([]);
+  const [cover, setCover] = useState<File | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState('');
-
-  const fetchConfig = {
-    headers: { Authorization: TOKEN, 'x-wihope-name': WIHOPE_NAME },
-    cache: 'no-store' as const
-  };
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [loadingNewCategory, setLoadingNewCategory] = useState(false);
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const fetchConfig = {
+          headers: { Authorization: TOKEN, 'x-wihope-name': WIHOPE_NAME },
+          cache: 'no-store' as const
+        };
+
+        const res = await fetch(`${BASE_URL}/api/book-category/list?page_size=99`, fetchConfig);
+        if (!res.ok) throw new Error('Gagal ambil kategori');
+
+        const catData = await res.json();
+        setCategoriesList(catData.data || []);
+        setLoading(false);
+      } catch (error: any) {
+        setMessage(`Error: ${error.message}`);
+        setLoading(false);
+      }
+    };
+
     fetchCategories();
   }, []);
 
-  const fetchCategories = async () => {
+  const handleAddNewCategory = async () => {
+    if (!newCategoryName.trim()) {
+      setMessage('⚠️ Nama kategori tidak boleh kosong');
+      return;
+    }
+
+    setLoadingNewCategory(true);
     try {
-      const res = await fetch(
-        `${BASE_URL}/api/book-category/list`,
-        fetchConfig
-      );
-      if (!res.ok) throw new Error(`Failed to fetch categories: ${res.status}`);
-      const { data } = await res.json();
-      setCategoriesList(data || []);
-    } catch {
-      setMessage('Gagal memuat kategori.');
+      const response = await fetch(`${BASE_URL}/api/book-category/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: TOKEN,
+          'x-wihope-name': WIHOPE_NAME
+        },
+        body: JSON.stringify({ data: { name: newCategoryName.trim() } })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP ${response.status}`);
+      }
+
+      const result = await response.json();
+      const categoryData = result.data || result;
+
+      if (categoryData?.documentId && categoryData?.name) {
+        setCategoriesList(prev => [...prev, { 
+          documentId: categoryData.documentId, 
+          name: categoryData.name 
+        }]);
+        setNewCategoryName('');
+        setIsAddingCategory(false);
+        setMessage('✅ Kategori berhasil ditambahkan');
+      } else {
+        throw new Error('Struktur data tidak sesuai: ' + JSON.stringify(result));
+      }
+    } catch (error: any) {
+      setMessage(`❌ Gagal menambahkan kategori: ${error.message}`);
+    } finally {
+      setLoadingNewCategory(false);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === 'stok' ? Number(value) : value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCoverPreview(URL.createObjectURL(file));
+      setCover(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    setCover(null);
+    setCoverPreview(null);
   };
 
   const handleKategoriChange = (documentId: string) => {
-    setKategori((prev) =>
-      prev.includes(documentId)
-        ? prev.filter((id) => id !== documentId)
-        : [...prev, documentId]
+    setKategori(prev => prev.includes(documentId)
+      ? prev.filter(id => id !== documentId)
+      : [...prev, documentId]
     );
-  };
-
-  const handleAddCategory = async () => {
-    const trimmed = newCategoryName.trim();
-    if (!trimmed) {
-      setMessage('Nama kategori tidak boleh kosong.');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const res = await fetch(`${BASE_URL}/api/book-category/add`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...fetchConfig.headers },
-        body: JSON.stringify({ data: { name: trimmed } })
-      });
-      if (!res.ok) throw new Error(`Failed to add category: ${res.status}`);
-      setMessage('Kategori berhasil ditambahkan!');
-      setNewCategoryName('');
-      setShowAddCategory(false);
-      await fetchCategories();
-    } catch {
-      setMessage('Gagal menambah kategori.');
-    } finally {
-      setLoading(false);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitting(true);
+    setMessage('');
+
     if (!cover) {
-      setMessage('Cover buku belum dipilih!');
+      setMessage('⚠️ Cover buku wajib diunggah!');
+      setSubmitting(false);
       return;
     }
 
-    setLoading(true);
-    const formDataToSend = new FormData();
-    formDataToSend.append('cover', cover);
-    formDataToSend.append(
-      'data',
-      JSON.stringify({
+    try {
+      const payload = new FormData();
+      payload.append('data', JSON.stringify({
         title: formData.judul,
         writer: formData.penulis,
         publisher: formData.penerbit,
         published_year: formData.tahunTerbit,
-        stock: formData.stok,
+        stock: parseInt(formData.stok) || 0,
         categories: kategori
-      })
-    );
+      }));
+      payload.append('cover', cover);
 
-    try {
       const res = await fetch(`${BASE_URL}/api/book/add`, {
         method: 'POST',
-        headers: fetchConfig.headers,
-        body: formDataToSend
+        headers: { Authorization: TOKEN, 'x-wihope-name': WIHOPE_NAME },
+        body: payload,
+        cache: 'no-store'
       });
+
       const result = await res.json();
       if (res.ok) {
-        setMessage('Buku berhasil ditambahkan!');
-        setFormData({
-          judul: '',
-          penulis: '',
-          penerbit: '',
-          tahunTerbit: '',
-          stok: 0
-        });
-        setCover(null);
+        setMessage('✅ Buku berhasil ditambahkan!');
+        setFormData({ judul: '', penulis: '', penerbit: '', tahunTerbit: '', stok: '' });
         setKategori([]);
+        setCover(null);
+        setCoverPreview(null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
       } else {
-        setMessage(`Gagal: ${result.message || 'Terjadi kesalahan'}`);
+        setMessage(`❌ Gagal: ${result.message || 'Terjadi kesalahan'}`);
       }
-    } catch {
-      setMessage('Gagal mengirim data.');
+    } catch (error: any) {
+        setMessage(`⚠️ Error: ${error.message}`);
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
-  const inputFields = [
-    { label: 'Judul', name: 'judul', type: 'text' },
-    { label: 'Penulis', name: 'penulis', type: 'text' },
-    { label: 'Penerbit', name: 'penerbit', type: 'text' },
-    { label: 'Tahun Terbit', name: 'tahunTerbit', type: 'number' },
-    { label: 'Stok', name: 'stok', type: 'number' }
-  ];
+  if (loading) return (
+    <div className="p-8 text-center">
+      <div className="text-lg text-vintage-brown">Sabar, loading data....</div>
+    </div>
+  );
 
   return (
-    <div className="w-full rounded-xl border border-vintage-sage bg-vintage-parchment p-8 font-vintage shadow-lg backdrop-blur-sm">
-      <div className="relative mb-8">
-        <div className="absolute -left-2 top-0 h-full w-1 rounded-full bg-vintage-terracotta"></div>
-        <h1 className="pl-4 text-3xl font-medium text-vintage-brown">
-          <span className="mr-3 text-4xl text-vintage-terracotta">📚</span>
-          Tambah Buku Baru
-        </h1>
-        <p className="mt-1 pl-12 text-sm italic text-beige-700">
-          Lengkapi data buku dan kategori untuk menambahkan koleksi baru
-        </p>
+    <div className="w-full rounded-xl bg-beige-50 p-6 font-vintage shadow-lg shadow-beige-200/50 md:p-8">
+      <div className="mb-8 flex items-center justify-between border-b border-beige-200 pb-6">
+        <h1 className="text-2xl font-bold text-vintage-brown">Tambah Buku Baru</h1>
+        <div className="h-2 w-16 rounded-full bg-vintage-sage/30"></div>
       </div>
 
       {message && (
-        <div
-          className={`mb-6 rounded border p-3 ${
-            message.includes('berhasil')
-              ? 'border-green-200 bg-green-50 text-green-700'
-              : 'border-red-200 bg-red-50 text-red-700'
-          } text-sm`}
-          aria-live="polite"
-        >
-          {message}
-        </div>
+        <div className={`mb-6 rounded border p-3 text-sm ${
+          message.includes('✅') ? 'border-green-200 bg-green-50 text-green-700' :
+          message.includes('❌') ? 'border-red-200 bg-red-50 text-red-700' :
+          'border-yellow-200 bg-yellow-50 text-yellow-700'
+        }`}>{message}</div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {inputFields.map(({ label, name, type }) => (
-            <div key={name} className="space-y-2">
-              <label className="text-sm font-medium tracking-wide text-beige-800">
-                {label} <span className="text-vintage-terracotta">*</span>
-              </label>
+        <div className="grid gap-6 md:grid-cols-2">
+          {[
+            { label: 'Judul', name: 'judul', type: 'text' },
+            { label: 'Penulis', name: 'penulis', type: 'text' },
+            { label: 'Penerbit', name: 'penerbit', type: 'text' }
+          ].map(({ label, name, type }) => (
+            <div key={name} className="group relative">
+              <label className="mb-1 block text-sm font-medium text-beige-700">{label}</label>
               <input
-                name={name}
-                value={formData[name as keyof FormData]}
-                onChange={handleChange}
                 type={type}
-                min={
-                  name === 'stok' || name === 'tahunTerbit' ? '0' : undefined
-                }
-                className="w-full rounded-lg border-2 border-beige-200 bg-white/80 px-4 py-2.5 text-beige-900 
-                            transition-all duration-200 placeholder:text-beige-400 
-                            focus:border-vintage-sage focus:outline-none focus:ring-2 focus:ring-vintage-sage/30"
+                name={name}
+                value={formData[name as keyof typeof formData]}
+                onChange={handleChange}
+                className="w-full rounded-lg border border-beige-300 bg-white px-4 py-3 text-beige-900 transition-all focus:border-vintage-sage focus:ring-2 focus:ring-vintage-sage/30"
                 placeholder={`Masukkan ${label.toLowerCase()}`}
                 required
               />
+              <div className="absolute bottom-0 left-0 h-0.5 w-0 bg-vintage-sage transition-all duration-300 group-focus-within:w-full"></div>
             </div>
           ))}
-          <div className="space-y-2">
-            <label className="text-sm font-medium tracking-wide text-beige-800">
-              Cover Buku <span className="text-vintage-terracotta">*</span>
-            </label>
+
+          <div className="group relative">
+            <label className="mb-1 block text-sm font-medium text-beige-700">Tahun Terbit</label>
             <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setCover(e.target.files?.[0] || null)}
-              className="w-full rounded-lg border-2 border-beige-200 bg-white/80 px-4 py-2 text-beige-900
-                          transition-all file:mr-2 file:rounded file:bg-vintage-sage file:px-3 
-                          file:py-1 file:text-sm file:text-white
-                          hover:file:bg-vintage-sage/90 focus:outline-none focus:ring-2 focus:ring-vintage-sage/50"
+              type="number"
+              name="tahunTerbit"
+              value={formData.tahunTerbit}
+              onChange={handleChange}
+              min="0"
+              className="w-full rounded-lg border border-beige-300 bg-white px-4 py-3 text-beige-900 transition-all focus:border-vintage-sage focus:ring-2 focus:ring-vintage-sage/30"
+              required
             />
+            <div className="absolute bottom-0 left-0 h-0.5 w-0 bg-vintage-sage transition-all duration-300 group-focus-within:w-full"></div>
           </div>
         </div>
 
-        <div className="rounded-xl border-2 border-vintage-sage/30 bg-white/60 p-6">
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="flex items-center gap-2 text-lg font-medium text-vintage-brown">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-vintage-terracotta"></span>
-              Kategori
-            </h3>
-            <button
-              type="button"
-              onClick={() => setShowAddCategory(!showAddCategory)}
-              className="flex items-center gap-1 text-sm font-medium text-vintage-terracotta transition-colors hover:text-vintage-terracotta/80 focus:outline-none"
-            >
-              <span className="text-lg">+</span> Tambah Kategori
-            </button>
+        <div className="rounded-xl border border-beige-200 bg-white p-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium text-beige-800">Kategori</h3>
+            {!isAddingCategory && (
+              <button
+                type="button"
+                onClick={() => setIsAddingCategory(true)}
+                className="flex items-center gap-1 rounded-full bg-beige-100 px-4 py-2 text-sm font-medium text-beige-700 transition-colors hover:bg-beige-200"
+              >
+                <span>+</span> Tambah Kategori
+              </button>
+            )}
           </div>
 
-          {showAddCategory && (
-            <div className="mb-5 rounded-lg border border-vintage-sage/40 bg-vintage-parchment p-4 shadow-sm">
-              <div className="flex flex-col gap-2 sm:flex-row">
-                <input
-                  type="text"
-                  value={newCategoryName}
-                  onChange={(e) => setNewCategoryName(e.target.value)}
-                  placeholder="Masukkan nama kategori baru..."
-                  className="flex-1 rounded border border-beige-300 px-3 py-2.5 text-sm 
-                              placeholder:text-beige-400 focus:outline-none focus:ring-2 focus:ring-vintage-sage/50"
-                  required
-                />
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={handleAddCategory}
-                    disabled={loading}
-                    className={`rounded bg-vintage-terracotta px-4 py-2.5 text-sm font-medium text-white 
-                                transition-colors ${
-                                  loading
-                                    ? 'cursor-not-allowed opacity-50'
-                                    : 'hover:bg-vintage-terracotta/90'
-                                }`}
-                  >
-                    {loading ? 'Menambahkan...' : 'Tambah'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowAddCategory(false);
-                      setNewCategoryName('');
-                    }}
-                    className="rounded bg-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-300"
-                  >
-                    Batal
-                  </button>
-                </div>
+          {isAddingCategory && (
+            <div className="mt-4 rounded-lg border border-beige-200 bg-beige-50 p-4">
+              <label className="mb-2 block text-sm font-medium text-beige-700">Nama Kategori Baru</label>
+              <input
+                type="text"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                placeholder="Misal: Fiksi Ilmiah"
+                className="w-full rounded border border-beige-300 bg-white px-3 py-2 text-sm focus:border-vintage-sage focus:ring-1 focus:ring-vintage-sage"
+              />
+              <p className="mt-2 text-xs text-beige-500">Tekan Tambah untuk menyimpan kategori baru.</p>
+              <div className="mt-3 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => { setIsAddingCategory(false); setNewCategoryName(''); }}
+                  disabled={loadingNewCategory}
+                  className="rounded bg-gray-200 px-3 py-1 text-sm text-gray-700 transition hover:bg-gray-300 disabled:opacity-60"
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  onClick={handleAddNewCategory}
+                  disabled={loadingNewCategory || !newCategoryName.trim()}
+                  className="rounded bg-vintage-sage px-3 py-1 text-sm text-white transition hover:bg-vintage-sage/90 disabled:opacity-60"
+                >
+                  {loadingNewCategory ? 'Menyimpan...' : 'Tambah'}
+                </button>
               </div>
             </div>
           )}
 
-          <div className="flex flex-wrap gap-3">
-            {categoriesList.length > 0 ? (
-              categoriesList.map((cat) => (
-                <div key={cat.id} className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id={`kategori-${cat.id}`}
-                    checked={kategori.includes(cat.documentId)}
-                    onChange={() => handleKategoriChange(cat.documentId)}
-                    className="peer hidden"
-                  />
-                  <label
-                    htmlFor={`kategori-${cat.id}`}
-                    className="cursor-pointer select-none rounded-full border border-beige-300 
-                                px-4 py-2 text-sm text-beige-700 transition-all duration-150
-                                hover:bg-beige-50 peer-checked:border-vintage-terracotta 
-                                peer-checked:bg-vintage-terracotta/10 peer-checked:text-vintage-terracotta"
-                  >
-                    {cat.name}
-                  </label>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm italic text-beige-500">
-                Belum ada kategori tersedia.
-              </p>
-            )}
+          <div className="mt-4 flex flex-wrap gap-3">
+            {categoriesList.map((cat) => (
+              <div key={cat.documentId} className="flex items-center">
+                <input
+                  type="checkbox"
+                  id={`cat-${cat.documentId}`}
+                  checked={kategori.includes(cat.documentId)}
+                  onChange={() => handleKategoriChange(cat.documentId)}
+                  className="peer hidden"
+                />
+                <label
+                  htmlFor={`cat-${cat.documentId}`}
+                  className="cursor-pointer select-none rounded-full border border-beige-300 px-4 py-2 text-sm text-beige-700 transition-all peer-checked:border-vintage-sage peer-checked:bg-vintage-sage/10 peer-checked:text-vintage-sage"
+                >
+                  {cat.name}
+                </label>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="flex justify-end pt-6">
+        <div className="grid gap-6 md:grid-cols-2">
+          <div className="group relative">
+            <label className="mb-1 block text-sm font-medium text-beige-700">Jumlah Stok</label>
+            <div className="relative">
+              <input
+                type="number"
+                name="stok"
+                value={formData.stok}
+                onChange={handleChange}
+                min="0"
+                className="w-full rounded-lg border border-beige-300 bg-white px-4 py-3 text-beige-900 transition-all focus:border-vintage-sage focus:ring-2 focus:ring-vintage-sage/30"
+                required
+              />
+              <div className="absolute right-8 top-1/2 -translate-y-1/2 text-sm text-beige-500">buku</div>
+            </div>
+            <div className="absolute bottom-0 left-0 h-0.5 w-0 bg-vintage-sage transition-all duration-300 group-focus-within:w-full"></div>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-beige-700">Cover Buku</label>
+            <div className="flex items-center gap-4">
+              <div className="relative h-16 w-16 overflow-hidden rounded-lg border-2 border-dashed border-beige-300 bg-beige-100">
+                {coverPreview ? (
+                  <>
+                    <img src={coverPreview} alt="Preview cover" className="h-full w-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs text-white shadow-md hover:bg-red-600"
+                    >
+                      ×
+                    </button>
+                  </>
+                ) : (
+                  <span className="flex h-full w-full items-center justify-center text-2xl text-beige-400">+</span>
+                )}
+              </div>
+
+              <div>
+                <label
+                  htmlFor="cover-upload"
+                  className="inline-block cursor-pointer rounded-lg bg-beige-100 px-4 py-2 text-sm font-medium text-beige-700 transition-colors hover:bg-beige-200"
+                >
+                  Pilih Gambar
+                </label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  id="cover-upload"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+                <p className="mt-1 text-xs text-beige-500">Format: JPG, PNG (max 2MB)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-4 pt-4">
           <button
             type="submit"
-            disabled={loading}
-            className={`rounded-xl px-7 py-3 text-sm font-medium text-white shadow-md transition-all duration-200
-                          ${
-                            loading
-                              ? 'cursor-not-allowed bg-gray-400'
-                              : 'active:scale-99 bg-vintage-terracotta hover:bg-vintage-terracotta/90'
-                          } 
-                        focus:outline-none focus:ring-2 focus:ring-vintage-terracotta/50 focus:ring-offset-2`}
+            disabled={submitting}
+            className="rounded-lg bg-vintage-sage px-6 py-2.5 text-sm font-medium text-white shadow-md transition-colors hover:bg-vintage-sage/90 disabled:opacity-70"
           >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <svg
-                  className="h-4 w-4 animate-spin"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                  ></path>
-                </svg>
-                Menyimpan...
-              </span>
-            ) : (
-              'Tambah Buku'
-            )}
+            {submitting ? 'Menyimpan...' : 'Tambah Buku'}
           </button>
         </div>
       </form>

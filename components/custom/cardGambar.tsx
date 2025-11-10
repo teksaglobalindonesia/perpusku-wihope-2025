@@ -61,7 +61,7 @@ export const CardGambar = ({ ...props }: CardGambarProps) => {
             <div className="flex-1">
               <div className="space-y-2">
                 <h2 className="text-lg font-semibold text-vintage-brown sm:text-xl">
-                  {item.title}
+                  {item.title} 
                 </h2>
                 <div className="flex flex-col flex-wrap gap-x-4 gap-y-1 text-sm sm:text-base">
                   <p className="text-beige-700">

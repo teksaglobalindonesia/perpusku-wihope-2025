@@ -156,12 +156,6 @@ export const MEdit = ({ id }: { id: string }) => {
         {/* Tombol Aksi */}
         <div className="flex justify-end gap-4 pt-4">
           <button
-            type="button"
-            className="rounded-lg border border-beige-300 bg-white px-6 py-2.5 text-sm font-medium text-beige-700 transition-colors hover:bg-beige-100"
-          >
-            Hapus
-          </button>
-          <button
             type="submit"
             disabled={submitting}
             className="rounded-lg bg-vintage-sage px-6 py-2.5 text-sm font-medium text-white shadow-md transition-colors hover:bg-vintage-sage/90 disabled:opacity-70"

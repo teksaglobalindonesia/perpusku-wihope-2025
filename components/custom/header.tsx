@@ -73,7 +73,7 @@ export const Header = ({ navItems = [] }: headerProps) => {
                 <a
                   key={index}
                   href={item.path}
-                  className={`group relative rounded-md px-5 py-2.5 font-vintage text-sm font-medium text-vintage-parchment transition-all duration-300 hover:bg-terracotta-600/40 hover:text-terracotta-100 focus:outline-none focus:ring-2 focus:ring-terracotta-400 focus:ring-offset-2 focus:ring-offset-beige-800`}
+                  className={`group relative rounded-md px-5 py-2.5 font-vintage text-md font-medium text-vintage-parchment transition-all duration-300 hover:bg-terracotta-600/40 hover:text-terracotta-100 focus:outline-none focus:ring-2 focus:ring-terracotta-400 focus:ring-offset-2 focus:ring-offset-beige-800`}
                 >
                   {item.label}
                   {isActive && (

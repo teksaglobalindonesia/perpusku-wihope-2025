@@ -73,8 +73,16 @@ export const PJCreate = () => {
         const bookJson = await bookRes.json();
         const memberJson = await memberRes.json();
 
-        setBookData(bookJson.data || []);
-        setMemberData(memberJson.data || []);
+        setBookData(
+          (bookJson.data || []).filter(
+            (book: any) => book !== null && book !== undefined
+          )
+        );
+        setMemberData(
+          (memberJson.data || []).filter(
+            (member: any) => member !== null && member !== undefined
+          )
+        );
       } catch (error) {
         console.error('Error fetching data:', error);
         setMessage('Gagal memuat data buku atau anggota. Coba lagi nanti.');
@@ -89,7 +97,7 @@ export const PJCreate = () => {
     if (loanDate) {
       const date = new Date(loanDate);
       date.setDate(date.getDate() + duration);
-      setReturnDate(date.toISOString().split('T')[0]); // Format YYYY-MM-DD
+      setReturnDate(date.toISOString().split('T')[0]);
     }
   }, [loanDate, duration]);
 
@@ -208,10 +216,10 @@ export const PJCreate = () => {
                       imageSrc: book.cover?.url
                         ? `${BASE_URL}${book.cover.url}`
                         : '/images/placeholder-book.png',
-                      title: book.title,
-                      genre: book.genre,
-                      author: book.author,
-                      stock: book.stock,
+                      title: book.title || 'Buku tidak ditemukan',
+                      genre: book.genre || 'ga ada genre',
+                      author: book.author || 'ga nemu penulis',
+                      stock: book.stock || 0,
                       buttons: [],
                       documentId: book.documentId
                     }))}
